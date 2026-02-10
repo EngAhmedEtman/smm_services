@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('start_count')->nullable();
             $table->integer('remains')->nullable();
             $table->decimal('price', 10, 4)->nullable();
-            $table->string('currency')->default('USD');
+            $table->string('currency')->default('EGP');
             $table->string('status')->default('pending'); // pending, completed, cancelled
             $table->text('error_log')->nullable();
             $table->timestamps();

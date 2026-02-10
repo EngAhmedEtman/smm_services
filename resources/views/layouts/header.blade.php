@@ -6,10 +6,10 @@
 
     <div class="flex items-center gap-6">
         <!-- Balance Pill -->
-        <a href="#" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 backdrop-blur-md shadow-lg shadow-green-900/10 hover:shadow-green-900/20 transition-all duration-300 transform hover:scale-105">
+        <a href="{{ route('recharge') }}" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 backdrop-blur-md shadow-lg shadow-green-900/10 hover:shadow-green-900/20 transition-all duration-300 transform hover:scale-105">
             <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
             <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold mr-1">الرصيد</span>
-            <span class="text-sm text-white font-bold tracking-wide font-mono">${{ number_format(auth()->user()->balance ?? 0, 2) }}</span>
+            <span class="text-sm text-white font-bold tracking-wide font-mono">{{ number_format(auth()->user()->balance ?? 0, 2) }} ج.م</span>
         </a>
 
         <!-- Notifications -->
@@ -87,7 +87,7 @@
 
     <div class="flex items-center gap-4">
         <!-- Balance Mobile -->
-        <span class="text-xs text-green-400 font-bold">$120.50</span>
+        <span class="text-xs text-green-400 font-bold">120.50 ج.م</span>
 
         <button class="text-gray-400 hover:text-white transform active:scale-95 transition-transform" onclick="alert('Menu functionality would go here')">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

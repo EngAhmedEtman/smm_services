@@ -23,12 +23,12 @@
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/10 rounded-full group-hover:bg-indigo-500/20 transition-all duration-500"></div>
             <div class="relative">
                 <p class="text-sm font-medium text-gray-400 mb-1">الرصيد الحالي</p>
-                <h3 class="text-3xl font-bold text-white">$120.50</h3>
+                <h3 class="text-3xl font-bold text-white">{{ number_format(auth()->user()->balance ?? 0, 2) }} ج.م</h3>
                 <div class="mt-4 flex items-center gap-2 text-xs text-green-400 bg-green-500/10 w-fit px-2 py-1 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                     </svg>
-                    + $10.00 هذا الأسبوع
+                    + 10.00 ج.م هذا الأسبوع
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-pink-500/10 rounded-full group-hover:bg-pink-500/20 transition-all duration-500"></div>
             <div class="relative">
                 <p class="text-sm font-medium text-gray-400 mb-1">إجمالي الإنفاق</p>
-                <h3 class="text-3xl font-bold text-white">$4,502.85</h3>
+                <h3 class="text-3xl font-bold text-white">{{ number_format(auth()->user()->total_spent ?? 0, 2) }} ج.م</h3>
                 <div class="mt-4 text-xs text-gray-500">
                     منذ بداية التسجيل
                 </div>

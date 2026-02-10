@@ -34,11 +34,15 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    
-    'dragon_smm' => [
-        'url' => env('DRAGON_SMM_API_URL'),
-        'key' => env('DRAGON_SMM_API_KEY'),
+
+    'smm_provider' => [
+        'url' => env('SMM_PROVIDER_API_URL'),
+        'key' => env('SMM_PROVIDER_API_KEY'),
     ],
 
+    'whatsapp' => [
+    'url'   => env('WHATSAPP_API_URL'),
+    'token' => env('WHATSAPP_ACCESS_TOKEN'),
+],
 
 ];

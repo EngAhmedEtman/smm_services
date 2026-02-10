@@ -19,4 +19,11 @@ class Service extends Model
         'type',
         'provider',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'service_favorites', 'service_id', 'user_id');
+    }
+
+    
 }

@@ -47,7 +47,7 @@
             <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700 text-center shadow-inner">
                 <p class="text-xs text-gray-400 mb-1">الرصيد الحالي</p>
                 <p class="text-3xl font-bold text-green-400 flex items-center justify-center gap-1 font-mono">
-                    <span class="text-lg text-green-600">$</span>{{ number_format($user->balance ?? 0, 2) }}
+                    {{ number_format($user->balance ?? 0, 2) }} <span class="text-lg text-green-600">ج.م</span>
                 </p>
             </div>
             <a href="#" class="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-sm text-white transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20">
@@ -126,7 +126,7 @@
                     </svg>
                 </div>
                 <p class="text-gray-400 text-sm relative z-10">إجمالي المصروفات</p>
-                <p class="text-3xl font-bold text-white relative z-10 font-mono">${{ number_format($stats['total_spent'], 2) }}</p>
+                <p class="text-3xl font-bold text-white relative z-10 font-mono">{{ number_format(auth()->user()->total_spent ?? 0, 2) }} ج.م</p>
             </div>
         </div>
 

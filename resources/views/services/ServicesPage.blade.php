@@ -64,7 +64,7 @@
             <div id="serviceInfo" class="hidden bg-gray-800/50 rounded-lg p-4 border border-gray-700 text-sm space-y-2">
                 <div class="flex justify-between">
                     <span class="text-gray-400">السعر لكل 1000:</span>
-                    <span id="serviceRate" class="font-bold text-green-400">$0.00</span>
+                    <span id="serviceRate" class="font-bold text-green-400">0.00 ج.م</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">الحد الأدنى:</span>
@@ -82,14 +82,20 @@
 
             <!-- Link & Quantity Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div class="md:col-span-2">
                     <label for="link" class="block text-sm font-medium text-gray-400 mb-2">الرابط</label>
                     <input type="url" id="link" name="link" class="form-input block w-full rounded-lg h-12 px-4 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://example.com/post">
                 </div>
 
-                <div>
+                <div id="quantityContainer" class="md:col-span-2">
                     <label for="quantity" class="block text-sm font-medium text-gray-400 mb-2">الكمية</label>
                     <input type="number" id="quantity" name="quantity" class="form-input block w-full rounded-lg h-12 px-4 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="0">
+                </div>
+
+                <div id="commentsContainer" class="hidden md:col-span-2">
+                    <label for="comments" class="block text-sm font-medium text-gray-400 mb-2">التعليقات (كل تعليق في سطر)</label>
+                    <textarea id="comments" name="comments" rows="5" class="form-input block w-full rounded-lg px-4 py-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-600 bg-gray-900 border-gray-700 text-white" placeholder="اكتب تعليقاتك هنا...&#10;تعليق 1&#10;تعليق 2"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">إجمالي التعليقات: <span id="commentsCount" class="font-bold text-indigo-400">0</span></p>
                 </div>
             </div>
 
@@ -106,7 +112,7 @@
                         <span class="text-xs text-indigo-300">يتم خصمها من رصيدك</span>
                     </div>
                 </div>
-                <div class="text-2xl font-bold text-white tracking-wider" id="totalCharge">$0.00</div>
+                <div class="text-2xl font-bold text-white tracking-wider" id="totalCharge">0.00 ج.م</div>
                 <input type="hidden" name="charge" id="chargeInput" value="0">
             </div>
 
@@ -146,6 +152,9 @@
     const categorySelect = document.getElementById('category');
     const serviceSelect = document.getElementById('service');
     const quantityInput = document.getElementById('quantity');
+    const commentsInput = document.getElementById('comments');
+    const quantityContainer = document.getElementById('quantityContainer');
+    const commentsContainer = document.getElementById('commentsContainer');
     const totalChargeDisplay = document.getElementById('totalCharge');
     const chargeInput = document.getElementById('chargeInput');
     const serviceInfo = document.getElementById('serviceInfo');
@@ -162,10 +171,10 @@
     function showToast(message, type = 'info') {
         const toast = document.createElement('div');
         const colors = {
-            success: 'bg-green-500/10 border-green-500/30 text-green-400',
-            error: 'bg-red-500/10 border-red-500/30 text-red-400',
-            warning: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
-            info: 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+            success: 'bg-gray-900 border-l-4 border-green-500 text-white shadow-2xl shadow-green-900/20',
+            error: 'bg-gray-900 border-l-4 border-red-500 text-white shadow-2xl shadow-red-900/20',
+            warning: 'bg-gray-900 border-l-4 border-yellow-500 text-white shadow-2xl shadow-yellow-900/20',
+            info: 'bg-gray-900 border-l-4 border-blue-500 text-white shadow-2xl shadow-blue-900/20'
         };
 
         const icons = {
@@ -213,11 +222,12 @@
             list.forEach(srv => {
                 const option = document.createElement('option');
                 option.value = srv.service;
-                option.textContent = `${srv.service} - ${srv.name} [$${Number(srv.rate).toFixed(2)}]`;
+                option.textContent = `${srv.service} - ${srv.name} [${Number(srv.rate).toFixed(2)} ج.م]`;
                 option.dataset.rate = srv.rate;
                 option.dataset.min = srv.min;
                 option.dataset.max = srv.max;
                 option.dataset.name = srv.name;
+                option.dataset.type = srv.type;
                 serviceSelect.appendChild(option);
             });
             serviceSelect.disabled = false;
@@ -320,10 +330,14 @@
         if (selectedOption.value) {
             // Show Info
             serviceInfo.classList.remove('hidden');
-            serviceRateEl.textContent = '$' + Number(selectedOption.dataset.rate).toFixed(4); // Use more precision for small rates
+            serviceRateEl.textContent = Number(selectedOption.dataset.rate).toFixed(4) + ' ج.م'; // Use more precision for small rates
             serviceMinEl.textContent = selectedOption.dataset.min;
             serviceMaxEl.textContent = selectedOption.dataset.max;
-            serviceDescEl.textContent = selectedOption.dataset.name; // Using name as desc for now if desc missing
+            serviceDescEl.textContent = selectedOption.dataset.name;
+
+            // Handle Type Logic
+            const type = selectedOption.dataset.type || 'Default';
+            handleServiceType(type);
 
             calculatePrice();
         } else {
@@ -332,27 +346,56 @@
         }
     });
 
-    // 4. Handle Quantity Change
+    // 4. Handle Inputs Change
     quantityInput.addEventListener('input', calculatePrice);
+    commentsInput.addEventListener('input', calculatePrice);
+
+    function handleServiceType(type) {
+        // Reset fields
+        quantityContainer.classList.remove('hidden');
+        commentsContainer.classList.add('hidden');
+        quantityInput.readOnly = false;
+
+        if (type === 'Custom Comments' || type === 'Custom Comments Package') {
+            quantityContainer.classList.add('hidden');
+            commentsContainer.classList.remove('hidden');
+        } else if (type === 'Package') {
+            // For Package, usually quantity is fixed (e.g. 1) or determined by service
+            // We can hide quantity or make it readonly 1
+            quantityInput.value = 1;
+            quantityInput.readOnly = true;
+            // quantityContainer.classList.add('hidden'); // Optional: hide it
+        }
+    }
 
     function calculatePrice() {
         const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-        const qty = parseFloat(quantityInput.value);
+        let qty = parseFloat(quantityInput.value);
+        const type = selectedOption.dataset.type || 'Default';
+
+        if (type === 'Custom Comments' || type === 'Custom Comments Package') {
+            const lines = commentsInput.value.split(/\r\n|\r|\n/).filter(line => line.trim() !== '');
+            qty = lines.length;
+            // Update quantity input for submission (hidden or visible)
+            quantityInput.value = qty;
+            const countEl = document.getElementById('commentsCount');
+            if (countEl) countEl.textContent = qty;
+        }
 
         if (selectedOption.value && qty > 0) {
             const rate = parseFloat(selectedOption.dataset.rate);
             const total = (qty / 1000) * rate;
-            totalChargeDisplay.textContent = '$' + total.toFixed(4); // 4 decimals standard for SMM
+            totalChargeDisplay.textContent = total.toFixed(4) + ' ج.م'; // 4 decimals standard for SMM
             chargeInput.value = total.toFixed(4); // Update hidden input
         } else {
-            totalChargeDisplay.textContent = '$0.00';
+            totalChargeDisplay.textContent = '0.00 ج.م';
             chargeInput.value = '0';
         }
     }
 
     function resetCalculation() {
         quantityInput.value = '';
-        totalChargeDisplay.textContent = '$0.00';
+        totalChargeDisplay.textContent = '0.00 ج.م';
         chargeInput.value = '0';
     }
 
