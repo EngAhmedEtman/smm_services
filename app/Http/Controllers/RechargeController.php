@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Recharge;
+use Illuminate\Support\Facades\Log;
 
 class RechargeController extends Controller
 {
@@ -27,7 +28,24 @@ class RechargeController extends Controller
         if ($request->hasFile('proof_image')) {
             $image = $request->file('proof_image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/recharges', $imageName);
+
+            // Create directory explicitly
+            $savePath = storage_path('app/public/recharges');
+            if (!is_dir($savePath)) {
+                mkdir($savePath, 0755, true);
+            }
+
+            // Move file directly (more reliable than storeAs on shared hosting)
+            $image->move($savePath, $imageName);
+
+            // Verify file was saved
+            $fullPath = $savePath . '/' . $imageName;
+            if (file_exists($fullPath)) {
+                Log::info("Recharge image saved: {$fullPath}");
+            } else {
+                Log::error("Recharge image FAILED to save: {$fullPath}");
+            }
+
             $input['proof_image'] = 'recharges/' . $imageName;
         }
 
