@@ -40,7 +40,7 @@
             <span class="px-3 py-1 rounded-full text-xs font-bold border"
                 :class="{
                     'bg-yellow-500/10 text-yellow-500 border-yellow-500/20': status === 'pending',
-                    'bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse': status === 'processing',
+                    'bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse': status === 'sending',
                     'bg-orange-500/10 text-orange-500 border-orange-500/20': status === 'paused',
                     'bg-green-500/10 text-green-500 border-green-500/20': status === 'completed'
                 }"
@@ -61,13 +61,13 @@
             </h3>
             <div class="flex gap-2">
                 <!-- Start Button -->
-                <button @click="updateStatus('processing')" x-show="status === 'pending' || status === 'paused'"
+                <button @click="updateStatus('sending')" x-show="status === 'pending' || status === 'paused'"
                     class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all">
                     بدء / استئناف
                 </button>
 
                 <!-- Pause Button -->
-                <button @click="updateStatus('paused')" x-show="status === 'processing'"
+                <button @click="updateStatus('paused')" x-show="status === 'sending'"
                     class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all">
                     إيقاف مؤقت
                 </button>
@@ -107,7 +107,7 @@
             get statusText() {
                 const map = {
                     'pending': 'في الانتظار',
-                    'processing': 'جاري العمل...',
+                    'sending': 'جاري الإرسال...',
                     'paused': 'متوقف مؤقتاً',
                     'completed': 'مكتمل'
                 };

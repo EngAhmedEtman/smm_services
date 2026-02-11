@@ -56,7 +56,7 @@
                         <td class="px-6 py-4">
                             @if($campaign->status == 'pending')
                             <span class="bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded text-xs font-bold border border-yellow-500/20">قيد الانتظار</span>
-                            @elseif($campaign->status == 'processing')
+                            @elseif($campaign->status == 'sending')
                             <span class="bg-blue-500/10 text-blue-500 px-2 py-1 rounded text-xs font-bold border border-blue-500/20 animate-pulse">جاري الإرسال...</span>
                             @elseif($campaign->status == 'completed')
                             <span class="bg-green-500/10 text-green-500 px-2 py-1 rounded text-xs font-bold border border-green-500/20">مكتمل</span>
@@ -78,14 +78,14 @@
                         </td>
                         <td class="px-6 py-4 text-sm">
                             <div class="flex items-center gap-2">
-                                @if($campaign->status == 'pending' || $campaign->status == 'paused' || $campaign->status == 'processing')
+                                @if($campaign->status == 'pending' || $campaign->status == 'paused' || $campaign->status == 'sending')
                                 <!-- Start / Resume Processing Page -->
                                 {{-- We will create a process page next --}}
                                 <!-- Start (Processing) -->
                                 @if($campaign->status == 'pending' || $campaign->status == 'paused')
                                 <form action="{{ route('whatsapp.campaigns.status', $campaign->id) }}" method="POST" class="inline">
                                     @csrf
-                                    <input type="hidden" name="status" value="processing">
+                                    <input type="hidden" name="status" value="sending">
                                     <button type="submit" class="text-green-500 hover:bg-green-500/10 px-2 py-1.5 rounded transition-all" title="بدء الإرسال (خلفية)">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />

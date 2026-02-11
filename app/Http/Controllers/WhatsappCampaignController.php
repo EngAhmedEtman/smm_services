@@ -91,19 +91,19 @@ class WhatsappCampaignController extends Controller
 
         $newStatus = $request->status;
 
-        if (!in_array($newStatus, ['pending', 'processing', 'paused', 'completed'])) {
+        if (!in_array($newStatus, ['pending', 'sending', 'paused', 'completed'])) {
             return back()->with('error', 'حالة غير صالحة.');
         }
 
         $campaign->update(['status' => $newStatus]);
 
-        if ($newStatus == 'processing') {
-            \Illuminate\Support\Facades\Log::info("Dispatching SendCampaignMessages for Campaign ID: " . $campaign->id);
-            \App\Jobs\SendCampaignMessages::dispatch($campaign->id);
+        // No queue dispatch needed — cron will pick up 'sending' campaigns automatically
+        if ($newStatus == 'sending') {
+            \Illuminate\Support\Facades\Log::info("Campaign #{$campaign->id} set to sending. Cron will process.");
         }
 
         $messages = [
-            'processing' => 'تم بدء الحملة.',
+            'sending' => 'تم بدء الحملة، سيتم إرسال الرسائل تلقائياً.',
             'paused' => 'تم إيقاف الحملة مؤقتاً.',
             'pending' => 'تم استئناف الحملة.',
             'completed' => 'تم إكمال الحملة.',

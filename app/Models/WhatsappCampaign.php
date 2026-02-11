@@ -23,10 +23,12 @@ class WhatsappCampaign extends Model
         'total_numbers',
         'sent_count',
         'failed_count',
+        'last_sent_at',
     ];
 
     protected $casts = [
         'message' => 'array',
+        'last_sent_at' => 'datetime',
     ];
 
     public function contact()
