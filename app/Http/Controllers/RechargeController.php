@@ -31,7 +31,10 @@ class RechargeController extends Controller
             $input['proof_image'] = 'recharges/' . $imageName;
         }
 
-        Recharge::create($input);
+        $recharge = Recharge::create($input);
+
+        // Notify Admin
+        \App\Services\AdminNotificationService::notifyNewRecharge($recharge);
 
         return redirect()->route('recharge')->with('success', 'تم إرسال طلب الشحن بنجاح، سيتم مراجعته قريباً');
     }

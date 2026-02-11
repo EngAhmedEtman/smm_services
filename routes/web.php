@@ -76,6 +76,19 @@ Route::middleware('auth')->group(function () {
     // Static Pages
     Route::get('/recharge', [RechargeController::class, 'create'])->name('recharge');
     Route::post('/recharge', [RechargeController::class, 'store'])->name('recharge.store');
+
+    // Admin Settings (Super Admin)
+    Route::middleware(['super_admin'])->group(function () {
+        Route::get('/admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+        Route::post('/admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
+
+        Route::get('/admin/recharges', [\App\Http\Controllers\Admin\SettingsController::class, 'recharges'])->name('admin.recharges.index');
+        Route::post('/admin/recharges/{id}/approve', [\App\Http\Controllers\Admin\SettingsController::class, 'approveRecharge'])->name('admin.recharges.approve');
+        Route::post('/admin/recharges/{id}/reject', [\App\Http\Controllers\Admin\SettingsController::class, 'rejectRecharge'])->name('admin.recharges.reject');
+
+        Route::get('/admin/users', [\App\Http\Controllers\Admin\SettingsController::class, 'users'])->name('admin.users.index');
+        Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
+    });
 })->middleware(['auth', 'verified']); // Ensure auth group is closed correctly
 
 
