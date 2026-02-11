@@ -57,9 +57,10 @@ class AdminNotificationService
 
             // Step 2: Send MEDIA (proof image) as a separate message
             if ($recharge->proof_image) {
-                $imageUrl = url('storage/' . $recharge->proof_image);
+                $imageUrl = url('file/' . $recharge->proof_image);
 
                 Log::info('AdminNotification: Sending media: ' . $imageUrl);
+
 
                 $mediaPayload = [
                     'number' => $number,

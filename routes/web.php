@@ -105,3 +105,15 @@ Route::get('/call-us', function () {
 Route::get('/privacy-policy', function () {
     return view('privacypolicy');
 })->name('privacy-policy');
+
+// File Proxy: Serve storage files without symlink (shared hosting fix)
+Route::get('/file/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+
+    $mime = mime_content_type($fullPath);
+    return response()->file($fullPath, ['Content-Type' => $mime]);
+})->where('path', '.*')->name('file.serve');
