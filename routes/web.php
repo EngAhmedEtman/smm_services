@@ -108,27 +108,45 @@ Route::get('/privacy-policy', function () {
 
 // File Proxy: Serve storage files without symlink (shared hosting fix)
 Route::get('/file/{path}', function ($path) {
-    // Check storage first
-    $storagePath = storage_path('app/public/' . $path);
-    if (file_exists($storagePath)) {
-        $mime = mime_content_type($storagePath);
-        return response()->file($storagePath, ['Content-Type' => $mime]);
+    // Mime types map for images
+    $mimeTypes = [
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'pdf' => 'application/pdf',
+    ];
+
+    // Determine file location
+    $filePath = null;
+    $locations = [
+        storage_path('app/public/' . $path),
+        public_path('uploads/' . $path),
+        public_path($path),
+    ];
+
+    foreach ($locations as $loc) {
+        if (file_exists($loc)) {
+            $filePath = $loc;
+            break;
+        }
     }
 
-    // Fallback: check public/uploads (for files uploaded during transition)
-    $publicPath = public_path('uploads/' . $path);
-    if (file_exists($publicPath)) {
-        $mime = mime_content_type($publicPath);
-        return response()->file($publicPath, ['Content-Type' => $mime]);
+    if (!$filePath) {
+        \Illuminate\Support\Facades\Log::warning("File not found in any location for: {$path}");
+        abort(404);
     }
 
-    // Fallback: check public directly
-    $directPath = public_path($path);
-    if (file_exists($directPath)) {
-        $mime = mime_content_type($directPath);
-        return response()->file($directPath, ['Content-Type' => $mime]);
-    }
+    // Get correct mime type
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $mime = $mimeTypes[$ext] ?? mime_content_type($filePath);
 
-    \Illuminate\Support\Facades\Log::warning("File not found: storage={$storagePath}, public={$publicPath}, direct={$directPath}");
-    abort(404);
+    // Return raw file with clean headers (important for WhatsApp API)
+    return response(file_get_contents($filePath), 200, [
+        'Content-Type' => $mime,
+        'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
+        'Content-Length' => filesize($filePath),
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
 })->where('path', '.*')->name('file.serve');
