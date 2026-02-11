@@ -108,12 +108,27 @@ Route::get('/privacy-policy', function () {
 
 // File Proxy: Serve storage files without symlink (shared hosting fix)
 Route::get('/file/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-
-    if (!file_exists($fullPath)) {
-        abort(404);
+    // Check storage first
+    $storagePath = storage_path('app/public/' . $path);
+    if (file_exists($storagePath)) {
+        $mime = mime_content_type($storagePath);
+        return response()->file($storagePath, ['Content-Type' => $mime]);
     }
 
-    $mime = mime_content_type($fullPath);
-    return response()->file($fullPath, ['Content-Type' => $mime]);
+    // Fallback: check public/uploads (for files uploaded during transition)
+    $publicPath = public_path('uploads/' . $path);
+    if (file_exists($publicPath)) {
+        $mime = mime_content_type($publicPath);
+        return response()->file($publicPath, ['Content-Type' => $mime]);
+    }
+
+    // Fallback: check public directly
+    $directPath = public_path($path);
+    if (file_exists($directPath)) {
+        $mime = mime_content_type($directPath);
+        return response()->file($directPath, ['Content-Type' => $mime]);
+    }
+
+    \Illuminate\Support\Facades\Log::warning("File not found: storage={$storagePath}, public={$publicPath}, direct={$directPath}");
+    abort(404);
 })->where('path', '.*')->name('file.serve');
