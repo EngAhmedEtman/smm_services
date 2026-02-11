@@ -48,16 +48,29 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
+        /* Autofill Fix for Dark Mode */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #16161a inset !important;
+            -webkit-text-fill-color: white !important;
+            caret-color: white !important;
+            background-color: #16161a !important;
+        }
+
+        /* Consistent Form Input Styles */
         .form-input {
             background-color: #16161a;
             border: 1px solid #2d2d33;
             color: white;
+            transition: all 0.2s ease-in-out;
         }
 
         .form-input:focus {
             border-color: #6366f1;
             outline: none;
-            ring: 2px solid rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
         /* Toast Animation */
@@ -76,10 +89,20 @@
         .animate-slide-in {
             animation: slide-in 0.3s ease-out forwards;
         }
+
+        /* Hide Scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
-<body class="font-sans antialiased min-h-screen bg-[#0f0f13]">
+<body class="font-sans antialiased min-h-screen bg-[#0f0f13]" x-data="{ mobileSidebarOpen: false }">
 
     <!-- Sidebar -->
     @include('layouts.sidebar')

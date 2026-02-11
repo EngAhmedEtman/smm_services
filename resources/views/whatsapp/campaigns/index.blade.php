@@ -65,12 +65,22 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-xs text-gray-400 mb-1 flex justify-between">
-                                <span>{{ $campaign->sent_count }} / {{ $campaign->total_numbers }}</span>
-                                <span>{{ $campaign->total_numbers > 0 ? round(($campaign->sent_count / $campaign->total_numbers) * 100) : 0 }}%</span>
-                            </div>
-                            <div class="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-indigo-500 rounded-full" style="width: {{ $campaign->total_numbers > 0 ? ($campaign->sent_count / $campaign->total_numbers) * 100 : 0 }}%"></div>
+                            <div class="flex flex-col gap-1 min-w-[140px]">
+                                <div class="flex justify-between text-[10px] font-bold">
+                                    <span class="text-green-400" title="تم الإرسال">✔ {{ $campaign->sent_count }}</span>
+                                    <span class="text-red-400" title="فشل الإرسال">✖ {{ $campaign->failed_count }}</span>
+                                    <span class="text-gray-400" title="الإجمالي">Σ {{ $campaign->total_numbers }}</span>
+                                </div>
+
+                                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden flex">
+                                    <!-- Sent Progress -->
+                                    <div class="h-full bg-green-500" style="width: {{ $campaign->total_numbers > 0 ? ($campaign->sent_count / $campaign->total_numbers) * 100 : 0 }}%"></div>
+                                    <!-- Failed Progress (Optional: if we want to show failed in bar, we can add another div here) -->
+                                    <div class="h-full bg-red-500" style="width: {{ $campaign->total_numbers > 0 ? ($campaign->failed_count / $campaign->total_numbers) * 100 : 0 }}%"></div>
+                                </div>
+                                <div class="text-right text-[10px] text-gray-500">
+                                    {{ $campaign->total_numbers > 0 ? round((($campaign->sent_count + $campaign->failed_count) / $campaign->total_numbers) * 100) : 0 }}% مكتمل
+                                </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-xs text-gray-400 font-mono">

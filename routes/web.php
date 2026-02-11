@@ -17,9 +17,7 @@ require __DIR__ . '/auth.php';
 // });
 
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -106,6 +104,27 @@ Route::get('/privacy-policy', function () {
     return view('privacypolicy');
 })->name('privacy-policy');
 
+// Temporary: Clear all caches
+Route::get('/clear-cache-2026', function () {
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    return '✅ All caches cleared!';
+});
+
+// Cron Trigger: Process campaigns via URL (for shared hosting without shell cron)
+Route::get('/run-campaigns-etman2026', function () {
+    \Illuminate\Support\Facades\Log::info('Cron Trigger: Accessed via URL');
+
+    \Illuminate\Support\Facades\Artisan::call('campaign:process');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+
+    \Illuminate\Support\Facades\Log::info('Cron Trigger: Output: ' . $output);
+
+    return response($output ?: 'Done', 200)->header('Content-Type', 'text/plain');
+});
+
 // File Proxy: Serve storage files without symlink (shared hosting fix)
 Route::get('/file/{path}', function ($path) {
     // Mime types map for images
@@ -150,16 +169,3 @@ Route::get('/file/{path}', function ($path) {
         'Cache-Control' => 'public, max-age=86400',
     ]);
 })->where('path', '.*')->name('file.serve');
-
-// Cron Trigger: Process campaigns via URL (for shared hosting without shell cron)
-Route::get('/cron/campaigns/{key}', function ($key) {
-    // Simple secret key to prevent unauthorized access
-    if ($key !== 'etman2026') {
-        abort(403);
-    }
-
-    \Illuminate\Support\Facades\Artisan::call('campaign:process');
-    $output = \Illuminate\Support\Facades\Artisan::output();
-
-    return response($output, 200)->header('Content-Type', 'text/plain');
-});

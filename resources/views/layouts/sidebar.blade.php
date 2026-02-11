@@ -1,183 +1,269 @@
-<aside class="w-64 glass border-r border-gray-800 hidden md:flex flex-col min-h-screen fixed top-0 bottom-0 z-40 bg-[#1e1e23]/90 backdrop-blur-xl">
-    <!-- Logo -->
-    <div class="h-16 flex items-center justify-center border-b border-gray-700/50">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">E</div>
-            <span class="text-xl font-bold text-white tracking-wide">EtmanSMM</span>
+<!-- Mobile Backdrop (with fade effect) -->
+<div x-show="mobileSidebarOpen"
+    @click="mobileSidebarOpen = false"
+    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-gray-900/80 z-40 md:hidden backdrop-blur-sm">
+</div>
+
+<!-- Sidebar Container -->
+<aside :class="mobileSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'"
+    class="fixed top-0 right-0 bottom-0 w-64 glass border-l border-white/5 flex flex-col z-50 bg-[#16161a]/95 backdrop-blur-2xl transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) transform md:translate-x-0 h-full shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
+
+    <!-- Logo Section (Animated) -->
+    <div class="h-24 flex items-center justify-between px-8 relative overflow-hidden group">
+        <!-- Glow Effect behind Logo -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-indigo-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[1px] shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all duration-300 group-hover:rotate-3 group-hover:scale-105">
+                <div class="w-full h-full rounded-[10px] bg-[#16161a] flex items-center justify-center">
+                    <span class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">E</span>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-2xl font-bold text-white tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">EtmanSMM</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold ml-0.5">Pro Dashboard</span>
+            </div>
         </div>
+
+        <!-- Mobile Close Button -->
+        <button @click="mobileSidebarOpen = false" class="md:hidden text-gray-400 hover:text-white transition-colors hover:rotate-90 duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-2" x-data="{ 
+    <!-- Navigation (Scrollable) -->
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 scrollbar-hide" x-data="{ 
         openSmm: {{ (request()->routeIs('services.*') || request()->routeIs('addOrder') || request()->routeIs('showForm') || request()->routeIs('status')) ? 'true' : 'false' }}, 
         openWhatsapp: {{ request()->routeIs('whatsapp.*') ? 'true' : 'false' }},
         openAdmin: {{ request()->routeIs('admin.*') ? 'true' : 'false' }} 
     }">
-        <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">القائمة الرئيسية</p>
 
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <!-- Dashboard Link -->
+        <a href="{{ route('dashboard') }}"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+                  {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+            @if(request()->routeIs('dashboard'))
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-500 rounded-l-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+            @endif
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('dashboard') ? 'text-indigo-400' : 'group-hover:text-indigo-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
-            لوحة التحكم
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">لوحة التحكم</span>
         </a>
 
-        <!-- Social Media Dropdown -->
-        <div>
-            <button @click="openSmm = !openSmm" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        <!-- Section Title -->
+        <div class="px-4 mt-8 mb-2">
+            <span class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">الخدمات</span>
+        </div>
+
+        <!-- SMM Services Dropdown -->
+        <div class="relative">
+            <button @click="openSmm = !openSmm"
+                class="w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+                    {{ (request()->routeIs('services.*') || request()->routeIs('addOrder') || request()->routeIs('showForm') || request()->routeIs('status')) ? 'bg-gradient-to-r from-pink-600/20 to-rose-600/10 text-white shadow-lg shadow-pink-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+                @if(request()->routeIs('services.*') || request()->routeIs('addOrder') || request()->routeIs('showForm') || request()->routeIs('status'))
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-pink-500 rounded-l-full shadow-[0_0_10px_rgba(236,72,153,0.5)]"></div>
+                @endif
+
+                <div class="flex items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ (request()->routeIs('services.*') || request()->routeIs('addOrder')) ? 'text-pink-400' : 'group-hover:text-pink-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    خدمات السوشيال ميديا
+                    <span class="font-medium group-hover:translate-x-[-4px] transition-transform duration-300">الخدمات والطلبات</span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': openSmm}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" :class="{'rotate-180': openSmm}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div x-show="openSmm" x-collapse class="pl-4 space-y-1 mt-1">
-                <a href="{{ route('services.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('services.index') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                    كل الخدمات
-                </a>
-                <a href="{{ route('services.favorites') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('services.favorites') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                    </svg>
-                    المفضلة
-                </a>
-                <a href="{{ route('showForm') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ (request()->routeIs('showForm') || request()->routeIs('addOrder')) ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    طلب جديد
-                </a>
-                <a href="{{ route('status') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('status') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    سجل الطلبات
-                </a>
+
+            <div x-show="openSmm" x-collapse class="pr-6 space-y-1 mt-1 overflow-hidden">
+                <div class="border-r-2 border-gray-800 space-y-1 py-1 mr-3">
+                    <a href="{{ route('addOrder') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ (request()->routeIs('addOrder') || request()->routeIs('services.add') || request()->is('services/add') || request()->is('new-order')) ? 'bg-pink-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ (request()->routeIs('addOrder') || request()->routeIs('services.add') || request()->is('services/add') || request()->is('new-order')) ? 'bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        طلب جديد
+                    </a>
+                    <a href="{{ route('services.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('services.index') ? 'bg-pink-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('services.index') ? 'bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        جميع الخدمات
+                    </a>
+                    <a href="{{ route('services.favorites') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('services.favorites') ? 'bg-pink-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('services.favorites') ? 'bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        المفضلة
+                    </a>
+                    <a href="{{ route('status') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('status') ? 'bg-pink-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('status') ? 'bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        سجل الطلبات
+                    </a>
+                </div>
             </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="px-4 mt-8 mb-2">
+            <span class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">التسويق</span>
         </div>
 
         <!-- WhatsApp Dropdown -->
-        <div>
-            <button @click="openWhatsapp = !openWhatsapp" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+        <div class="relative">
+            <button @click="openWhatsapp = !openWhatsapp"
+                class="w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+                    {{ request()->routeIs('whatsapp.*') ? 'bg-gradient-to-r from-green-600/20 to-emerald-600/10 text-white shadow-lg shadow-green-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+                @if(request()->routeIs('whatsapp.*'))
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-500 rounded-l-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                @endif
+
+                <div class="flex items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('whatsapp.*') ? 'text-green-400' : 'group-hover:text-green-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    واتساب
+                    <span class="font-medium group-hover:translate-x-[-4px] transition-transform duration-300">واتساب</span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': openWhatsapp}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" :class="{'rotate-180': openWhatsapp}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div x-show="openWhatsapp" x-collapse class="pl-4 space-y-1 mt-1">
-                <a href="{{ route('whatsapp.accounts') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('whatsapp.accounts') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    جميع الحسابات
-                </a>
-                <a href="{{ route('whatsapp.contacts') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('whatsapp.contacts') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    جهات الاتصال
-                </a>
-                <a href="{{ route('whatsapp.buttons') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('whatsapp.buttons') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                    </svg>
-                    الأزرار التفاعلية
-                </a>
-                <a href="{{ route('whatsapp.campaigns.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('whatsapp.campaigns.*') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                    </svg>
-                    الحملات الإعلانية
-                </a>
-                <!-- Marketing Messages (Templates) -->
-                <a href="{{ route('whatsapp.messages.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('whatsapp.messages.*') ? 'text-indigo-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                    الرسائل المحفوظة
-                </a>
+
+            <div x-show="openWhatsapp" x-collapse class="pr-6 space-y-1 mt-1 overflow-hidden">
+                <div class="border-r-2 border-gray-800 space-y-1 py-1 mr-3">
+                    <a href="{{ route('whatsapp.accounts') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.accounts') ? 'bg-green-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.accounts') ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        جميع الحسابات
+                    </a>
+                    <a href="{{ route('whatsapp.contacts') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.contacts') ? 'bg-green-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.contacts') ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        جهات الاتصال
+                    </a>
+                    <a href="{{ route('whatsapp.messages.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.messages.*') ? 'bg-green-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.messages.*') ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        الرسائل المحفوظة
+                    </a>
+                    <a href="{{ route('whatsapp.buttons') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.buttons') ? 'bg-green-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.buttons') ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        الأزرار التفاعلية
+                    </a>
+                    <a href="{{ route('whatsapp.campaigns.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.campaigns.*') ? 'bg-green-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.campaigns.*') ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        الحملات التسويقية
+                    </a>
+                </div>
             </div>
         </div>
 
-        <a href="{{ route('recharge') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('recharge') ? 'bg-green-600/20 text-green-400 border border-green-500/20 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <!-- Section Title -->
+        <div class="px-4 mt-8 mb-2">
+            <span class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">المالية</span>
+        </div>
+
+        <!-- Funds Link -->
+        <a href="{{ route('recharge') }}"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+           {{ request()->routeIs('recharge') ? 'bg-gradient-to-r from-emerald-600/20 to-teal-600/10 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+            @if(request()->routeIs('recharge'))
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-l-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+            @endif
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('recharge') ? 'text-emerald-400' : 'group-hover:text-emerald-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            شحن الرصيد
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">شحن الرصيد</span>
         </a>
 
-        @if(auth()->check() && auth()->user()->role === 'super_admin')
-        <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-6">الإدارة</p>
-        <div>
-            <button @click="openAdmin = !openAdmin" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        @if(in_array(auth()->user()->role ?? 'user', ['admin', 'super_admin']))
+        <!-- Admin Section (Only for Admins) -->
+        <div class="px-4 mt-8 mb-2">
+            <span class="text-[10px] font-bold text-red-500/80 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                الإدارة
+            </span>
+        </div>
+
+        <div class="relative">
+            <button @click="openAdmin = !openAdmin"
+                class="w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+                    {{ request()->routeIs('admin.*') ? 'bg-gradient-to-r from-red-600/20 to-orange-600/10 text-white shadow-lg shadow-red-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+                @if(request()->routeIs('admin.*'))
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-red-500 rounded-l-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+                @endif
+
+                <div class="flex items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('admin.*') ? 'text-red-500' : 'group-hover:text-red-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    لوحة الإدارة
+                    <span class="font-medium group-hover:translate-x-[-4px] transition-transform duration-300">الإعدادات العامة</span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': openAdmin}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" :class="{'rotate-180': openAdmin}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div x-show="openAdmin" x-collapse class="pl-4 space-y-1 mt-1">
-                <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('admin.settings.*') ? 'text-red-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    إعدادات المسؤول
-                </a>
-                <a href="{{ route('admin.recharges.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('admin.recharges.*') ? 'text-yellow-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    طلبات الشحن
-                </a>
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'text-blue-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    المستخدمين
-                </a>
-                <a href="{{ route('admin.tickets.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 {{ request()->routeIs('admin.tickets.*') ? 'text-purple-400 bg-white/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                    </svg>
-                    التذاكر
-                </a>
+
+            <div x-show="openAdmin" x-collapse class="pr-6 space-y-1 mt-1 overflow-hidden">
+                <div class="border-r-2 border-gray-800 space-y-1 py-1 mr-3">
+                    <a href="{{ route('admin.settings.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.settings.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.settings.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        عام
+                    </a>
+                    <a href="{{ route('admin.recharges.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.recharges.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.recharges.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        طلبات الشحن
+                    </a>
+                    <a href="{{ route('admin.users.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.users.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.users.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        المستخدمين
+                    </a>
+                    <a href="{{ route('admin.tickets.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.tickets.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.tickets.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        التذاكر
+                    </a>
+                </div>
             </div>
         </div>
         @endif
 
         <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-6">الدعم</p>
 
-        <a href="{{ route('call-us') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('call-us') ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <a href="{{ route('call-us') }}"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+           {{ request()->routeIs('call-us') ? 'bg-gradient-to-r from-cyan-600/20 to-blue-600/10 text-white shadow-lg shadow-cyan-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+            @if(request()->routeIs('call-us'))
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-cyan-500 rounded-l-full shadow-[0_0_10px_rgba(6,182,212,0.5)]"></div>
+            @endif
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('call-us') ? 'text-cyan-400' : 'group-hover:text-cyan-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            تواصل معنا
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">تواصل معنا</span>
         </a>
 
-        <a href="{{ route('privacy-policy') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('privacy-policy') ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <a href="{{ route('privacy-policy') }}"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+           {{ request()->routeIs('privacy-policy') ? 'bg-gradient-to-r from-violet-600/20 to-purple-600/10 text-white shadow-lg shadow-violet-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+
+            @if(request()->routeIs('privacy-policy'))
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-violet-500 rounded-l-full shadow-[0_0_10px_rgba(139,92,246,0.5)]"></div>
+            @endif
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('privacy-policy') ? 'text-violet-400' : 'group-hover:text-violet-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            سياسة الخصوصية
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">سياسة الخصوصية</span>
         </a>
+
     </nav>
 
     <!-- User Profile (Bottom) -->

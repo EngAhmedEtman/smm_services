@@ -152,7 +152,7 @@
 @push('scripts')
 <script>
     // 1. Get All Services for Search (Passed from Controller)
-    const allServices = @json($services);
+    window.allServices = window.allServices || @json($services);
 
     // Elements
     const searchInput = document.getElementById('serviceSearch');

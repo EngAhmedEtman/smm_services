@@ -35,16 +35,12 @@ class ProcessCampaigns extends Command
 
     protected function processCampaign(WhatsappCampaign $campaign): void
     {
-        // Check if enough time has passed since last message
-        if ($campaign->last_sent_at) {
-            $delay = rand($campaign->min_delay, $campaign->max_delay);
-            $nextSendAt = Carbon::parse($campaign->last_sent_at)->addSeconds($delay);
-
-            if (now()->lt($nextSendAt)) {
-                $remaining = now()->diffInSeconds($nextSendAt);
-                $this->info("Campaign #{$campaign->id}: waiting {$remaining}s before next message.");
-                return; // Not time yet
-            }
+        // last_sent_at stores the NEXT allowed send time (not the actual last sent time)
+        // This ensures the random delay is calculated ONCE and stays fixed
+        if ($campaign->last_sent_at && now()->lt($campaign->last_sent_at)) {
+            $remaining = (int) now()->diffInSeconds($campaign->last_sent_at);
+            $this->info("Campaign #{$campaign->id}: waiting {$remaining}s before next message.");
+            return;
         }
 
         // Fetch next pending log
@@ -53,7 +49,6 @@ class ProcessCampaigns extends Command
             ->first();
 
         if (!$log) {
-            // All messages processed
             $campaign->update(['status' => 'completed']);
             $this->info("Campaign #{$campaign->id}: completed!");
             Log::info("Campaign #{$campaign->id} completed.");
@@ -85,10 +80,13 @@ class ProcessCampaigns extends Command
                     'message_id' => $resData['data']['key']['id'] ?? $resData['message_id'] ?? null,
                 ]);
                 $campaign->increment('sent_count');
-                $campaign->update(['last_sent_at' => now()]);
 
-                $this->info("Campaign #{$campaign->id}: sent to {$number} ✓");
-                Log::info("Campaign #{$campaign->id}: sent to {$number}");
+                // Calculate delay ONCE and store the NEXT allowed send time
+                $delay = rand($campaign->min_delay, $campaign->max_delay);
+                $campaign->update(['last_sent_at' => now()->addSeconds($delay)]);
+
+                $this->info("Campaign #{$campaign->id}: sent to {$number} ✓ (next in {$delay}s)");
+                Log::info("Campaign #{$campaign->id}: sent to {$number}, next in {$delay}s");
             } else {
                 throw new \Exception($resData['message'] ?? 'Unknown API Error');
             }
@@ -98,13 +96,16 @@ class ProcessCampaigns extends Command
                 'error_message' => $e->getMessage(),
             ]);
             $campaign->increment('failed_count');
-            $campaign->update(['last_sent_at' => now()]);
+
+            // Even on fail, set next send time to avoid rapid retries
+            $delay = rand($campaign->min_delay, $campaign->max_delay);
+            $campaign->update(['last_sent_at' => now()->addSeconds($delay)]);
 
             $this->error("Campaign #{$campaign->id}: failed to {$number} - {$e->getMessage()}");
             Log::error("Campaign #{$campaign->id}: failed to {$number} - {$e->getMessage()}");
         }
 
-        // Check if all done
+        // Check remaining
         $remaining = WhatsappCampaignLog::where('whatsapp_campaign_id', $campaign->id)
             ->where('status', 'pending')
             ->count();
@@ -112,7 +113,6 @@ class ProcessCampaigns extends Command
         if ($remaining === 0) {
             $campaign->update(['status' => 'completed']);
             $this->info("Campaign #{$campaign->id}: all messages processed, completed!");
-            Log::info("Campaign #{$campaign->id} completed.");
         } else {
             $this->info("Campaign #{$campaign->id}: {$remaining} messages remaining.");
         }
