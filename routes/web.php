@@ -150,3 +150,16 @@ Route::get('/file/{path}', function ($path) {
         'Cache-Control' => 'public, max-age=86400',
     ]);
 })->where('path', '.*')->name('file.serve');
+
+// Cron Trigger: Process campaigns via URL (for shared hosting without shell cron)
+Route::get('/cron/campaigns/{key}', function ($key) {
+    // Simple secret key to prevent unauthorized access
+    if ($key !== 'etman2026') {
+        abort(403);
+    }
+
+    \Illuminate\Support\Facades\Artisan::call('campaign:process');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+
+    return response($output, 200)->header('Content-Type', 'text/plain');
+});
