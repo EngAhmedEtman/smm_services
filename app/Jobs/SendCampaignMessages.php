@@ -33,6 +33,8 @@ class SendCampaignMessages implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info("Job SendCampaignMessages started for campaign: " . $this->campaignId);
+
         $campaign = WhatsappCampaign::find($this->campaignId);
 
         if (!$campaign) {
@@ -40,8 +42,11 @@ class SendCampaignMessages implements ShouldQueue
             return;
         }
 
+        Log::info("Campaign Status: " . $campaign->status);
+
         // Check if campaign is paused or completed
         if ($campaign->status == 'paused' || $campaign->status == 'completed' || $campaign->status == 'pending') {
+            Log::info("Stopping job because status is: " . $campaign->status);
             return; // Stop processing
         }
 

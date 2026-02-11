@@ -101,6 +101,111 @@
     </div>
 
     @stack('scripts')
+
+    @stack('scripts')
+
+    <!-- Global Notifications (Vanilla JS Fallback) -->
+    <div id="global-notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('global-notification-container');
+
+            window.addEventListener('notification', (event) => {
+                const {
+                    type,
+                    message,
+                    title
+                } = event.detail;
+                showGlobalNotification(message, type, title);
+            });
+
+            // Expose globally just in case
+            window.showGlobalNotification = (message, type = 'info', title = '') => {
+                const toast = document.createElement('div');
+
+                // Styles based on type
+                let bg = '#1e1e24';
+                let border = '#4f46e5';
+                let text = '#fff';
+
+                if (type === 'success') {
+                    bg = '#064e3b';
+                    border = '#10b981';
+                    text = '#d1fae5';
+                }
+                if (type === 'error') {
+                    bg = '#7f1d1d';
+                    border = '#ef4444';
+                    text = '#fee2e2';
+                }
+                if (type === 'warning') {
+                    bg = '#78350f';
+                    border = '#f59e0b';
+                    text = '#fef3c7';
+                }
+
+                toast.style.cssText = `
+                    background: ${bg};
+                    border-left: 5px solid ${border};
+                    color: ${text};
+                    padding: 16px;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+                    min-width: 300px;
+                    max-width: 400px;
+                    font-family: inherit;
+                    pointer-events: auto;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease-out;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                `;
+
+                const iconHtml = type === 'success' ? '✔' : (type === 'error' ? '✖' : 'ℹ');
+
+                toast.innerHTML = `
+                    <div style="font-size: 20px; font-weight: bold;">${iconHtml}</div>
+                    <div>
+                        <div style="font-weight: bold; margin-bottom: 4px;">${title || (type === 'error' ? 'Error' : 'Notification')}</div>
+                        <div style="font-size: 14px; opacity: 0.9;">${message}</div>
+                    </div>
+                `;
+
+                container.appendChild(toast);
+
+                // Animate In
+                requestAnimationFrame(() => {
+                    toast.style.opacity = '1';
+                    toast.style.transform = 'translateX(0)';
+                });
+
+                // Auto Remove
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            };
+
+            // Handle Session Flashes
+            @if(session('success'))
+            showGlobalNotification(@json(session('success')), 'success', 'تمت العملية بنجاح');
+            @endif
+
+            @if(session('error'))
+            showGlobalNotification(@json(session('error')), 'error', 'خطأ');
+            @endif
+
+            @if($errors -> any())
+            showGlobalNotification('يرجى مراجعة البيانات المدخلة', 'error', 'خطأ في البيانات');
+            @endif
+        });
+    </script>
+
+
 </body>
 
 </html>

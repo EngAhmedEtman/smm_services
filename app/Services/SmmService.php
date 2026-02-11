@@ -142,7 +142,8 @@ class SmmService
     protected function getHiddenServiceIds()
     {
         return [
-            4823, 4825,
+            4823,
+            4825,
         ];
     }
 
