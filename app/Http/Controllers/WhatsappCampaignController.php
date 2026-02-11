@@ -97,7 +97,9 @@ class WhatsappCampaignController extends Controller
 
         $campaign->update(['status' => $newStatus]);
 
-        // TODO: When status = 'processing', dispatch SendCampaignMessages Job here
+        if ($newStatus == 'processing') {
+            \App\Jobs\SendCampaignMessages::dispatch($campaign->id);
+        }
 
         $messages = [
             'processing' => 'تم بدء الحملة.',

@@ -1,257 +1,193 @@
 @extends('layouts.app')
 
-@section('title', 'معالجة الحملة | ' . $campaign->campaign_name)
+@section('title', 'متابعة الحملة | Etman SMM')
 
-@section('header_title', 'معالجة الحملة: ' . $campaign->campaign_name)
+@section('header_title', 'متابعة الحملة: ' . $campaign->campaign_name)
 
 @section('content')
-<div class="space-y-6" x-data="campaignProcessor({{ $campaign->id }}, {{ $campaign->min_delay }}, {{ $campaign->max_delay }})">
+<div class="space-y-6" x-data="campaignMonitor({{ $campaign->id }}, '{{ $campaign->status }}')">
 
-    <!-- Status Header -->
-    <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 flex justify-between items-center">
-        <div>
-            <h2 class="text-xl font-bold text-white mb-1">{{ $campaign->campaign_name }}</h2>
-            <div class="flex items-center gap-4 text-sm text-gray-400">
-                <span>المجموعة: {{ $campaign->contact->contact_name ?? 'غير معروف' }}</span>
-                <span>•</span>
-                <span>الرقم المرسل: {{ $campaign->instance_id }}</span>
-            </div>
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+            <div class="text-gray-400 text-sm mb-1">الإجمالي</div>
+            <div class="text-3xl font-bold text-white" x-text="total">0</div>
         </div>
-
-        <div class="flex items-center gap-3">
-            <template x-if="status === 'running'">
-                <button @click="pauseCampaign()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    إيقاف مؤقت
-                </button>
-            </template>
-
-            <template x-if="status === 'paused' || status === 'idle'">
-                <button @click="startCampaign()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                    </svg>
-                    <span x-text="status === 'idle' ? 'بدء الإرسال' : 'استئناف الإرسال'"></span>
-                </button>
-            </template>
-
-            <div class="bg-gray-800 px-4 py-2 rounded-lg text-white font-mono" x-text="timer > 0 ? 'انتظار: ' + timer + 's' : 'جاهز'"></div>
+        <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+            <div class="text-gray-400 text-sm mb-1">تم الإرسال</div>
+            <div class="text-3xl font-bold text-green-500" x-text="sent">0</div>
+        </div>
+        <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+            <div class="text-gray-400 text-sm mb-1">فشل</div>
+            <div class="text-3xl font-bold text-red-500" x-text="failed">0</div>
+        </div>
+        <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800 text-center">
+            <div class="text-gray-400 text-sm mb-1">المتبقي</div>
+            <div class="text-3xl font-bold text-blue-500" x-text="total - (sent + failed)">0</div>
         </div>
     </div>
 
-    <!-- Progress -->
-    <div class="glass p-6 rounded-2xl border border-gray-800">
+    <!-- Progress Bar -->
+    <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-800">
         <div class="flex justify-between text-sm mb-2">
             <span class="text-gray-400">التقدم الكلي</span>
-            <span class="text-white font-bold"><span x-text="sentCount"></span> / <span x-text="totalCount"></span></span>
+            <span class="text-indigo-400 font-mono" x-text="percent + '%'">0%</span>
         </div>
         <div class="w-full h-4 bg-gray-800 rounded-full overflow-hidden">
-            <div class="h-full bg-indigo-500 transition-all duration-500" :style="'width: ' + progressPercentage + '%'"></div>
+            <div class="h-full bg-indigo-500 transition-all duration-500 striped-bar" :style="'width: ' + percent + '%'"></div>
         </div>
-        <div class="flex justify-between mt-4 text-center">
-            <div>
-                <span class="block text-2xl font-bold text-green-400" x-text="sentCount"></span>
-                <span class="text-xs text-gray-500">تم الإرسال</span>
-            </div>
-            <div>
-                <span class="block text-2xl font-bold text-red-400" x-text="failedCount"></span>
-                <span class="text-xs text-gray-500">فشل</span>
-            </div>
-            <div>
-                <span class="block text-2xl font-bold text-gray-400" x-text="pendingCount"></span>
-                <span class="text-xs text-gray-500">متبقي</span>
-            </div>
+        <div class="mt-4 text-center">
+            <span class="px-3 py-1 rounded-full text-xs font-bold border"
+                :class="{
+                    'bg-yellow-500/10 text-yellow-500 border-yellow-500/20': status === 'pending',
+                    'bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse': status === 'processing',
+                    'bg-orange-500/10 text-orange-500 border-orange-500/20': status === 'paused',
+                    'bg-green-500/10 text-green-500 border-green-500/20': status === 'completed'
+                }"
+                x-text="statusText">
+                جاري التحميل...
+            </span>
         </div>
     </div>
 
-    <!-- Logs Console -->
-    <div class="glass rounded-2xl border border-gray-800 overflow-hidden flex flex-col h-96">
-        <div class="bg-gray-900/80 px-4 py-3 border-b border-gray-700 flex justify-between">
-            <h3 class="font-bold text-white text-sm">سجل العمليات المباشر</h3>
-            <span class="text-xs text-gray-500" x-show="logs.length > 0">عرض آخر 50 عملية</span>
+    <!-- Live Logs -->
+    <div class="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden flex flex-col h-96">
+        <div class="p-4 border-b border-gray-800 bg-gray-800/50 flex justify-between items-center">
+            <h3 class="font-bold text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                </svg>
+                سجل العمليات المباشر
+            </h3>
+            <div class="flex gap-2">
+                <!-- Start Button -->
+                <button @click="updateStatus('processing')" x-show="status === 'pending' || status === 'paused'"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all">
+                    بدء / استئناف
+                </button>
+
+                <!-- Pause Button -->
+                <button @click="updateStatus('paused')" x-show="status === 'processing'"
+                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all">
+                    إيقاف مؤقت
+                </button>
+            </div>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-sm" id="log-container">
-            <template x-for="log in logs" :key="log.id">
-                <div class="flex items-center gap-2 p-2 rounded transition-colors" :class="{
-                    'bg-green-500/10 text-green-400': log.status === 'success',
-                    'bg-red-500/10 text-red-400': log.status === 'error',
-                    'bg-blue-500/10 text-blue-400': log.status === 'processing'
-                }">
-                    <span class="text-xs opacity-50" x-text="log.time"></span>
-                    <span x-text="log.message"></span>
+        <div class="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-sm" id="logs-container">
+            <template x-for="log in logs" :key="log.updated_at + log.phone_number">
+                <div class="flex items-center gap-3 p-2 rounded hover:bg-white/5 transition-colors border-l-2"
+                    :class="{
+                        'border-green-500 bg-green-500/5': log.status === 'sent',
+                        'border-red-500 bg-red-500/5': log.status !== 'sent'
+                    }">
+                    <span class="text-gray-500 text-xs" x-text="new Date(log.updated_at).toLocaleTimeString('en-US', {hour12: false})"></span>
+                    <span :class="log.status === 'sent' ? 'text-green-400' : 'text-red-400'" class="font-bold w-16" x-text="log.status === 'sent' ? 'SENT' : 'FAIL'"></span>
+                    <span class="text-gray-300" x-text="log.phone_number"></span>
+                    <span x-show="log.error_message" class="text-red-400 text-xs ml-auto" x-text="log.error_message"></span>
                 </div>
             </template>
-            <div x-show="logs.length === 0" class="text-center text-gray-500 py-10">
-                في انتظار بدء العملية...
+            <div x-show="logs.length === 0" class="text-center text-gray-600 py-10">
+                لا توجد عمليات حديثة...
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('campaignProcessor', (campaignId, minDelay, maxDelay) => ({
-            status: 'idle', // idle, running, paused, completed
-            timer: 0,
-            totalCount: {
-                {
-                    $campaign - > total_numbers
-                }
-            },
-            sentCount: {
-                {
-                    $campaign - > sent_count
-                }
-            },
-            failedCount: {
-                {
-                    $campaign - > failed_count
-                }
-            },
-            pendingCount: {
-                {
-                    $campaign - > total_numbers - ($campaign - > sent_count + $campaign - > failed_count)
-                }
-            },
+    function campaignMonitor(campaignId, initialStatus) {
+        return {
+            status: initialStatus,
+            total: 0,
+            sent: 0,
+            failed: 0,
+            percent: 0,
             logs: [],
+            pollInterval: null,
 
-            // List of pending Log IDs to process
-            // We will fetch this via AJAX on start or pass it from controller
-            // Passing huge list in blade is bad. Better to fetch "next batch" via AJAX.
-            // For simplicity: We will call "process-next" endpoint which returns the next result.
-
-            get progressPercentage() {
-                if (this.totalCount === 0) return 0;
-                return Math.round(((this.sentCount + this.failedCount) / this.totalCount) * 100);
+            get statusText() {
+                const map = {
+                    'pending': 'في الانتظار',
+                    'processing': 'جاري العمل...',
+                    'paused': 'متوقف مؤقتاً',
+                    'completed': 'مكتمل'
+                };
+                return map[this.status] || this.status;
             },
 
             init() {
-                // Initialize status based on server status
-                const serverStatus = '{{ $campaign->status }}';
-                if (serverStatus === 'processing') {
-                    this.status = 'running';
-                    this.addLog('info', 'استكمال الحملة تلقائياً...');
-                    this.processNext();
-                } else if (serverStatus === 'paused') {
-                    this.status = 'paused';
-                    this.addLog('info', 'الحملة متوقفة مؤقتاً.');
-                } else if (serverStatus === 'completed') {
-                    this.status = 'completed';
-                    this.addLog('success', 'الحملة مكتملة.');
-                } else {
-                    this.status = 'idle';
-                    this.addLog('info', 'الجهاز جاهز. اضغط بدء الإرسال للانطلاق.');
-                }
+                this.poll();
+                this.pollInterval = setInterval(() => {
+                    this.poll();
+                }, 3000); // Poll every 3 seconds
             },
 
-            async startCampaign() {
-                this.status = 'running';
-                this.addLog('info', 'تم بدء الحملة...');
-
-                // Sync with server
-                await fetch('{{ route("whatsapp.campaigns.status", $campaign->id) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        status: 'processing'
-                    })
-                });
-
-                this.processNext();
-            },
-
-            async pauseCampaign() {
-                this.status = 'paused';
-                this.addLog('info', 'تم الإيقاف المؤقت.');
-
-                // Sync with server
-                await fetch('{{ route("whatsapp.campaigns.status", $campaign->id) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        status: 'paused'
-                    })
-                });
-            },
-
-            async processNext() {
-                if (this.status !== 'running') return;
-
-                if (this.pendingCount <= 0) {
-                    this.status = 'completed';
-                    this.addLog('success', 'تم انتهاء الحملة بنجاح!');
-                    return;
-                }
-
+            async poll() {
                 try {
-                    this.addLog('processing', 'جاري إرسال رسالة...');
+                    const response = await fetch(`{{ url('/whatsapp/campaigns') }}/${campaignId}/progress`);
+                    const data = await response.json();
 
-                    const response = await fetch(`{{ url('/whatsapp/campaigns') }}/${campaignId}/send-single`, {
+                    this.status = data.status;
+                    this.total = data.total_numbers;
+                    this.sent = data.sent_count;
+                    this.failed = data.failed_count;
+
+                    // Logs
+                    this.logs = data.recent_logs;
+
+                    // Calculate Percent
+                    if (this.total > 0) {
+                        this.percent = Math.round(((this.sent + this.failed) / this.total) * 100);
+                    }
+
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            },
+
+            async updateStatus(newStatus) {
+                try {
+                    const response = await fetch('{{ route("whatsapp.campaigns.status", $campaign->id) }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
+                        },
+                        body: JSON.stringify({
+                            status: newStatus
+                        })
                     });
 
                     const data = await response.json();
 
-                    if (data.status === 'success') {
-                        this.sentCount++;
-                        this.addLog('success', `تم الإرسال بنجاح للرقم: ${data.phone}`);
-                    } else if (data.status === 'completed') {
-                        // Server says no more pending
-                        this.status = 'completed';
-                        this.addLog('success', 'تم انتهاء الحملة بجميع الأرقام.');
-                        return;
-                    } else {
-                        this.failedCount++;
-                        this.addLog('error', `فشل الإرسال للرقم ${data.phone ?? 'Unknown'}: ${data.message}`);
+                    if (data.success) {
+                        this.status = newStatus;
+                        this.poll(); // Update immediately
                     }
-
-                    this.pendingCount--;
-
-                    // Random Delay
-                    const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay);
-                    this.timer = delay;
-
-                    const countdown = setInterval(() => {
-                        if (this.status !== 'running') {
-                            clearInterval(countdown);
-                            return;
-                        }
-                        this.timer--;
-                        if (this.timer <= 0) {
-                            clearInterval(countdown);
-                            this.processNext();
-                        }
-                    }, 1000);
-
                 } catch (error) {
-                    this.addLog('error', 'خطأ في الاتصال بالنظام. سيتم إعادة المحاولة بعد 5 ثواني.');
-                    setTimeout(() => this.processNext(), 5000);
+                    alert('Error updating status');
                 }
-            },
-
-            addLog(type, message) {
-                this.logs.unshift({
-                    id: Date.now(),
-                    time: new Date().toLocaleTimeString(),
-                    status: type,
-                    message: message
-                });
-                if (this.logs.length > 50) this.logs.pop();
             }
-        }));
-    });
+        };
+    }
 </script>
+
+<style>
+    .striped-bar {
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+        animation: progress-stripes 1s linear infinite;
+    }
+
+    @keyframes progress-stripes {
+        0% {
+            background-position: 1rem 0;
+        }
+
+        100% {
+            background-position: 0 0;
+        }
+    }
+</style>
 @endsection
