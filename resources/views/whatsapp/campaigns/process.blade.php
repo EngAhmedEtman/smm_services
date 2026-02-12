@@ -35,7 +35,7 @@
                     <span x-text="statusText">جاري الاتصال...</span>
                 </div>
             </div>
-            <p class="text-gray-400 text-sm font-mono">CAMPAIGN ID: <span class="text-indigo-400">#{{ $campaign->id }}</span> | INSTANCE: <span class="text-indigo-400">{{ $campaign->instance_id }}</span></p>
+            <p class="text-gray-400 text-sm font-mono">CAMPAIGN ID: <span class="text-indigo-400">#{{ $campaign->id }}</span> | INSTANCE: <span class="text-indigo-400" dir="ltr">{{ $campaign->whatsappInstance ? $campaign->whatsappInstance->phone_number : $campaign->instance_id }}</span></p>
         </div>
 
         <div class="flex gap-3 relative z-10">
@@ -137,6 +137,7 @@
             </div>
         </div>
 
+        @if(auth()->user()->role === 'super_admin')
         <!-- Terminal Logs -->
         <div class="lg:col-span-2 bg-[#0d1117] border border-gray-800 rounded-2xl overflow-hidden flex flex-col h-[400px] shadow-2xl relative">
             <!-- Terminal Header -->
@@ -179,6 +180,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
     </div>
 </div>

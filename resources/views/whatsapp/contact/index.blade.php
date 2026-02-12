@@ -65,13 +65,13 @@
             </div>
 
             <div class="flex items-center gap-2 pt-3 border-t border-gray-800/50 mt-auto">
-                <a href="{{ route('whatsapp.contact.edit', $contact->id) }}" class="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 py-2 rounded-lg transition-colors border border-indigo-500/20 text-center text-sm font-bold flex items-center justify-center gap-2">
+                <a href="{{ route('whatsapp.contacts.edit', $contact->id) }}" class="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 py-2 rounded-lg transition-colors border border-indigo-500/20 text-center text-sm font-bold flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                     تعديل
                 </a>
-                <form action="{{ route('whatsapp.contact.delete', $contact->id) }}" method="POST" class="flex-1" onsubmit="return confirm('تنبيه: سيتم حذف جميع الأرقام المرتبطة بهذه المجموعة. هل أنت متأكد؟');">
+                <form action="{{ route('whatsapp.contacts.destroy', $contact->id) }}" method="POST" class="flex-1" onsubmit="return confirm('تنبيه: سيتم حذف جميع الأرقام المرتبطة بهذه المجموعة. هل أنت متأكد؟');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 py-2 rounded-lg transition-colors border border-red-500/20 text-center text-sm font-bold flex items-center justify-center gap-2">

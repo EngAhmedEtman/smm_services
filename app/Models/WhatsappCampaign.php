@@ -53,4 +53,9 @@ class WhatsappCampaign extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function whatsappInstance()
+    {
+        return $this->belongsTo(Whatsapp::class, 'instance_id', 'instance_id');
+    }
 }
