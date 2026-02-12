@@ -58,8 +58,7 @@
                     </div>
                 </div>
                 <div class="flex gap-4">
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium">تسجيل الدخول</a>
-                    <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all transform hover:scale-105">حساب جديد</a>
+                    <a href="{{ route('login') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all transform hover:scale-105">تسجيل الدخول</a>
                 </div>
             </div>
         </div>
