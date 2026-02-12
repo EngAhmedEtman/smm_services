@@ -11,6 +11,7 @@ class Whatsapp extends Model
     protected $fillable = [
         'user_id',
         'instance_id',
+        'phone_number',
         'status',
     ];
 }

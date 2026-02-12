@@ -70,7 +70,9 @@
                             <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1e1e24] {{ $account->status == 'connected' ? 'bg-green-500 animate-pulse' : 'bg-red-500' }}"></span>
                         </div>
                         <div>
-                            <h3 class="font-bold text-white text-lg group-hover:text-green-400 transition-colors">WhatsApp</h3>
+                            <h3 class="font-bold text-white text-lg group-hover:text-green-400 transition-colors" dir="ltr">
+                                {{ $account->phone_number ? '+' . $account->phone_number : 'WhatsApp' }}
+                            </h3>
                             <p class="text-xs text-gray-500 font-mono mt-0.5">{{ $account->created_at->diffForHumans() }}</p>
                         </div>
                     </div>

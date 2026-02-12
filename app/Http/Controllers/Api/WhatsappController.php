@@ -51,6 +51,20 @@ class WhatsappController extends Controller
         ]);
     }
 
+    public function updateNumber(Request $request)
+    {
+        $request->validate([
+            'instance_id' => 'required',
+            'phone_number' => 'required|numeric'
+        ]);
+
+        Whatsapp::where('instance_id', $request->instance_id)
+            ->where('user_id', auth()->id()) // Security check
+            ->update(['phone_number' => $request->phone_number]);
+
+        return response()->json(['status' => 'success', 'message' => 'تم حفظ الرقم بنجاح']);
+    }
+
     public function scanInstance($instanceId)
     {
         // Get QR Code for EXISTING instance

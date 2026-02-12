@@ -56,7 +56,19 @@
                     <p class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 4. اضغط على "ربط جهاز" وامسح الكود</p>
                 </div>
 
-                <button onclick="window.location.reload()" class="w-full mt-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 flex items-center justify-center gap-2 group-hover:translate-y-0.5">
+                <!-- Phone Number Input -->
+                <div class="mt-4">
+                    <label class="block text-gray-400 text-sm mb-2 text-right">رقم الهاتف المرتبط <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2">
+                        <button id="saveNumberBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                            حفظ
+                        </button>
+                        <input type="text" id="phoneNumberInput" placeholder="201xxxxxxxxx" class="flex-1 bg-[#16161a] border border-gray-700 rounded-xl px-4 py-2 text-white text-center focus:outline-none focus:border-green-500 transition-colors">
+                    </div>
+                    <p id="saveStatus" class="text-xs mt-1 text-right h-4"></p>
+                </div>
+
+                <button onclick="window.location.reload()" class="w-full mt-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 flex items-center justify-center gap-2 group-hover:translate-y-0.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin-slow" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                     </svg>
@@ -136,5 +148,47 @@
             })
             .catch(error => console.error('Error checking status:', error));
     }, 5000); // Check every 5 seconds
+
+    // Save Number Logic
+    document.getElementById('saveNumberBtn').addEventListener('click', function() {
+        const phone = document.getElementById('phoneNumberInput').value;
+        const statusEl = document.getElementById('saveStatus');
+
+        if (!phone) {
+            statusEl.textContent = 'يرجى كتابة الرقم أولاً';
+            statusEl.className = 'text-xs mt-1 text-right h-4 text-red-500';
+            return;
+        }
+
+        statusEl.textContent = 'جاري الحفظ...';
+        statusEl.className = 'text-xs mt-1 text-right h-4 text-gray-400';
+
+        fetch("{{ route('whatsapp.updateNumber') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    instance_id: instanceId,
+                    phone_number: phone
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusEl.textContent = 'تم حفظ الرقم بنجاح ✅';
+                    statusEl.className = 'text-xs mt-1 text-right h-4 text-green-500';
+                } else {
+                    statusEl.textContent = 'حدث خطأ أثناء الحفظ';
+                    statusEl.className = 'text-xs mt-1 text-right h-4 text-red-500';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                statusEl.textContent = 'خطأ في الاتصال';
+                statusEl.className = 'text-xs mt-1 text-right h-4 text-red-500';
+            });
+    });
 </script>
 @endsection
