@@ -81,7 +81,7 @@ class AdminNotificationService
     }
 
     public static function notifyNewRechargeApproved($recharge)
-{
+    {
         try {
             Log::info('AdminNotification: Starting for Recharge #' . $recharge->id);
 
@@ -97,7 +97,12 @@ class AdminNotificationService
             }
 
             $user = $recharge->user;
-            $number = preg_replace('/[^0-9]/', '', $user->phone);
+            $number = preg_replace('/[^0-9]/', '', auth()->user()->phone);
+
+            if (empty($number)) {
+                Log::warning("AdminNotification: User {$user->id} has no valid phone number. Skipping notification.");
+                return;
+            }
 
             // Format text message
             $message = "🔔 *تم قبول إيداع جديد* " .
@@ -118,12 +123,9 @@ class AdminNotificationService
 
             $textResponse = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
             Log::info('AdminNotification: Text sent [' . $textResponse->status() . ']: ' . $textResponse->body());
-
         } catch (\Exception $e) {
             // Log error but don't break the user flow
             Log::error("Admin Notification Error: " . $e->getMessage());
         }
     }
-
-
 }
