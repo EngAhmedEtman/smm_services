@@ -110,6 +110,8 @@ Route::get('/privacy-policy', function () {
     return view('privacypolicy');
 })->name('privacy-policy');
 
+Route::get('/services-list', [ServiceController::class, 'publicList'])->name('public.services');
+
 Route::get('/terms', function () {
     return view('terms');
 })->name('terms');

@@ -53,6 +53,15 @@ class ServiceController extends Controller
     }
 
     /**
+     * Display public services list for guests.
+     */
+    public function publicList(Request $request)
+    {
+        // No need to fetch all services for the landing page style
+        return view('public-services', ['categories' => []]);
+    }
+
+    /**
      * Handle the creation of a new order.
      * Validates input, calculates cost, checks balance, creates local order, and sends to API.
      */

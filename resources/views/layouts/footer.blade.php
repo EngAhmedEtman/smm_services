@@ -35,9 +35,15 @@
         <div>
             <h3 class="text-white font-bold mb-2.5 border-r-2 border-indigo-500 pr-2.5 text-[13px]">روابط سريعة</h3>
             <ul class="space-y-1.5 text-[13px] text-gray-400">
+                @auth
                 <li><a href="{{ route('dashboard') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">لوحة التحكم</a></li>
                 <li><a href="{{ route('services.index') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">جميع الخدمات</a></li>
                 <li><a href="{{ route('addOrder') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">طلب جديد</a></li>
+                @else
+                <li><a href="{{ url('/') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">الرئيسية</a></li>
+                <li><a href="{{ route('public.services') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">الخدمات</a></li>
+                <li><a href="{{ route('login') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">تسجيل الدخول</a></li>
+                @endauth
                 <li><a href="{{ route('recharge') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">شحن الرصيد</a></li>
             </ul>
         </div>
@@ -45,7 +51,11 @@
         <div>
             <h3 class="text-white font-bold mb-2.5 border-r-2 border-purple-500 pr-2.5 text-[13px]">الدعم والمساعدة</h3>
             <ul class="space-y-1.5 text-[13px] text-gray-400">
+                @auth
                 <li><a href="{{ route('tickets.index') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">تذاكر الدعم الفني</a></li>
+                @else
+                <li><a href="{{ route('call-us') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">اتصل بنا</a></li>
+                @endauth
                 <li><a href="{{ route('terms') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">الشروط والأحكام</a></li>
                 <li><a href="{{ route('privacy-policy') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">سياسة الخصوصية</a></li>
                 <li><a href="{{ route('api.docs') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">API Documentation</a></li>

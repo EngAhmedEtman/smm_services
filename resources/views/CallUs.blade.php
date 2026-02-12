@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(auth()->check() ? 'layouts.app' : 'layouts.public', ['hideNavbar' => true])
 
 @section('title', 'تواصل معنا | Etman SMM')
 
@@ -20,7 +20,7 @@
     <!-- Contact Cards -->
     <div class="grid md:grid-cols-2 gap-6 mb-12">
         <!-- WhatsApp -->
-        <a href="https://wa.me/201234567890" target="_blank" class="glass p-6 rounded-2xl border border-gray-800 hover:border-green-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-green-500/10">
+        <a href="https://api.whatsapp.com/send?phone=201558551073" target="_blank" class="glass p-6 rounded-2xl border border-gray-800 hover:border-green-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-green-500/10">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7 text-green-500" fill="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">واتساب</h3>
                     <p class="text-gray-400 text-sm">تحدث معنا مباشرة على واتساب</p>
-                    <p class="text-green-400 font-mono text-sm mt-1">+20 15 5855 1037</p>
+                    <p class="text-green-400 font-mono text-sm mt-1">201558551037+</p>
                 </div>
             </div>
         </a>

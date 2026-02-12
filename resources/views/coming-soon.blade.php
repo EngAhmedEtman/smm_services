@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public', ['hideNavbar' => true])
 
 @section('title', 'قريباً | EtViral')
 

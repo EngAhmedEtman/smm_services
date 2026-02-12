@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Etman SMM | أفضل لوحة خدمات تواصل اجتماعي</title>
+    <title>EtViral | أفضل لوحة خدمات تواصل اجتماعي</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -45,14 +45,14 @@
                     <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
                         E
                     </div>
-                    <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">EtmanSMM</span>
+                    <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">EtViral</span>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-8 space-x-reverse">
-                        <a href="#" class="text-white hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الرئيسية</a>
-                        <a href="#services" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الخدمات</a>
-                        <a href="#api" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">API</a>
-                        <a href="#" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الشروط</a>
+                        <a href="/" class="text-white hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الرئيسية</a>
+                        <a href="{{ route('public.services') }}" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الخدمات</a>
+                        <a href="{{ route('api.docs') }}" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">API</a>
+                        <a href="{{ route('terms') }}" class="text-gray-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">الشروط</a>
                     </div>
                 </div>
                 <div class="flex gap-4">
@@ -88,12 +88,12 @@
                 </p>
                 <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                     <a href="{{ route('register') }}" class="px-8 py-4 rounded-full bg-white text-gray-900 font-bold text-lg hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-xl shadow-white/10">
-                        ابدأ الآن مجاناً
+                        تسجيل حساب جديد
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                     </a>
-                    <a href="#services" class="px-8 py-4 rounded-full glass text-white font-bold text-lg hover:bg-white/5 transition-all">
+                    <a href="{{ route('public.services') }}" class="px-8 py-4 rounded-full glass text-white font-bold text-lg hover:bg-white/5 transition-all">
                         استعراض الخدمات
                     </a>
                 </div>
@@ -201,13 +201,11 @@
         </div>
     </div>
 
+
+
     <!-- Footer -->
-    <footer class="border-t border-white/5 bg-[#0a0a0c] pt-16 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            <p class="mb-4 text-2xl font-bold text-white">EtmanSMM</p>
-            <p>&copy; 2026 جميع الحقوق محفوظة.</p>
-        </div>
-    </footer>
+    <!-- Footer -->
+    @include('layouts.footer')
 
 </body>
 
