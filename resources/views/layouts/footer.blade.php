@@ -4,7 +4,7 @@
         <div class="space-y-2">
             <div class="flex items-center gap-2">
                 <div class="w-6 h-6 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/20">E</div>
-                <span class="text-base font-bold text-white tracking-wide">EtmanSMM</span>
+                <span class="text-base font-bold text-white tracking-wide">EtViral</span>
             </div>
             <p class="text-[13px] text-gray-400 leading-snug">
                 منصتك الأولى لخدمات التسويق الإلكتروني المتكاملة. نقدم حلولاً ذكية لتعزيز تواجدك الرقمي.
@@ -45,10 +45,10 @@
         <div>
             <h3 class="text-white font-bold mb-2.5 border-r-2 border-purple-500 pr-2.5 text-[13px]">الدعم والمساعدة</h3>
             <ul class="space-y-1.5 text-[13px] text-gray-400">
-                <li><a href="#" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">تذاكر الدعم الفني</a></li>
-                <li><a href="#" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">الشروط والأحكام</a></li>
-                <li><a href="#" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">سياسة الخصوصية</a></li>
-                <li><a href="#" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">API Documentation</a></li>
+                <li><a href="{{ route('tickets.index') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">تذاكر الدعم الفني</a></li>
+                <li><a href="{{ route('terms') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">الشروط والأحكام</a></li>
+                <li><a href="{{ route('privacy-policy') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">سياسة الخصوصية</a></li>
+                <li><a href="{{ route('api.docs') }}" class="hover:text-white hover:translate-x-1 transition-all duration-300 inline-block">API Documentation</a></li>
             </ul>
         </div>
 
@@ -60,7 +60,7 @@
                     <svg class="h-3.5 w-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span>support@etmansmm.com</span>
+                    <span>support@etviral.com</span>
                 </li>
                 <li class="flex items-center gap-2.5">
                     <svg class="h-3.5 w-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@
 
     <!-- Bottom Bar -->
     <div class="border-t border-gray-800/50 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-gray-500">
-        <p>&copy; {{ date('Y') }} <span class="text-gray-300 font-bold">Etman SMM</span>. جميع الحقوق محفوظة.</p>
+        <p>&copy; {{ date('Y') }} <span class="text-gray-300 font-bold">EtViral</span>. جميع الحقوق محفوظة.</p>
         <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>

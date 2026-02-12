@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="flex flex-col">
-                <span class="text-2xl font-bold text-white tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">EtmanSMM</span>
+                <span class="text-2xl font-bold text-white tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">EtViral</span>
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold ml-0.5">Pro Dashboard</span>
             </div>
         </div>
@@ -260,6 +260,10 @@
 
         <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-6">الدعم</p>
 
+
+
+
+
         <a href="{{ route('call-us') }}"
             class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
            {{ request()->routeIs('call-us') ? 'bg-gradient-to-r from-cyan-600/20 to-blue-600/10 text-white shadow-lg shadow-cyan-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
@@ -273,6 +277,8 @@
             </svg>
             <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">تواصل معنا</span>
         </a>
+
+
 
         <a href="{{ route('privacy-policy') }}"
             class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
@@ -291,13 +297,6 @@
     </nav>
 
     <!-- User Profile (Bottom) -->
-    <div class="p-4 border-t border-gray-700/50">
-        <div class="flex items-center gap-3 p-2 rounded-lg bg-gray-800/50 border border-gray-700/50">
-            <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">U</div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-white truncate">مستخدم تجريبي</p>
-                <p class="text-xs text-indigo-400 truncate">120.50 ج.م</p>
-            </div>
-        </div>
-    </div>
+    <!-- User Profile (Bottom) Hidden/Removed as per request -->
+    <!-- <div class="p-4 border-t border-gray-700/50"> ... </div> -->
 </aside>

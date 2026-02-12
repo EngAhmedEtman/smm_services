@@ -30,7 +30,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">واتساب</h3>
                     <p class="text-gray-400 text-sm">تحدث معنا مباشرة على واتساب</p>
-                    <p class="text-green-400 font-mono text-sm mt-1">+20 123 456 7890</p>
+                    <p class="text-green-400 font-mono text-sm mt-1">+20 15 5855 1037</p>
                 </div>
             </div>
         </a>
@@ -46,13 +46,13 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">تيليجرام</h3>
                     <p class="text-gray-400 text-sm">تابعنا على قناة التيليجرام</p>
-                    <p class="text-blue-400 font-mono text-sm mt-1">@etman_smm</p>
+                    <p class="text-blue-400 font-mono text-sm mt-1">@EtViral</p>
                 </div>
             </div>
         </a>
 
         <!-- Email -->
-        <a href="mailto:support@etman-smm.com" class="glass p-6 rounded-2xl border border-gray-800 hover:border-purple-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-purple-500/10">
+        <a href="mailto:support@etviral.com" class="glass p-6 rounded-2xl border border-gray-800 hover:border-purple-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-purple-500/10">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">البريد الإلكتروني</h3>
                     <p class="text-gray-400 text-sm">راسلنا عبر البريد الإلكتروني</p>
-                    <p class="text-purple-400 font-mono text-sm mt-1">support@etman-smm.com</p>
+                    <p class="text-purple-400 font-mono text-sm mt-1">support@EtViral.com</p>
                 </div>
             </div>
         </a>

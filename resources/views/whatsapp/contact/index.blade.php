@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'مجموعات الأرقام | Etman SMM')
+@section('title', 'مجموعات الأرقام | EtViral')
 
 @section('content')
 <div class="space-y-8 direction-rtl">
@@ -17,7 +17,7 @@
             </h2>
             <p class="text-gray-400 text-sm">إدارة قوائم جهات الاتصال وحملاتك المستهدفة</p>
         </div>
-        <a href="{{ route('whatsapp.contact.create') }}" class="w-full md:w-auto bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 flex items-center justify-center gap-2 transform hover:-translate-y-1 active:scale-95 group">
+        <a href="{{ route('whatsapp.contacts.create') }}" class="w-full md:w-auto bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 flex items-center justify-center gap-2 transform hover:-translate-y-1 active:scale-95 group">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>

@@ -51,6 +51,14 @@
             @endif
         </div>
 
+        <div>
+            <label for="phone" class="block text-sm font-medium text-gray-300">{{ __('رقم الهاتف') }}</label>
+            <input id="phone" name="phone" type="text" class="mt-1 block w-full bg-[#16161a] border border-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2" value="{{ old('phone', $user->phone) }}" required />
+            @error('phone')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
         <div class="flex items-center gap-4">
             <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/30">
                 {{ __('حفظ التغييرات') }}

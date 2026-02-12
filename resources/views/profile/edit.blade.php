@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'الملف الشخصي | Etman SMM')
+@section('title', 'الملف الشخصي | EtViral')
 @section('header_title', 'الملف الشخصي')
 
 @section('content')
@@ -50,7 +50,7 @@
                     {{ number_format($user->balance ?? 0, 2) }} <span class="text-lg text-green-600">ج.م</span>
                 </p>
             </div>
-            <a href="#" class="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-sm text-white transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20">
+            <a href="{{ route('recharge') }}" class="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-sm text-white transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -138,7 +138,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
-                        نشاط الطلبات (Static)
+                        نشاط الطلبات (آخر 7 أيام)
                     </h3>
                     <select class="bg-gray-800 border-none text-xs text-gray-400 rounded-lg focus:ring-0">
                         <option>آخر 7 أيام</option>
@@ -146,11 +146,11 @@
                 </div>
                 <!-- CSS Only Bar Chart -->
                 <div class="flex items-end justify-between h-56 gap-3 pb-2">
-                    @foreach([35, 60, 25, 80, 50, 95, 70] as $h)
+                    @foreach($ordersActivity as $item)
                     <div class="w-full bg-indigo-500/10 rounded-t-lg relative group h-full flex flex-col justify-end hover:bg-indigo-500/20 transition-colors cursor-pointer">
-                        <div style="height: {{ $h }}%;" class="w-full bg-indigo-500 rounded-t-lg relative transition-all duration-500 ease-out group-hover:bg-indigo-400">
+                        <div style="height: {{ $item['height'] }}%;" class="w-full bg-indigo-500 rounded-t-lg relative transition-all duration-500 ease-out group-hover:bg-indigo-400">
                             <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white font-bold text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-xl border border-gray-700">
-                                {{ $h }}
+                                {{ $item['count'] }} طلب
                                 <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
                             </div>
                         </div>
@@ -158,7 +158,9 @@
                     @endforeach
                 </div>
                 <div class="flex justify-between text-xs text-gray-400 mt-2 font-mono uppercase">
-                    <span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+                    @foreach($ordersActivity as $item)
+                    <span>{{ $item['date'] }}</span>
+                    @endforeach
                 </div>
             </div>
 
@@ -168,15 +170,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                     </svg>
-                    توزيع الخدمات (Static)
+                    توزيع الخدمات (الأكثر طلباً)
                 </h3>
                 <div class="flex items-center justify-center lg:justify-start gap-8">
                     <!-- Pie Chart Circle -->
                     <div class="relative w-48 h-48 rounded-full border-[16px] border-indigo-500/10 flex items-center justify-center">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            <!-- In a real app, use JS to calculate stroke-dasharray -->
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6366f1" stroke-width="10" stroke-dasharray="180 251" class="drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" stroke-width="10" stroke-dasharray="50 251" stroke-dashoffset="-180" />
+                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6366f1" stroke-width="10" stroke-dasharray="251 251" class="drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
                         </svg>
                         <div class="absolute text-center">
                             <span class="block text-3xl font-bold text-white">Top</span>
@@ -186,27 +186,18 @@
 
                     <!-- Legend -->
                     <div class="flex-1 space-y-4">
+                        @foreach($serviceDistribution as $service)
                         <div class="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
                             <div class="flex items-center gap-3">
                                 <span class="w-4 h-4 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
-                                <span class="text-sm text-gray-300">متابعين انستقرام</span>
+                                <span class="text-sm text-gray-300 truncate max-w-[120px]">{{ $service['name'] }}</span>
                             </div>
-                            <span class="text-sm font-bold text-white">72%</span>
+                            <span class="text-sm font-bold text-white">{{ $service['percentage'] }}%</span>
                         </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
-                            <div class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-green-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                                <span class="text-sm text-gray-300">لايكات فيسبوك</span>
-                            </div>
-                            <span class="text-sm font-bold text-white">18%</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
-                            <div class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-gray-700"></span>
-                                <span class="text-sm text-gray-300">أخرى</span>
-                            </div>
-                            <span class="text-sm font-bold text-white">10%</span>
-                        </div>
+                        @endforeach
+                        @if($serviceDistribution->isEmpty())
+                        <p class="text-sm text-gray-500">لا توجد بيانات كافية</p>
+                        @endif
                     </div>
                 </div>
             </div>

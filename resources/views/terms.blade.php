@@ -2,7 +2,7 @@
 
 @section('title', 'شروط وأحكام الاستخدام | EtViral')
 
-@section('header_title', 'شروط الاستخدام وسياسة الخصوصية')
+@section('header_title', 'شروط الاستخدام')
 
 @section('content')
 <div class="max-w-4xl mx-auto">
@@ -118,50 +118,6 @@
             </div>
         </div>
 
-        <!-- Privacy Policy -->
-        <div class="glass rounded-2xl p-6 border border-gray-800">
-            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">🔐</span>
-                سياسة الخصوصية
-            </h2>
-            <ul class="space-y-3 text-gray-300 text-sm md:text-base list-disc list-inside marker:text-emerald-500">
-                <li>نلتزم بحماية بيانات المستخدمين وعدم مشاركتها أو بيعها لأي طرف ثالث.</li>
-                <li>تُستخدم البيانات فقط لأغراض تنفيذ الطلبات وتحسين الخدمات.</li>
-                <li>يتم حفظ جميع البيانات على خوادم آمنة ومشفرة.</li>
-                <li>لن تصلك أي مراسلات إلا من خلال النطاق الرسمي لموقع EtViral.</li>
-            </ul>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-6">
-            <!-- Marketing Terms -->
-            <div class="glass rounded-2xl p-6 border border-gray-800">
-                <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">📢</span>
-                    شروط التسويق ونظام الإفيلييت
-                </h2>
-                <ul class="space-y-3 text-gray-300 text-sm md:text-base list-disc list-inside marker:text-orange-500">
-                    <li>يُمنع إنشاء أكثر من حساب بغرض التحايل على نظام الإفيلييت.</li>
-                    <li>في حال اكتشاف أي تلاعب أو استخدام حسابات وهمية، يتم إيقاف جميع الحسابات المرتبطة بشكل نهائي دون استرجاع الرصيد.</li>
-                    <li>نحتفظ بحق إيقاف أي حساب مستقبلي إذا ثبت ارتباطه بسلوك احتيالي سابق.</li>
-                    <li>يُمنع استخدام رابط الإفيلييت لدعوة نفسك أو تحقيق عمولات غير مشروعة.</li>
-                </ul>
-            </div>
-
-            <!-- Support -->
-            <div class="glass rounded-2xl p-6 border border-gray-800">
-                <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400">📞</span>
-                    الدعم الفني
-                </h2>
-                <ul class="space-y-3 text-gray-300 text-sm md:text-base list-disc list-inside marker:text-cyan-500">
-                    <li>يتم تقديم الدعم الفني حصريًا عبر نظام التذاكر.</li>
-                    <li>قد يستغرق الرد مدة تصل إلى 5 أيام عمل حسب ضغط الطلبات.</li>
-                    <li>يجب إرفاق جميع الأدلة والمعلومات اللازمة عند فتح أي شكوى لضمان معالجتها بشكل صحيح.</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Acknowledgement -->
         <div class="text-center p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl mt-8">
             <p class="text-indigo-300 font-bold text-sm md:text-lg">
                 📝 باستخدامك لموقع EtViral، فإنك تقر بأنك قرأت وفهمت وتوافق على جميع الشروط والأحكام المذكورة أعلاه بشكل كامل ونهائي.

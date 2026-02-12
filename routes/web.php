@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/whatsapp/connect', [WhatsappController::class, 'connect'])->name('whatsapp.connect');
     Route::get('/whatsapp/scan/{instance_id}', [WhatsappController::class, 'scanInstance'])->name('whatsapp.scan');
     Route::get('/whatsapp/reboot/{instance_id}', [WhatsappController::class, 'rebootInstance'])->name('whatsapp.reboot');
-    Route::get('/whatsapp/reset/{instance_id}', [WhatsappController::class, 'resetInstance'])->name('whatsapp.reset');
+    Route::post('/whatsapp/reset/{instance_id}', [WhatsappController::class, 'resetInstance'])->name('whatsapp.reset');
     Route::get('/whatsapp/reconnect/{instance_id}', [WhatsappController::class, 'reconnect'])->name('whatsapp.reconnect');
     Route::post('/whatsapp/update-number', [WhatsappController::class, 'updateNumber'])->name('whatsapp.updateNumber');
     Route::get('/whatsapp/debug/{instance_id}', [WhatsappController::class, 'debugStatus'])->name('whatsapp.debug');
@@ -109,6 +109,18 @@ Route::get('/call-us', function () {
 Route::get('/privacy-policy', function () {
     return view('privacypolicy');
 })->name('privacy-policy');
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/support/tickets', function () {
+    return view('coming-soon');
+})->name('tickets.index');
+
+Route::get('/api-docs', function () {
+    return view('coming-soon');
+})->name('api.docs');
 
 // Temporary: Clear all caches
 Route::get('/clear-cache-2026', function () {

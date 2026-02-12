@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'لوحة التحكم | Etman SMM')
+@section('title', 'لوحة التحكم | EtViral')
 @section('header_title', 'لوحة التحكم')
 
 @section('content')
