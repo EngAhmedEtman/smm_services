@@ -38,9 +38,7 @@
 <body class="bg-[#0f0f13] text-gray-100 antialiased overflow-x-hidden">
 
     <!-- Navbar -->
-    <div style="background: red; color: white; text-align: center; padding: 10px; font-weight: bold; z-index: 9999; position: relative;">
-        DEBUG: SYSTEM CHECK - IF YOU SEE THIS, I AM EDITING THE RIGHT FILE
-    </div>
+
     <nav class="fixed w-full z-50 transition-all duration-300 glass border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
