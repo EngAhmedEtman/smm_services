@@ -35,45 +35,85 @@ class ProcessCampaigns extends Command
 
     protected function processCampaign(WhatsappCampaign $campaign): void
     {
-        // last_sent_at stores the NEXT allowed send time (not the actual last sent time)
-        // This ensures the random delay is calculated ONCE and stays fixed
+        // 1. Check delay
         if ($campaign->last_sent_at && now()->lt($campaign->last_sent_at)) {
-            $remaining = (int) now()->diffInSeconds($campaign->last_sent_at);
-            $this->info("Campaign #{$campaign->id}: waiting {$remaining}s before next message.");
             return;
         }
 
-        // Fetch next pending log
+        // 2. Fetch next pending log
         $log = WhatsappCampaignLog::where('whatsapp_campaign_id', $campaign->id)
             ->where('status', 'pending')
             ->first();
 
+        // 3. Mark completed if no logs
         if (!$log) {
             $campaign->update(['status' => 'completed']);
-            $this->info("Campaign #{$campaign->id}: completed!");
             Log::info("Campaign #{$campaign->id} completed.");
             return;
         }
 
-        // Select random message
-        $messages = $campaign->message;
-        $text = is_array($messages) ? $messages[array_rand($messages)] : $messages;
-
-        // Clean number
-        $number = preg_replace('/[^0-9]/', '', $log->phone_number);
-
         try {
+            // 4. Prepare Message Content
+            $messages = $campaign->message;
+            // Handle JSON decoding if it's a string
+            if (is_string($messages)) {
+                $decoded = json_decode($messages, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $messages = $decoded;
+                }
+            }
+
+            // Select random message
+            $text = is_array($messages) ? $messages[array_rand($messages)] : $messages;
+
+            // 5. Replace Placeholders
+            // {{random}}
+            if (str_contains($text, '{{random}}')) {
+                $randomText = \App\Models\WhatsappRandomText::inRandomOrder()->value('text') ?? '';
+                $text = str_replace('{{random}}', $randomText, $text);
+            }
+
+            // {{welcome}}
+            if (str_contains($text, '{{welcome}}')) {
+                $welcomeText = \App\Models\WhatsappWelcomeText::inRandomOrder()->value('text') ?? '';
+                $text = str_replace('{{welcome}}', $welcomeText, $text);
+            }
+
+            // {{date}}
+            $text = str_replace('{{date}}', now()->toDateString(), $text);
+
+            // 6. Prepare Payload
+            $number = preg_replace('/[^0-9]/', '', $log->phone_number);
             $payload = [
                 'number' => $number,
-                'type' => 'text',
-                'message' => $text,
                 'instance_id' => $campaign->instance_id,
                 'access_token' => $this->token,
             ];
 
+            // 7. Determine Type (Text vs Media)
+            if ($campaign->media_path) {
+                $payload['type'] = 'media';
+                $payload['message'] = $text; // Caption
+                $payload['media_url'] = asset('storage/' . $campaign->media_path);
+
+                // Determine media type (image/document) based on extension
+                $extension = pathinfo($campaign->media_path, PATHINFO_EXTENSION);
+                if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $payload['media_type'] = 'image';
+                } else {
+                    $payload['media_type'] = 'document';
+                    $payload['filename'] = basename($campaign->media_path);
+                }
+            } else {
+                $payload['type'] = 'text';
+                $payload['message'] = $text;
+            }
+
+            // 8. Send Request
             $response = Http::timeout(60)->post($this->baseUrl . '/send', $payload);
             $resData = $response->json();
 
+            // 9. Handle Response
             if ($response->successful() && ($resData['status'] ?? '') === 'success') {
                 $log->update([
                     'status' => 'sent',
@@ -81,14 +121,13 @@ class ProcessCampaigns extends Command
                 ]);
                 $campaign->increment('sent_count');
 
-                // Calculate delay ONCE and store the NEXT allowed send time
+                // Set next delay
                 $delay = rand($campaign->min_delay, $campaign->max_delay);
                 $campaign->update(['last_sent_at' => now()->addSeconds($delay)]);
 
-                $this->info("Campaign #{$campaign->id}: sent to {$number} ✓ (next in {$delay}s)");
-                Log::info("Campaign #{$campaign->id}: sent to {$number}, next in {$delay}s");
+                $this->info("Sent to {$number} (Next in {$delay}s)");
             } else {
-                throw new \Exception($resData['message'] ?? 'Unknown API Error');
+                throw new \Exception($resData['message'] ?? 'API Error');
             }
         } catch (\Exception $e) {
             $log->update([
@@ -97,24 +136,11 @@ class ProcessCampaigns extends Command
             ]);
             $campaign->increment('failed_count');
 
-            // Even on fail, set next send time to avoid rapid retries
+            // Set delay purely to prevent hammering
             $delay = rand($campaign->min_delay, $campaign->max_delay);
             $campaign->update(['last_sent_at' => now()->addSeconds($delay)]);
 
-            $this->error("Campaign #{$campaign->id}: failed to {$number} - {$e->getMessage()}");
-            Log::error("Campaign #{$campaign->id}: failed to {$number} - {$e->getMessage()}");
-        }
-
-        // Check remaining
-        $remaining = WhatsappCampaignLog::where('whatsapp_campaign_id', $campaign->id)
-            ->where('status', 'pending')
-            ->count();
-
-        if ($remaining === 0) {
-            $campaign->update(['status' => 'completed']);
-            $this->info("Campaign #{$campaign->id}: all messages processed, completed!");
-        } else {
-            $this->info("Campaign #{$campaign->id}: {$remaining} messages remaining.");
+            $this->error("Failed {$number}: " . $e->getMessage());
         }
     }
 }

@@ -23,13 +23,29 @@ class WhatsappMessageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'content' => 'required|array|min:1',
-            'content.*' => 'required|string',
+            'content.*' => 'nullable|string',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt|max:10240', // 10MB
         ]);
+
+        $mediaPath = null;
+        if ($request->hasFile('media')) {
+            $mediaPath = $request->file('media')->store('whatsapp_media', 'public');
+        }
+
+        // Filter out empty messages but keep keys reindexed
+        $content = array_values(array_filter($request->content, function ($value) {
+            return !is_null($value) && $value !== '';
+        }));
+
+        if (empty($content)) {
+            return back()->withErrors(['content' => 'يجب إضافة رسالة واحدة على الأقل.']);
+        }
 
         WhatsappMessage::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
-            'content' => $request->content,
+            'content' => $content,
+            'media_path' => $mediaPath,
         ]);
 
         return redirect()->route('whatsapp.messages.index')->with('success', 'تم حفظ قالب الرسائل بنجاح.');
@@ -46,15 +62,36 @@ class WhatsappMessageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'content' => 'required|array|min:1',
-            'content.*' => 'required|string',
+            'content.*' => 'nullable|string',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt|max:10240',
         ]);
 
         $message = WhatsappMessage::where('user_id', auth()->id())->findOrFail($id);
 
-        $message->update([
+        $data = [
             'name' => $request->name,
-            'content' => $request->content,
-        ]);
+        ];
+
+        if ($request->hasFile('media')) {
+            // Delete old media if exists
+            if ($message->media_path && \Storage::disk('public')->exists($message->media_path)) {
+                \Storage::disk('public')->delete($message->media_path);
+            }
+            $data['media_path'] = $request->file('media')->store('whatsapp_media', 'public');
+        }
+
+        // Filter content
+        $content = array_values(array_filter($request->content, function ($value) {
+            return !is_null($value) && $value !== '';
+        }));
+
+        if (empty($content)) {
+            return back()->withErrors(['content' => 'يجب إضافة رسالة واحدة على الأقل.']);
+        }
+
+        $data['content'] = $content;
+
+        $message->update($data);
 
         return redirect()->route('whatsapp.messages.index')->with('success', 'تم تحديث قالب الرسائل بنجاح.');
     }

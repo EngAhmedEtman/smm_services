@@ -39,8 +39,28 @@
         </button>
     </div>
 
+    <!-- Custom Scrollbar Style -->
+    <style>
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+
     <!-- Navigation (Scrollable) -->
-    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 scrollbar-hide" x-data="{ 
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 sidebar-scroll" x-data="{ 
         openSmm: {{ (request()->routeIs('services.*') || request()->routeIs('addOrder') || request()->routeIs('showForm') || request()->routeIs('status')) ? 'true' : 'false' }}, 
         openWhatsapp: {{ request()->routeIs('whatsapp.*') ? 'true' : 'false' }},
         openAdmin: {{ request()->routeIs('admin.*') ? 'true' : 'false' }} 
@@ -228,6 +248,10 @@
                     <a href="{{ route('admin.tickets.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.tickets.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.tickets.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         التذاكر
+                    </a>
+                    <a href="{{ route('whatsapp.assets.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.assets.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.assets.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        إدارة المتغيرات
                     </a>
                 </div>
             </div>

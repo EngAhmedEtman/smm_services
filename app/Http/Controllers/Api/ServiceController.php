@@ -43,8 +43,8 @@ class ServiceController extends Controller
     {
         $services = $this->smmService->services();
 
-        // 1. Paginate the services array
-        $paginatedServices = $this->paginateArray($services, $request, 20);
+        // 1. Paginate the services array directly to respect provider order
+        $paginatedServices = $this->paginateArray($services, $request, 100);
 
         // 2. Get User's Favorite Service IDs
         $favoriteIds = $this->getUserFavoriteIds();

@@ -1,78 +1,113 @@
 @extends('layouts.app')
 
-@section('title', 'قوالب الرسائل')
-
-@section('header_title', 'قوالب الرسائل')
+@section('title', 'قوالب الرسائل | Etman SMM')
 
 @section('content')
-<div class="bg-gray-900 rounded-xl border border-gray-800 p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-white">قوالب الرسائل المحفوظة</h2>
-        <a href="{{ route('whatsapp.messages.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+<div class="space-y-8 direction-rtl">
+
+    <!-- Background Glow -->
+    <div class="fixed top-20 right-0 w-[400px] h-[400px] bg-green-600/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#1e1e24]/60 backdrop-blur-md p-6 rounded-2xl border border-green-500/10 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-green-600/5 to-transparent pointer-events-none"></div>
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                <span class="w-2 h-8 bg-green-500 rounded-full inline-block"></span>
+                قوالب الرسائل
+            </h2>
+            <p class="text-gray-400 text-sm">حفظ وإدارة رسائلك التسويقية لاستخدامها في الحملات</p>
+        </div>
+        <a href="{{ route('whatsapp.messages.create') }}" class="w-full md:w-auto bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 flex items-center justify-center gap-2 transform hover:-translate-y-1 active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
             </svg>
-            إضافة قالب جديد
+            <span>إضافة قالب جديد</span>
         </a>
     </div>
 
     @if(session('success'))
-    <div class="bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-lg mb-6">
+    <div class="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-up shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
         {{ session('success') }}
     </div>
     @endif
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left">
-            <thead>
-                <tr class="text-gray-400 border-b border-gray-800 text-sm uppercase">
-                    <th class="px-6 py-3 font-medium">اسم القالب</th>
-                    <th class="px-6 py-3 font-medium">عدد الرسائل</th>
-                    <th class="px-6 py-3 font-medium text-right">إجراءات</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-800">
-                @forelse($messages as $message)
-                <tr class="hover:bg-gray-800/50 transition-colors">
-                    <td class="px-6 py-4">
-                        <div class="text-white font-medium">{{ $message->name }}</div>
-                        <div class="text-xs text-gray-500 mt-1">{{ Str::limit($message->content[0] ?? '', 50) }}</div>
-                    </td>
-                    <td class="px-6 py-4 text-gray-300">
-                        <span class="bg-gray-800 px-2 py-1 rounded text-xs">{{ count($message->content) }} رسائل (تبديل)</span>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('whatsapp.messages.edit', $message->id) }}" class="text-blue-400 hover:bg-blue-500/10 px-2 py-1.5 rounded transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                </svg>
-                            </a>
-                            <form action="{{ route('whatsapp.messages.destroy', $message->id) }}" method="POST" class="inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا القالب؟');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:bg-red-500/10 px-2 py-1.5 rounded transition-all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">
-                        لا توجد قوالب رسائل محفوظة بعد.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        @forelse($messages as $message)
+        <div class="bg-[#1e1e24]/80 backdrop-blur-md border border-gray-800/60 rounded-2xl p-5 relative hover:bg-[#222228] transition-all duration-300 group hover:border-green-500/30 shadow-md hover:shadow-xl flex flex-col justify-between h-full">
+
+            <div class="mb-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 group-hover:bg-green-500/20 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-lg leading-tight group-hover:text-green-400 transition-colors line-clamp-1" title="{{ $message->name }}">
+                            {{ $message->name }}
+                        </h3>
+                        <span class="text-xs text-gray-500 font-mono">{{ count($message->content) }} رسائل تبديل</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900/50 rounded-xl p-3 border border-gray-800/50 min-h-[80px]">
+                    <p class="text-xs text-gray-400 line-clamp-3 leading-relaxed">
+                        {{ Str::limit($message->content[0] ?? '', 100) }}
+                    </p>
+                    @if($message->media_path)
+                    <div class="mt-2 flex items-center gap-1 text-green-400 text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                        </svg>
+                        <span>مرفق ملف/صورة</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-3 border-t border-gray-800/50 mt-auto">
+                <a href="{{ route('whatsapp.messages.edit', $message->id) }}" class="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 py-2 rounded-lg transition-colors border border-indigo-500/20 text-center text-sm font-bold flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    تعديل
+                </a>
+                <form action="{{ route('whatsapp.messages.destroy', $message->id) }}" method="POST" class="flex-1" onsubmit="return confirm('هل أنت متأكد من حذف هذا القالب؟');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 py-2 rounded-lg transition-colors border border-red-500/20 text-center text-sm font-bold flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        حذف
+                    </button>
+                </form>
+            </div>
+
+        </div>
+        @empty
+        <div class="col-span-full text-center py-20 bg-[#1e1e24]/40 backdrop-blur rounded-3xl border border-dashed border-gray-700 hover:border-green-500/50 transition-colors group">
+            <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">لا توجد قوالب محفوظة</h3>
+            <p class="text-gray-400 mb-8 max-w-sm mx-auto">ابدأ بإنشاء قوالب رسائل جاهزة لتسهيل حملاتك التسويقية.</p>
+            <a href="{{ route('whatsapp.messages.create') }}" class="inline-flex bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 hover:shadow-green-900/50 transform hover:-translate-y-1">
+                إضافة قالب جديد
+            </a>
+        </div>
+        @endforelse
     </div>
 
-    <div class="mt-6">
+    @if($messages->hasPages())
+    <div class="py-4">
         {{ $messages->links() }}
     </div>
+    @endif
 </div>
 @endsection

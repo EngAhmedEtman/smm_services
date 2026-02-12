@@ -3,35 +3,61 @@
 @section('title', 'ربط واتساب | Etman SMM')
 
 @section('content')
-<div class="flex justify-center items-center min-h-[calc(100vh-200px)]">
-    <div class="glass p-8 rounded-2xl w-full max-w-md text-center relative overflow-hidden group">
+<div class="flex justify-center items-center min-h-[calc(100vh-140px)] direction-rtl">
+
+    <!-- Background Animated Blobs -->
+    <div class="fixed top-1/4 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-[100px] -z-10 animate-pulse"></div>
+    <div class="fixed bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] -z-10 animate-pulse" style="animation-delay: 2s;"></div>
+
+    <div class="bg-[#1e1e24]/60 backdrop-blur-xl p-8 md:p-12 rounded-3xl w-full max-w-lg text-center relative overflow-hidden group border border-white/10 shadow-2xl">
+
         <!-- Decoration Background -->
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-green-500/10 rounded-full group-hover:bg-green-500/20 transition-all duration-500 blur-2xl"></div>
-        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-indigo-500/10 rounded-full group-hover:bg-indigo-500/20 transition-all duration-500 blur-2xl"></div>
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-green-500/10 rounded-full group-hover:bg-green-500/20 transition-all duration-1000 blur-3xl"></div>
+        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-teal-500/10 rounded-full group-hover:bg-teal-500/20 transition-all duration-1000 blur-3xl"></div>
 
-        <div class="relative z-10">
-            <h2 class="text-2xl font-bold text-white mb-2">ربط حساب واتساب</h2>
-            <p class="text-gray-400 text-sm mb-6">قم بمسح الغمز (QR Code) أدناه لربط حسابك</p>
+        <div class="relative z-10 flex flex-col items-center">
 
-            <div class="bg-white p-4 rounded-xl inline-block mb-6 shadow-lg shadow-green-500/10">
-                <img src="{{ $qr }}" alt="QR Code" class="w-64 h-64 object-contain">
+            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-green-500/30 transform group-hover:rotate-6 transition-transform duration-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h.01M16 14.207l1.293-1.293a1 1 0 00-1.414-1.414l-1.293 1.293a1 1 0 001.414 1.414zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
             </div>
 
-            <div class="space-y-4">
-                <div class="text-sm text-gray-300 bg-white/5 p-3 rounded-lg border border-white/10">
-                    <p class="mb-1">صلاحية الكود:</p>
-                    <span id="timer" class="text-xl font-bold text-green-400 font-mono">{{ $expires_in }}</span> <span class="text-xs text-gray-500">ثانية</span>
+            <h2 class="text-3xl font-bold text-white mb-2">ربط حساب واتساب</h2>
+            <p class="text-gray-400 text-sm mb-8 leading-relaxed">افتح تطبيق واتساب على هاتفك، اذهب إلى <b>الأجهزة المرتبطة</b>، وامسح الكود أدناه.</p>
+
+            <div class="bg-white/5 p-2 rounded-2xl md:rounded-3xl shadow-2xl shadow-green-500/10 mb-8 relative group-hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-xl md:rounded-2xl overflow-hidden p-2">
+                    <img src="{{ $qr }}" alt="QR Code" class="w-64 h-64 object-contain">
+                </div>
+                <!-- Scan Overlay Animation -->
+                <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                    <div class="h-1 bg-green-500/50 absolute top-0 left-0 right-0 shadow-[0_0_20px_rgba(34,197,94,0.5)] animate-[scan_3s_linear_infinite]"></div>
+                </div>
+            </div>
+
+            <div class="w-full space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-300 bg-[#16161a]/80 p-4 rounded-xl border border-gray-700/50">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        صلاحية الكود
+                    </span>
+                    <div class="font-mono bg-white/5 px-3 py-1 rounded text-green-400 font-bold tracking-wider">
+                        <span id="timer">{{ $expires_in }}</span> <span class="text-xs text-gray-500">ثانية</span>
+                    </div>
                 </div>
 
-                <div class="text-xs text-gray-500 space-y-1 text-right px-4">
-                    <p>1. افتح واتساب في هاتفك</p>
-                    <p>2. اضغط على القائمة (⋮) أو الإعدادات</p>
-                    <p>3. اختر "الأجهزة المرتبطة"</p>
-                    <p>4. اضغط على "ربط جهاز" وامسح الكود</p>
+                <div class="bg-[#16161a]/40 rounded-xl p-4 text-right text-xs text-gray-400 space-y-2 border border-white/5">
+                    <p class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 1. افتح واتساب في هاتفك</p>
+                    <p class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 2. اضغط على القائمة (⋮) أو الإعدادات</p>
+                    <p class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 3. اختر "الأجهزة المرتبطة"</p>
+                    <p class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> 4. اضغط على "ربط جهاز" وامسح الكود</p>
                 </div>
 
-                <button onclick="window.location.reload()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <button onclick="window.location.reload()" class="w-full mt-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 flex items-center justify-center gap-2 group-hover:translate-y-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin-slow" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                     </svg>
                     تحديث الكود
@@ -40,6 +66,42 @@
         </div>
     </div>
 </div>
+
+<style>
+    @keyframes scan {
+        0% {
+            top: 0%;
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 1;
+        }
+
+        90% {
+            opacity: 1;
+        }
+
+        100% {
+            top: 100%;
+            opacity: 0;
+        }
+    }
+
+    .animate-spin-slow {
+        animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 
 <script>
     // Countdown Timer logic

@@ -52,14 +52,30 @@ class WhatsappCampaignController extends Controller
             $request->validate(['whatsapp_message_id' => 'required|exists:whatsapp_messages,id']);
             $template = \App\Models\WhatsappMessage::find($request->whatsapp_message_id);
             $input['message'] = $template->content;
+            $input['media_path'] = $template->media_path;
             $input['whatsapp_message_id'] = $template->id;
         } else {
             $request->validate([
-                'message' => 'required|array|min:1|max:5',
-                'message.*' => 'required|string',
+                'message' => 'required|array|min:1',
+                'message.*' => 'nullable|string',
+                'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt|max:10240',
             ]);
-            $input['message'] = $request->message;
+
+            // Filter content
+            $content = array_values(array_filter($request->message, function ($value) {
+                return !is_null($value) && $value !== '';
+            }));
+
+            if (empty($content)) {
+                return back()->withErrors(['message' => 'يجب إضافة رسالة واحدة على الأقل.']);
+            }
+
+            $input['message'] = $content;
             $input['whatsapp_message_id'] = null;
+
+            if ($request->hasFile('media')) {
+                $input['media_path'] = $request->file('media')->store('whatsapp_media', 'public');
+            }
         }
 
         $campaign = WhatsappCampaign::create($input);
@@ -129,7 +145,12 @@ class WhatsappCampaignController extends Controller
     public function process($id)
     {
         $campaign = WhatsappCampaign::with('contact')->where('user_id', auth()->id())->findOrFail($id);
-        return view('whatsapp.campaigns.process', compact('campaign'));
+
+        // Prepare assets for randomization
+        $randomTexts = \App\Models\WhatsappRandomText::where('user_id', auth()->id())->pluck('text')->toArray();
+        $welcomeTexts = \App\Models\WhatsappWelcomeText::where('user_id', auth()->id())->pluck('text')->toArray();
+
+        return view('whatsapp.campaigns.process', compact('campaign', 'randomTexts', 'welcomeTexts'));
     }
 
     /**

@@ -13,10 +13,12 @@ class WhatsappMessage extends Model
         'user_id',
         'name',
         'content',
+        'media_path', // Added media_path to fillable
     ];
 
     protected $casts = [
         'content' => 'array',
+        // No explicit cast for media_path was requested, assuming string or default
     ];
 
     public function user()
