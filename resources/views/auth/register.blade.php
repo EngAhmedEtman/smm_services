@@ -66,8 +66,8 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="relative pt-32 pb-20 sm:pt-40 sm:pb-24 hero-bg min-h-screen flex items-center">
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-16">
+    <div class="relative pt-24 pb-12 sm:pt-40 sm:pb-24 hero-bg min-h-screen flex items-center">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
             <!-- Text Content -->
             <div class="lg:w-1/2 text-center lg:text-right z-10">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-medium text-indigo-300 mb-6">
@@ -86,7 +86,7 @@
                 </p>
 
                 <!-- Stats -->
-                <div class="mt-16 grid grid-cols-3 gap-8 border-t border-white/10 pt-8">
+                <div class="mt-16 hidden md:grid grid-cols-3 gap-8 border-t border-white/10 pt-8">
                     <div>
                         <p class="text-3xl font-bold text-white">5M+</p>
                         <p class="text-sm text-gray-500">طلب مكتمل</p>
