@@ -31,10 +31,10 @@
     <form action="{{ route('whatsapp.campaigns.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" x-data="{ messageMode: 'template', previewMessage: '' }">
         @csrf
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-8">
 
             <!-- Main Form Column -->
-            <div class="lg:col-span-2 space-y-8">
+            <div class="space-y-8">
 
                 <!-- Step 1: Basic Info -->
                 <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-indigo-500/30 transition-all">
@@ -255,6 +255,31 @@
                         </div>
                     </div>
 
+                    <!-- Batch Sleep Settings -->
+                    <div class="border border-gray-700/30 rounded-xl p-4 mb-6 bg-[#16161a]/50">
+                        <h4 class="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            حماية الرقم (استراحة بعد عدد معين)
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">عدد الرسائل قبل الاستراحة</label>
+                                <input type="number" name="batch_size" value="0" min="0" max="1000"
+                                    class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white text-center font-mono focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                                    placeholder="0 = بدون توقف">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">مدة الاستراحة (دقائق)</label>
+                                <input type="number" name="batch_sleep" value="0" min="0" max="120"
+                                    class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white text-center font-mono focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                                    placeholder="مثال: 5 دقائق">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">مثال: أرسل 20 رسالة ← استرح 5 دقائق ← أكمل. اتركه 0 لتعطيل هذه الميزة.</p>
+                    </div>
+
                     <div class="flex items-center gap-2 text-xs text-yellow-500 bg-yellow-500/5 p-3 rounded-lg border border-yellow-500/10 mb-6">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -268,79 +293,6 @@
                         </svg>
                         إطلاق الحملة الآن
                     </button>
-                </div>
-            </div>
-
-            <!-- Sidebar: Live Preview -->
-            <div class="hidden lg:block space-y-6">
-                <div class="sticky top-24">
-                    <h3 class="text-gray-400 font-bold mb-4 text-sm uppercase tracking-wider">معاينة الرسالة</h3>
-
-                    <!-- Phone Frame -->
-                    <div class="bg-gray-900 rounded-[3rem] border-4 border-gray-800 p-3 shadow-2xl relative overflow-hidden">
-                        <!-- Notch -->
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-10"></div>
-
-                        <!-- Screen -->
-                        <div class="bg-[#0b141a] rounded-[2.5rem] h-[500px] overflow-hidden relative flex flex-col">
-
-                            <!-- Chat Header -->
-                            <div class="bg-[#202c33] p-3 pt-8 flex items-center gap-3 border-b border-gray-700/30">
-                                <div class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="h-2 w-24 bg-gray-600 rounded mb-1"></div>
-                                    <div class="h-1.5 w-16 bg-gray-700 rounded"></div>
-                                </div>
-                            </div>
-
-                            <!-- Chat Area (Wallpaper) -->
-                            <div class="flex-1 p-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-10 bg-repeat space-y-4 overflow-y-auto">
-
-                                <!-- Received Message -->
-                                <div class="flex justify-start">
-                                    <div class="bg-[#202c33] rounded-lg rounded-tl-none p-2 max-w-[80%] text-xs text-gray-300 shadow-md">
-                                        <div class="h-1.5 w-full bg-gray-600/50 rounded mb-1"></div>
-                                        <div class="h-1.5 w-2/3 bg-gray-600/50 rounded"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Sent Message (Preview) -->
-                                <div class="flex justify-end" x-show="messageMode === 'custom' && previewMessage">
-                                    <div class="bg-[#005c4b] rounded-lg rounded-tr-none p-2 max-w-[85%] text-xs text-[#e9edef] shadow-md relative pb-5">
-                                        <p class="whitespace-pre-wrap leading-relaxed" x-text="previewMessage || '...'"></p>
-                                        <span class="absolute bottom-1 right-2 text-[9px] text-gray-400 flex items-center gap-0.5">
-                                            10:42 pm
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                            </svg>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="flex justify-end" x-show="messageMode === 'template'">
-                                    <div class="bg-[#005c4b] rounded-lg rounded-tr-none p-3 max-w-[85%] aspect-square flex items-center justify-center text-[#e9edef] shadow-md opacity-80 border-2 border-dashed border-[#ffffff30]">
-                                        <span class="text-xs opacity-70">معاينة القالب غير متاحة</span>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- Footer -->
-                            <div class="bg-[#202c33] p-2 flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-gray-600/30"></div>
-                                <div class="flex-1 h-8 bg-gray-700/30 rounded-full"></div>
-                                <div class="w-6 h-6 rounded-full bg-teal-600/50"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-800 text-xs text-center text-gray-500">
-                        هذه معاينة تقريبية فقط. قد يختلف الشكل الفعلي على أجهزة المستخدمين.
-                    </div>
                 </div>
             </div>
         </div>

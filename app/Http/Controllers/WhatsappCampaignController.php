@@ -37,11 +37,16 @@ class WhatsappCampaignController extends Controller
             'message_mode' => 'required|in:custom,template',
             'min_delay' => 'required|integer|min:1|max:3600',
             'max_delay' => 'required|integer|min:1|max:3600|gte:min_delay',
+            'batch_size' => 'nullable|integer|min:0|max:1000',
+            'batch_sleep' => 'nullable|integer|min:0|max:120',
         ]);
 
         $input = $request->except('media', 'message');
         $input['user_id'] = auth()->id();
         $input['status'] = 'pending';
+        $input['batch_size'] = $request->input('batch_size', 0) ?: 0;
+        $input['batch_sleep'] = $request->input('batch_sleep', 0) ?: 0;
+        $input['batch_sent_count'] = 0;
 
         // Calculate Total Numbers
         $group = WhatsappContact::withCount('numbers')->find($request->whatsapp_contact_id);
