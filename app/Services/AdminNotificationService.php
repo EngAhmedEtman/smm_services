@@ -100,6 +100,11 @@ class AdminNotificationService
             // Reverted to correct user relation
             $number = preg_replace('/[^0-9]/', '', $user->phone);
 
+            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            if (strlen($number) === 11 && str_starts_with($number, '01')) {
+                $number = '2' . $number;
+            }
+
             Log::info("AdminNotification: Processing for UserID: {$user->id}, RawPhone: {$user->phone}, CleanedPhone: {$number}");
 
             if (empty($number)) {
