@@ -66,7 +66,7 @@
                                 <div class="relative">
                                     <select name="instance_id" class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none" required>
                                         @foreach($instances as $instance)
-                                        <option value="{{ $instance->instance_id }}">{{ $instance->instance_id }} ({{ $instance->status }})</option>
+                                        <option value="{{ $instance->instance_id }}">{{ $instance->phone_number ?? $instance->instance_id }} ({{ $instance->status }})</option>
                                         @endforeach
                                         @if($instances->isEmpty())
                                         <option value="" disabled selected>لا توجد أرقام متصلة</option>

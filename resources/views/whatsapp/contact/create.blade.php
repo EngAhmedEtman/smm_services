@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <form action="{{ route('whatsapp.contact.store') }}" method="POST" class="space-y-8 relative z-10">
+        <form action="{{ route('whatsapp.contacts.store') }}" method="POST" class="space-y-8 relative z-10">
             @csrf
 
             <!-- Contact Name -->
