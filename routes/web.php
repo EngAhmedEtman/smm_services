@@ -63,12 +63,6 @@ Route::middleware('auth')->group(function () {
     // Messages Templates Routes
     Route::resource('/whatsapp/messages', WhatsappMessageController::class, ['names' => 'whatsapp.messages']);
 
-    // WhatsApp Assets (Random Text & Welcome Messages)
-    Route::get('/whatsapp/assets', [\App\Http\Controllers\WhatsappAssetsController::class, 'index'])->name('whatsapp.assets.index');
-    Route::post('/whatsapp/assets/random', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeRandom'])->name('whatsapp.assets.storeRandom');
-    Route::delete('/whatsapp/assets/random/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyRandom'])->name('whatsapp.assets.destroyRandom');
-    Route::post('/whatsapp/assets/welcome', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeWelcome'])->name('whatsapp.assets.storeWelcome');
-    Route::delete('/whatsapp/assets/welcome/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyWelcome'])->name('whatsapp.assets.destroyWelcome');
 
 
     // WhatsApp Webhook — must be public (called by Wolfix API externally)
@@ -89,6 +83,13 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/users', [\App\Http\Controllers\Admin\SettingsController::class, 'users'])->name('admin.users.index');
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
+
+        // WhatsApp Assets (Random Text & Welcome Messages) - Moved to Admin
+        Route::get('/admin/assets', [\App\Http\Controllers\WhatsappAssetsController::class, 'index'])->name('admin.assets.index');
+        Route::post('/admin/assets/random', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeRandom'])->name('admin.assets.storeRandom');
+        Route::delete('/admin/assets/random/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyRandom'])->name('admin.assets.destroyRandom');
+        Route::post('/admin/assets/welcome', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeWelcome'])->name('admin.assets.storeWelcome');
+        Route::delete('/admin/assets/welcome/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyWelcome'])->name('admin.assets.destroyWelcome');
     });
 })->middleware(['auth', 'verified']); // Ensure auth group is closed correctly
 

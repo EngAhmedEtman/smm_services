@@ -49,7 +49,7 @@
             </div>
 
             @if(auth()->user()->role === 'super_admin')
-            <form action="{{ route('whatsapp.assets.storeRandom') }}" method="POST" class="mb-6">
+            <form action="{{ route('admin.assets.storeRandom') }}" method="POST" class="mb-6">
                 @csrf
                 <div class="flex gap-2">
                     <input type="text" name="text" class="flex-1 bg-[#16161a]/80 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-600" placeholder="أضف نصاً عشوائياً جديداً..." required>
@@ -66,7 +66,7 @@
                 @forelse($randomTexts as $text)
                 <div class="bg-[#16161a]/60 border border-gray-800 rounded-xl p-3 flex items-center justify-between group hover:border-blue-500/30 transition-colors">
                     <p class="text-gray-300 text-sm">{{ $text->text }}</p>
-                    <form action="{{ route('whatsapp.assets.destroyRandom', $text->id) }}" method="POST">
+                    <form action="{{ route('admin.assets.destroyRandom', $text->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-gray-600 hover:text-red-400 p-1 rounded transition-colors">
@@ -104,7 +104,7 @@
             </div>
 
             @if(auth()->user()->role === 'super_admin')
-            <form action="{{ route('whatsapp.assets.storeWelcome') }}" method="POST" class="mb-6">
+            <form action="{{ route('admin.assets.storeWelcome') }}" method="POST" class="mb-6">
                 @csrf
                 <div class="flex gap-2">
                     <input type="text" name="text" class="flex-1 bg-[#16161a]/80 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all placeholder-gray-600" placeholder="أضف رسالة ترحيب جديدة..." required>
@@ -122,7 +122,7 @@
                 <div class="bg-[#16161a]/60 border border-gray-800 rounded-xl p-3 flex items-center justify-between group hover:border-purple-500/30 transition-colors">
                     <p class="text-gray-300 text-sm">{{ $text->text }}</p>
                     @if(auth()->user()->role === 'super_admin')
-                    <form action="{{ route('whatsapp.assets.destroyWelcome', $text->id) }}" method="POST">
+                    <form action="{{ route('admin.assets.destroyWelcome', $text->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-gray-600 hover:text-red-400 p-1 rounded transition-colors">

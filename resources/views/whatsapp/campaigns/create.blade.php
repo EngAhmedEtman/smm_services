@@ -5,185 +5,354 @@
 @section('header_title', 'إنشاء حملة واتساب جديدة')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-8">
+<div class="max-w-5xl mx-auto space-y-8 direction-rtl">
 
-    <div class="glass relative overflow-hidden rounded-2xl border border-gray-800 p-8">
-        <form action="{{ route('whatsapp.campaigns.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
-            @csrf
+    <!-- Header & Back Button -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <span class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                </span>
+                إنشاء حملة جديدة
+            </h2>
+            <p class="text-gray-400 text-sm mt-1 mr-12">قم بإعداد حملتك الإعلانية بخطوات بسيطة وذكية.</p>
+        </div>
+        <a href="{{ route('whatsapp.campaigns.index') }}" class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            <span>رجوع للقائمة</span>
+        </a>
+    </div>
 
-            <!-- Campaign Name -->
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">اسم الحملة</label>
-                <input type="text" name="campaign_name" placeholder="مثال: خصومات عيد رمضان" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all" required>
-            </div>
+    <form action="{{ route('whatsapp.campaigns.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" x-data="{ messageMode: 'template', previewMessage: '' }">
+        @csrf
 
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Select Instance -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">الرقم المرسل (Instance)</label>
-                    <select name="instance_id" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all" required>
-                        @foreach($instances as $instance)
-                        <option value="{{ $instance->instance_id }}">{{ $instance->instance_id }} ({{ $instance->status }})</option>
-                        @endforeach
-                        @if($instances->isEmpty())
-                        <option value="" disabled selected>لا توجد أرقام متصلة</option>
-                        @endif
-                    </select>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                <!-- Select Group -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">المجموعة المستهدفة</label>
-                    <select name="whatsapp_contact_id" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all" required>
-                        @foreach($groups as $group)
-                        <option value="{{ $group->id }}">{{ $group->contact_name }} ({{ $group->numbers_count }} رقم)</option>
-                        @endforeach
-                        @if($groups->isEmpty())
-                        <option value="" disabled selected>لا توجد مجموعات</option>
-                        @endif
-                    </select>
-                </div>
-            </div>
+            <!-- Main Form Column -->
+            <div class="lg:col-span-2 space-y-8">
 
-            <!-- Message Source Selection -->
-            <div x-data="{ messageMode: 'template', messages: [''] }" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">نوع الرسالة</label>
-                    <div class="flex items-center gap-6">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="message_mode" value="template" x-model="messageMode" class="bg-gray-900 border-gray-700 text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-gray-300">اختيار قالب محفوظ</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="message_mode" value="custom" x-model="messageMode" class="bg-gray-900 border-gray-700 text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-gray-300">كتابة رسالة مخصصة</span>
-                        </label>
+                <!-- Step 1: Basic Info -->
+                <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-indigo-500/30 transition-all">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-indigo-600 origin-top transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500"></div>
+
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="bg-indigo-500/10 text-indigo-400 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-mono border border-indigo-500/20">01</span>
+                        تفاصيل الحملة
+                    </h3>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">اسم الحملة</label>
+                            <div class="relative">
+                                <span class="absolute right-4 top-3.5 text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                </span>
+                                <input type="text" name="campaign_name" placeholder="مثال: خصومات الجمعة البيضاء"
+                                    class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-12 py-3 text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all placeholder-gray-600" required>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Instance -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">الرقم المرسل (Instance)</label>
+                                <div class="relative">
+                                    <select name="instance_id" class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none" required>
+                                        @foreach($instances as $instance)
+                                        <option value="{{ $instance->instance_id }}">{{ $instance->instance_id }} ({{ $instance->status }})</option>
+                                        @endforeach
+                                        @if($instances->isEmpty())
+                                        <option value="" disabled selected>لا توجد أرقام متصلة</option>
+                                        @endif
+                                    </select>
+                                    <div class="absolute left-4 top-3.5 text-gray-500 pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">المجموعة الدليل (Contacts)</label>
+                                <div class="relative">
+                                    <select name="whatsapp_contact_id" class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none" required>
+                                        @foreach($groups as $group)
+                                        <option value="{{ $group->id }}">{{ $group->contact_name }} ({{ $group->numbers_count }} رقم)</option>
+                                        @endforeach
+                                        @if($groups->isEmpty())
+                                        <option value="" disabled selected>لا توجد مجموعات</option>
+                                        @endif
+                                    </select>
+                                    <div class="absolute left-4 top-3.5 text-gray-500 pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Template Selection (Shown if messageMode == 'template') -->
-                <div x-show="messageMode === 'template'" class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-400">اختر القالب</label>
-                    <select name="whatsapp_message_id" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all">
-                        <option value="">-- اختر قالب الرسائل --</option>
-                        @foreach($templates as $template)
-                        <option value="{{ $template->id }}">
-                            {{ $template->name }} ({{ count($template->content ?? []) }} رسائل)
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+                <!-- Step 2: Message Configuration -->
+                <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-600 origin-top transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500"></div>
 
-                <!-- Custom Messages (Shown if messageMode == 'custom') -->
-                <div x-show="messageMode === 'custom'">
-                    <!-- Messages (Dynamic List for Custom Mode) -->
-                    <div x-data="{ messages: [''] }" class="space-y-4">
-                        <label class="block text-sm font-bold text-gray-400 mb-2 transition-colors">نصوص الرسائل (التبديل العشوائي)</label>
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="bg-purple-500/10 text-purple-400 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-mono border border-purple-500/20">02</span>
+                        تكوين الرسائل
+                    </h3>
 
-                        <div class="space-y-4">
-                            <template x-for="(msg, index) in messages" :key="index">
-                                <div class="relative group">
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">محتوى الرسالة</label>
-
-                                    <!-- Shortcode Helpers -->
-                                    <div class="flex gap-2 mb-2 flex-wrap">
-                                        <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{random}}')"
-                                            class="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-1 rounded text-xs hover:bg-purple-500/20 transition-colors">
-                                            @{{random}} نص عشوائي
-                                        </button>
-                                        <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{welcome}}')"
-                                            class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs hover:bg-green-500/20 transition-colors">
-                                            @{{welcome}} ترحيب
-                                        </button>
-                                        <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{date}}')"
-                                            class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-1 rounded text-xs hover:bg-blue-500/20 transition-colors">
-                                            @{{date}} التاريخ
-                                        </button>
-                                    </div>
-
-                                    <textarea :name="'message[' + index + ']'" rows="3" x-model="messages[index]" placeholder="نص الرسالة..." class="w-full bg-[#16161a]/80 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all resize-y min-h-[100px] hover:bg-[#16161a]"></textarea>
-
-                                    <!-- Delete Button -->
-                                    <button type="button" @click="messages.splice(index, 1)" x-show="messages.length > 1" class="absolute top-3 left-3 text-red-500 hover:text-red-400 bg-red-500/10 p-1.5 rounded-lg transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-
-                                    <!-- Counter Badge -->
-                                    <span class="absolute top-3 right-3 text-[10px] text-gray-500 font-bold bg-[#1e1e24] px-2 py-1 rounded border border-gray-700" x-text="'#' + (index + 1)"></span>
+                    <!-- Visual Selection Cards -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="message_mode" value="template" x-model="messageMode" class="peer sr-only">
+                            <div class="bg-[#16161a] border border-gray-700/50 rounded-xl p-4 flex flex-col items-center gap-3 transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500/5 hover:border-gray-500">
+                                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 peer-checked:bg-purple-500 peer-checked:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
                                 </div>
-                            </template>
-                        </div>
+                                <span class="text-sm font-bold text-gray-300 peer-checked:text-purple-400">قالب محفوظ</span>
+                            </div>
+                        </label>
 
-                        <div class="mt-4 text-right">
-                            <button type="button" @click="if(messages.length < 10) messages.push('')" x-show="messages.length < 10" class="bg-green-500/10 hover:bg-green-500/20 text-green-400 hover:text-green-300 text-sm font-bold px-4 py-2 rounded-lg transition-all inline-flex items-center gap-2 border border-green-500/20">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="message_mode" value="custom" x-model="messageMode" class="peer sr-only">
+                            <div class="bg-[#16161a] border border-gray-700/50 rounded-xl p-4 flex flex-col items-center gap-3 transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500/5 hover:border-gray-500">
+                                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 peer-checked:bg-purple-500 peer-checked:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-bold text-gray-300 peer-checked:text-purple-400">رسالة مخصصة</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Template Mode -->
+                    <div x-show="messageMode === 'template'" class="space-y-4 animate-fade-in-up">
+                        <label class="block text-sm font-medium text-gray-300">اختر القالب</label>
+                        <div class="relative">
+                            <select name="whatsapp_message_id" class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all appearance-none">
+                                <option value="">-- اختر قالب الرسائل --</option>
+                                @foreach($templates as $template)
+                                <option value="{{ $template->id }}">
+                                    {{ $template->name }} ({{ count($template->content ?? []) }} رسائل)
+                                </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute left-4 top-3.5 text-gray-500 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Message Mode -->
+                    <div x-show="messageMode === 'custom'" class="animate-fade-in-up">
+                        <div x-data="{ messages: [''] }" class="space-y-6">
+
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-bold text-gray-300">نصوص الرسائل</label>
+                                <span class="text-xs text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">سيتم التبديل عشوائياً بين الرسائل</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <template x-for="(msg, index) in messages" :key="index">
+                                    <div class="relative group">
+                                        <!-- Helper Buttons -->
+                                        <div class="flex gap-2 mb-2 flex-wrap text-xs">
+                                            <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{random}}')"
+                                                class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-700 transition-colors flex items-center gap-1">
+                                                <span class="text-blue-400">@</span> نص عشوائي
+                                            </button>
+                                            <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{welcome}}')"
+                                                class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-700 transition-colors flex items-center gap-1">
+                                                <span class="text-green-400">@</span> ترحيب
+                                            </button>
+                                            <button type="button" @click="insertAtCursor($el.closest('.relative').querySelector('textarea'), '@{{date}}')"
+                                                class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-700 transition-colors flex items-center gap-1">
+                                                <span class="text-yellow-400">@</span> التاريخ
+                                            </button>
+                                        </div>
+
+                                        <textarea :name="'message[' + index + ']'" rows="4"
+                                            x-model="messages[index]"
+                                            @input="if(index===0) previewMessage = $event.target.value"
+                                            placeholder="اكتب نص الرسالة هنا..."
+                                            class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all resize-y min-h-[120px]"></textarea>
+
+                                        <!-- Remove Button -->
+                                        <button type="button" @click="messages.splice(index, 1)" x-show="messages.length > 1"
+                                            class="absolute top-10 left-3 text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        <span class="absolute bottom-3 left-3 text-[10px] text-gray-600 font-mono" x-text="(messages[index] || '').length + ' char'"></span>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <button type="button" @click="if(messages.length < 10) messages.push('')" x-show="messages.length < 10"
+                                class="w-full border border-dashed border-gray-700 hover:border-purple-500 text-gray-400 hover:text-purple-400 font-medium py-3 rounded-xl transition-all flex items-center justify-center gap-2 hover:bg-purple-500/5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
                                 </svg>
-                                إضافة رسالة بديلة
+                                إضافة تغيير (Variation)
                             </button>
-                            <p class="text-xs text-gray-500 mt-2 leading-relaxed">سيتم اختيار رسالة واحدة عشوائياً لكل رقم.</p>
                         </div>
 
                         <!-- Media Attachment -->
-                        <div class="group bg-[#16161a]/40 p-4 rounded-xl border border-dashed border-gray-700/50 mt-4">
-                            <label class="block text-sm font-bold text-gray-400 mb-2 transition-colors group-hover:text-green-500">إرفاق ملف أو صورة (اختياري)</label>
-                            <input type="file" name="media" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-500/10 file:text-green-400 hover:file:bg-green-500/20 cursor-pointer">
-                            <p class="text-xs text-gray-500 mt-2">الملفات المسموحة: الصور (jpg, png)، المستندات (pdf, docx, txt) بحد أقصى 10 ميجابايت.</p>
+                        <div class="mt-6 p-4 bg-[#16161a]/50 rounded-xl border border-dashed border-gray-700 hover:border-purple-500/50 transition-colors group">
+                            <label class="flex items-center gap-4 cursor-pointer">
+                                <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-purple-500/20 group-hover:text-purple-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-gray-300 group-hover:text-purple-400 transition-colors">إرفاق ملف أو صورة</div>
+                                    <div class="text-xs text-gray-500 mt-1">يدعم الصور والمستندات بحد أقصى 10 ميجابايت</div>
+                                </div>
+                                <input type="file" name="media" class="hidden">
+                            </label>
                         </div>
                     </div>
                 </div>
+
+                <!-- Step 3: Delays and Submit -->
+                <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-green-500/30 transition-all">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-green-600 origin-top transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500"></div>
+
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="bg-green-500/10 text-green-400 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-mono border border-green-500/20">03</span>
+                        إعدادات الإرسال
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">الحد الأدنى (ثواني)</label>
+                            <input type="number" name="min_delay" value="5" min="1" max="3600"
+                                class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white text-center font-mono focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">الحد الأقصى (ثواني)</label>
+                            <input type="number" name="max_delay" value="15" min="1" max="3600"
+                                class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white text-center font-mono focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-yellow-500 bg-yellow-500/5 p-3 rounded-lg border border-yellow-500/10 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        ينصح باستخدام فواصل زمنية عشوائية (مثل 15-45 ثانية) لتجنب الحظر.
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transform hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        إطلاق الحملة الآن
+                    </button>
+                </div>
             </div>
 
-            <!-- Delays -->
-            <div class="grid md:grid-cols-2 gap-6 bg-gray-800/30 p-4 rounded-xl border border-gray-700/50">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">أقل مدة تأخير (ثواني)</label>
-                    <input type="number" name="min_delay" value="5" min="1" max="3600" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all text-center">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">أقصى مدة تأخير (ثواني)</label>
-                    <input type="number" name="max_delay" value="15" min="1" max="3600" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 transition-all text-center">
-                </div>
-                <div class="col-span-2 text-center text-xs text-yellow-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    ينصح بزيادة الفاصل الزمني لتجنب حظر الرقم من واتساب.
+            <!-- Sidebar: Live Preview -->
+            <div class="hidden lg:block space-y-6">
+                <div class="sticky top-24">
+                    <h3 class="text-gray-400 font-bold mb-4 text-sm uppercase tracking-wider">معاينة الرسالة</h3>
+
+                    <!-- Phone Frame -->
+                    <div class="bg-gray-900 rounded-[3rem] border-4 border-gray-800 p-3 shadow-2xl relative overflow-hidden">
+                        <!-- Notch -->
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-10"></div>
+
+                        <!-- Screen -->
+                        <div class="bg-[#0b141a] rounded-[2.5rem] h-[500px] overflow-hidden relative flex flex-col">
+
+                            <!-- Chat Header -->
+                            <div class="bg-[#202c33] p-3 pt-8 flex items-center gap-3 border-b border-gray-700/30">
+                                <div class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="h-2 w-24 bg-gray-600 rounded mb-1"></div>
+                                    <div class="h-1.5 w-16 bg-gray-700 rounded"></div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Area (Wallpaper) -->
+                            <div class="flex-1 p-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-10 bg-repeat space-y-4 overflow-y-auto">
+
+                                <!-- Received Message -->
+                                <div class="flex justify-start">
+                                    <div class="bg-[#202c33] rounded-lg rounded-tl-none p-2 max-w-[80%] text-xs text-gray-300 shadow-md">
+                                        <div class="h-1.5 w-full bg-gray-600/50 rounded mb-1"></div>
+                                        <div class="h-1.5 w-2/3 bg-gray-600/50 rounded"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Sent Message (Preview) -->
+                                <div class="flex justify-end" x-show="messageMode === 'custom' && previewMessage">
+                                    <div class="bg-[#005c4b] rounded-lg rounded-tr-none p-2 max-w-[85%] text-xs text-[#e9edef] shadow-md relative pb-5">
+                                        <p class="whitespace-pre-wrap leading-relaxed" x-text="previewMessage || '...'"></p>
+                                        <span class="absolute bottom-1 right-2 text-[9px] text-gray-400 flex items-center gap-0.5">
+                                            10:42 pm
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end" x-show="messageMode === 'template'">
+                                    <div class="bg-[#005c4b] rounded-lg rounded-tr-none p-3 max-w-[85%] aspect-square flex items-center justify-center text-[#e9edef] shadow-md opacity-80 border-2 border-dashed border-[#ffffff30]">
+                                        <span class="text-xs opacity-70">معاينة القالب غير متاحة</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="bg-[#202c33] p-2 flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-gray-600/30"></div>
+                                <div class="flex-1 h-8 bg-gray-700/30 rounded-full"></div>
+                                <div class="w-6 h-6 rounded-full bg-teal-600/50"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-800 text-xs text-center text-gray-500">
+                        هذه معاينة تقريبية فقط. قد يختلف الشكل الفعلي على أجهزة المستخدمين.
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Submit Buttons -->
-            <div class="flex gap-4 pt-4">
-                <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                    إنشاء وبدء الحملة
-                </button>
-                <a href="{{ route('whatsapp.campaigns.index') }}" class="px-8 py-4 rounded-xl border border-gray-600 text-gray-300 hover:bg-white/5 transition-all text-center font-bold">
-                    إلغاء
-                </a>
-            </div>
-
-        </form>
-    </div>
-
+    </form>
 </div>
 @endsection
 
 @push('scripts')
 <script>
     function insertAtCursor(myField, myValue) {
-        //IE support
-        if (document.selection) {
-            myField.focus();
-            sel = document.selection.createRange();
-            sel.text = myValue;
-        }
-        //MOZILLA and others
-        else if (myField.selectionStart || myField.selectionStart == '0') {
+        if (myField.selectionStart || myField.selectionStart == '0') {
             var startPos = myField.selectionStart;
             var endPos = myField.selectionEnd;
             myField.value = myField.value.substring(0, startPos) +
@@ -194,7 +363,6 @@
         } else {
             myField.value += myValue;
         }
-        // Trigger input event for Alpine/Vue if needed
         myField.dispatchEvent(new Event('input'));
     }
 </script>

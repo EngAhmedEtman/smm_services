@@ -79,4 +79,51 @@ class AdminNotificationService
             Log::error("Admin Notification Error: " . $e->getMessage());
         }
     }
+
+    public static function notifyNewRechargeApproved($recharge)
+{
+        try {
+            Log::info('AdminNotification: Starting for Recharge #' . $recharge->id);
+
+            // Fetch credentials from DB
+            $instanceId = Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
+            $accessToken = Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+            $adminPhone = Setting::where('key', 'admin_receiver_number')->value('value');
+
+            // If settings are missing, skip notification silently
+            if (!$instanceId || !$accessToken || !$adminPhone) {
+                Log::warning('AdminNotification: Settings missing.');
+                return;
+            }
+
+            $user = $recharge->user;
+            $number = preg_replace('/[^0-9]/', '', $user->phone);
+
+            // Format text message
+            $message = "🔔 *تم قبول إيداع جديد* " .
+
+
+                "تم شحن حسابك بمبلغ : {$recharge->amount} جنيه\n" .
+                "🆔 رقم المعاملة: #{$recharge->id}\n" .
+                "📅 الوقت: " . now()->format('Y-m-d h:i A');
+
+            // Step 1: Send TEXT notification (guaranteed)
+            $textPayload = [
+                'number' => $number,
+                'type' => 'text',
+                'message' => $message,
+                'instance_id' => $instanceId,
+                'access_token' => $accessToken
+            ];
+
+            $textResponse = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
+            Log::info('AdminNotification: Text sent [' . $textResponse->status() . ']: ' . $textResponse->body());
+
+        } catch (\Exception $e) {
+            // Log error but don't break the user flow
+            Log::error("Admin Notification Error: " . $e->getMessage());
+        }
+    }
+
+
 }

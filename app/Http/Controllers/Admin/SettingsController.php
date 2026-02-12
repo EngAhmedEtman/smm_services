@@ -61,7 +61,9 @@ class SettingsController extends Controller
         }
 
         $recharge->update(['status' => 'approved']);
-
+        
+        // Notify User
+        \App\Services\AdminNotificationService::notifyNewRechargeApproved($recharge);
         // Add balance to user
         $user = $recharge->user;
         $user->increment('balance', $recharge->amount);

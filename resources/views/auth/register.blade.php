@@ -127,8 +127,15 @@
                         <!-- Email -->
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-300 mb-1">البريد الإلكتروني</label>
-                            <input type="email" name="email" id="email" class="w-full px-4 py-3 bg-[#0f0f13] border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-500 transition-all shadow-inner" placeholder="name@example.com" :value="old('email')" required>
+                            <input type="email" name="email" id="email" class="w-full px-4 py-3 bg-[#0f0f13] border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-500 transition-all shadow-inner" placeholder="name@example.com" value="{{ old('email') }}" required>
                             <x-input-error :messages="$errors->get('email')" class="mt-1 text-red-400 text-xs" />
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-300 mb-1">رقم الهاتف</label>
+                            <input type="tel" name="phone" id="phone" class="w-full px-4 py-3 bg-[#0f0f13] border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-500 transition-all shadow-inner" placeholder="01xxxxxxxxx" value="{{ old('phone') }}" required>
+                            <x-input-error :messages="$errors->get('phone')" class="mt-1 text-red-400 text-xs" />
                         </div>
 
                         <!-- Password -->

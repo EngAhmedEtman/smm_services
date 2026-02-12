@@ -249,8 +249,8 @@
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.tickets.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         التذاكر
                     </a>
-                    <a href="{{ route('whatsapp.assets.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('whatsapp.assets.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
-                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('whatsapp.assets.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                    <a href="{{ route('admin.assets.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.assets.*') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.assets.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         إدارة المتغيرات
                     </a>
                 </div>
