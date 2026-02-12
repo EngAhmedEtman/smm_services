@@ -93,7 +93,7 @@
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">لا توجد مجموعات محفوظة</h3>
             <p class="text-gray-400 mb-8 max-w-sm mx-auto">ابدأ بإنشاء أول مجموعة أرقام لاستخدامها في حملاتك.</p>
-            <a href="{{ route('whatsapp.contact.create') }}" class="inline-flex bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 hover:shadow-green-900/50 transform hover:-translate-y-1">
+            <a href="{{ route('whatsapp.contacts.create') }}" class="inline-flex bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/30 hover:shadow-green-900/50 transform hover:-translate-y-1">
                 إضافة مجموعة جديدة
             </a>
         </div>
