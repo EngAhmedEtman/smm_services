@@ -11,15 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('whatsapp_random_texts') && !Schema::hasColumn('whatsapp_random_texts', 'user_id')) {
+        // Fix whatsapp_random_texts
+        if (Schema::hasTable('whatsapp_random_texts')) {
             Schema::table('whatsapp_random_texts', function (Blueprint $table) {
-                $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+                if (!Schema::hasColumn('whatsapp_random_texts', 'user_id')) {
+                    $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+                }
+                if (!Schema::hasColumn('whatsapp_random_texts', 'text')) {
+                    $table->text('text')->nullable();
+                }
             });
         }
 
-        if (Schema::hasTable('whatsapp_welcome_texts') && !Schema::hasColumn('whatsapp_welcome_texts', 'user_id')) {
+        // Fix whatsapp_welcome_texts
+        if (Schema::hasTable('whatsapp_welcome_texts')) {
             Schema::table('whatsapp_welcome_texts', function (Blueprint $table) {
-                $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+                if (!Schema::hasColumn('whatsapp_welcome_texts', 'user_id')) {
+                    $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+                }
+                if (!Schema::hasColumn('whatsapp_welcome_texts', 'text')) {
+                    $table->text('text')->nullable();
+                }
             });
         }
     }
@@ -29,17 +41,27 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasColumn('whatsapp_random_texts', 'user_id')) {
+        if (Schema::hasTable('whatsapp_random_texts')) {
             Schema::table('whatsapp_random_texts', function (Blueprint $table) {
-                $table->dropForeign(['user_id']);
-                $table->dropColumn('user_id');
+                if (Schema::hasColumn('whatsapp_random_texts', 'user_id')) {
+                    $table->dropForeign(['user_id']);
+                    $table->dropColumn('user_id');
+                }
+                if (Schema::hasColumn('whatsapp_random_texts', 'text')) {
+                    $table->dropColumn('text');
+                }
             });
         }
 
-        if (Schema::hasColumn('whatsapp_welcome_texts', 'user_id')) {
+        if (Schema::hasTable('whatsapp_welcome_texts')) {
             Schema::table('whatsapp_welcome_texts', function (Blueprint $table) {
-                $table->dropForeign(['user_id']);
-                $table->dropColumn('user_id');
+                if (Schema::hasColumn('whatsapp_welcome_texts', 'user_id')) {
+                    $table->dropForeign(['user_id']);
+                    $table->dropColumn('user_id');
+                }
+                if (Schema::hasColumn('whatsapp_welcome_texts', 'text')) {
+                    $table->dropColumn('text');
+                }
             });
         }
     }
