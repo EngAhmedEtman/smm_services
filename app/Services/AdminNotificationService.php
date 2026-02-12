@@ -97,7 +97,10 @@ class AdminNotificationService
             }
 
             $user = $recharge->user;
-            $number = preg_replace('/[^0-9]/', '', auth()->user()->phone);
+            // Reverted to correct user relation
+            $number = preg_replace('/[^0-9]/', '', $user->phone);
+
+            Log::info("AdminNotification: Processing for UserID: {$user->id}, RawPhone: {$user->phone}, CleanedPhone: {$number}");
 
             if (empty($number)) {
                 Log::warning("AdminNotification: User {$user->id} has no valid phone number. Skipping notification.");
