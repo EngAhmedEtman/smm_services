@@ -110,16 +110,16 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="hero-bg flex items-center justify-center p-4 py-24 sm:py-32 relative overflow-hidden">
+    <main class="hero-bg min-h-screen relative overflow-x-hidden pt-20">
 
         <!-- Background Elements -->
-        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div class="absolute top-[20%] left-[10%] w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-            <div class="absolute top-[20%] right-[10%] w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-[20%] left-[20%] w-64 h-64 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-[20%] left-[10%] w-64 h-64 sm:w-96 sm:h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute top-[20%] right-[10%] w-64 h-64 sm:w-96 sm:h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute bottom-[20%] left-[20%] w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
-        <div class="w-full max-w-md relative z-10">
+        <div class="relative z-10 w-full h-full">
             @yield('content')
         </div>
     </main>
