@@ -9,7 +9,9 @@
     <div class="glass p-6 rounded-2xl mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-bold text-white">مرحباً بك، {{ Auth::user()->name ?? 'ضيف' }}!</h1>
-            <p class="text-gray-400 mt-1">إليك نظرة عامة على نشاط حسابك اليوم.</p>
+            <p class="text-gray-400 mt-1">
+                عضو منذ {{ Auth::user()->created_at->diffForHumans() }}
+            </p>
         </div>
         <a href="{{ route('addOrder') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold transition-colors">
             + طلب جديد
@@ -72,6 +74,21 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                     تم الإرسال بنجاح
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Connected Card -->
+        <div class="glass p-6 rounded-2xl relative overflow-hidden group">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-teal-500/10 rounded-full group-hover:bg-teal-500/20 transition-all duration-500"></div>
+            <div class="relative">
+                <p class="text-sm font-medium text-gray-400 mb-1">أرقام واتساب المتصلة</p>
+                <h3 class="text-3xl font-bold text-white">{{ $whatsappConnectedCount ?? 0 }}</h3>
+                <div class="mt-4 flex items-center gap-2 text-xs {{ ($whatsappConnectedCount ?? 0) > 0 ? 'text-teal-400 bg-teal-500/10' : 'text-gray-400 bg-gray-500/10' }} w-fit px-2 py-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    {{ ($whatsappConnectedCount ?? 0) > 0 ? 'نشط حالياً' : 'غير متصل' }}
                 </div>
             </div>
         </div>

@@ -83,7 +83,35 @@ class WhatsappCampaignController extends Controller
             }
         }
 
-        $campaign = WhatsappCampaign::create($input);
+        $campaign = new WhatsappCampaign($input);
+
+        // PRICING LOGIC
+        $totalNumbers = $input['total_numbers'];
+        $pricingTier = \App\Models\PricingTier::where('min_count', '<=', $totalNumbers)
+            ->where(function ($query) use ($totalNumbers) {
+                $query->where('max_count', '>=', $totalNumbers)
+                    ->orWhereNull('max_count');
+            })
+            ->orderBy('min_count', 'desc') // Get the most specific tier (highest min_count)
+            ->first();
+
+        $pricePerMessage = $pricingTier ? $pricingTier->price_per_message : 0; // Default or fallback price
+        // You might want a default price setting if no tier matches, currently 0.
+
+        $totalCost = $totalNumbers * $pricePerMessage;
+
+        $user = auth()->user();
+
+        if ($user->balance < $totalCost) {
+            return back()->with('error', "رصيدك غير كافي. تكلفة الحملة: {$totalCost} ج.م، رصيدك: {$user->balance} ج.م");
+        }
+
+        // Deduct Balance & Save
+        $user->balance -= $totalCost;
+        $user->total_messages_sent += $totalNumbers;
+        $user->save();
+
+        $campaign->save(); // Save campaign after balance check
 
         // CREATE LOGS FOR EACH NUMBER
         $contactNumbers = \App\Models\WhatsappContactNumber::where('whatsapp_contact_id', $request->whatsapp_contact_id)->pluck('phone_number');
@@ -103,7 +131,7 @@ class WhatsappCampaignController extends Controller
             \App\Models\WhatsappCampaignLog::insert($chunk);
         }
 
-        return redirect()->route('whatsapp.campaigns.index')->with('success', 'تم إنشاء الحملة بنجاح، يمكنك البدء الآن.');
+        return redirect()->route('whatsapp.campaigns.index')->with('success', "تم إنشاء الحملة بنجاح، تم خصم {$totalCost} ج.م من رصيدك.");
     }
 
     public function updateStatus(Request $request, $id)

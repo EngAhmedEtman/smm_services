@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'balance',
         'total_spent',
+        'total_messages_sent',
         'role',
     ];
 
@@ -58,5 +59,15 @@ class User extends Authenticatable
     public function favoriteServices()
     {
         return $this->hasMany(FavoriteService::class);
+    }
+
+    public function whatsappInstances()
+    {
+        return $this->hasMany(Whatsapp::class, 'user_id');
+    }
+
+    public function whatsappCampaigns()
+    {
+        return $this->hasMany(WhatsappCampaign::class);
     }
 }

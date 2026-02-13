@@ -92,6 +92,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/assets/random/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyRandom'])->name('admin.assets.destroyRandom');
         Route::post('/admin/assets/welcome', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeWelcome'])->name('admin.assets.storeWelcome');
         Route::delete('/admin/assets/welcome/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyWelcome'])->name('admin.assets.destroyWelcome');
+
+        // WhatsApp Pricing Tiers
+        Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);
     });
 })->middleware(['auth', 'verified']); // Ensure auth group is closed correctly
 

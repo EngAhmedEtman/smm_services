@@ -9,8 +9,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalMessagesSent = WhatsappCampaign::where('user_id', auth()->id())->sum('sent_count');
+        $user = auth()->user();
+        # Use the column for total messages sent as it represents the deducted quota
+        $totalMessagesSent = $user->total_messages_sent;
 
-        return view('dashboard', compact('totalMessagesSent'));
+        $whatsappConnectedCount = \App\Models\Whatsapp::where('user_id', $user->id)->where('status', 'connected')->count();
+
+        return view('dashboard', compact('totalMessagesSent', 'whatsappConnectedCount'));
     }
 }
