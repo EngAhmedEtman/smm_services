@@ -122,10 +122,7 @@
                     <!-- Remember Me -->
                     <div class="flex items-center justify-between">
                         <label for="remember_me" class="inline-flex items-center cursor-pointer group">
-                            <div class="relative">
-                                <input id="remember_me" type="checkbox" name="remember" class="sr-only peer">
-                                <div class="w-10 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                            </div>
+                            <input id="remember_me" type="checkbox" name="remember" class="w-5 h-5 rounded border-gray-700 bg-gray-900/50 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 transition-colors">
                             <span class="mr-3 text-sm text-gray-400 group-hover:text-gray-300 transition-colors">تذكرني</span>
                         </label>
 
