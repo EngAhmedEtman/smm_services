@@ -25,7 +25,9 @@ class WhatsappCampaignController extends Controller
             $instances = Whatsapp::where('user_id', auth()->id())->get();
         }
 
-        return view('whatsapp.campaigns.create', compact('groups', 'instances', 'templates'));
+        $pricingTiers = \App\Models\PricingTier::orderBy('min_count')->get();
+
+        return view('whatsapp.campaigns.create', compact('groups', 'instances', 'templates', 'pricingTiers'));
     }
 
     public function store(Request $request)
