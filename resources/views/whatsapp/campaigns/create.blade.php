@@ -34,10 +34,10 @@
         <div class="space-y-8">
 
             <!-- Main Form Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="space-y-8">
 
-                <!-- Left Column (Form) -->
-                <div class="lg:col-span-2 space-y-8">
+                <!-- Main Form Section -->
+                <div class="space-y-8">
 
                     <!-- Step 1: Basic Info -->
                     <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-indigo-500/30 transition-all">
@@ -88,6 +88,7 @@
                                     <label class="block text-sm font-medium text-gray-300 mb-2">المجموعة الدليل (Contacts)</label>
                                     <div class="relative">
                                         <select name="whatsapp_contact_id" class="w-full bg-[#16161a] border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none" required>
+                                            <option value="">-- اختر المجموعة --</option>
                                             @foreach($groups as $group)
                                             <option value="{{ $group->id }}">{{ $group->contact_name }} ({{ $group->numbers_count }} رقم)</option>
                                             @endforeach
@@ -299,9 +300,9 @@
                     </div>
                 </div>
 
-                <!-- Cost Summary Sidebar -->
+                <!-- Cost Summary Section -->
                 <div class="space-y-6">
-                    <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sticky top-6">
+                    <div class="bg-[#1e1e24]/60 backdrop-blur-md border border-gray-800 rounded-2xl p-6">
                         <h3 class="text-lg font-bold text-white mb-4">ملخص التكلفة</h3>
 
                         <div class="space-y-4 text-sm">
@@ -324,36 +325,6 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 pt-6 border-t border-gray-700/50">
-                            <h4 class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">شرائح الأسعار</h4>
-                            <div class="space-y-2">
-                                @foreach($pricingTiers as $tier)
-                                <div class="flex justify-between items-center text-xs">
-                                    <span class="text-gray-400">
-                                        {{ number_format($tier->min_count) }}
-                                        @if($tier->max_count)
-                                        - {{ number_format($tier->max_count) }}
-                                        @else
-                                        +
-                                        @endif
-                                        رسالة
-                                    </span>
-                                    <span class="text-gray-200 font-mono">{{ number_format($tier->price_per_message, 2) }} ج.م</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div id="insufficientBalanceAlert" class="hidden mt-4 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                            <p class="text-red-400 text-xs text-center">
-                                رصيدك غير كافي لإطلاق هذه الحملة. <br>
-                                <a href="{{ route('recharge') }}" class="underline font-bold hover:text-red-300">اشحن رصيدك الآن</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
     </form>
 </div>

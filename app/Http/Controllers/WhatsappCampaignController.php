@@ -17,7 +17,7 @@ class WhatsappCampaignController extends Controller
 
     public function create()
     {
-        $groups = WhatsappContact::where('user_id', auth()->id())->get();
+        $groups = WhatsappContact::withCount('numbers')->where('user_id', auth()->id())->get();
         $instances = Whatsapp::where('user_id', auth()->id())->where('status', 'connected')->get();
         $templates = \App\Models\WhatsappMessage::where('user_id', auth()->id())->get();
 
