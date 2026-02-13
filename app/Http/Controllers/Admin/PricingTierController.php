@@ -27,7 +27,7 @@ class PricingTierController extends Controller
         return redirect()->back()->with('success', 'تم إضافة شريحة التسعير بنجاح');
     }
 
-    public function update(Request $request, PricingTier $pricingTier)
+    public function update(Request $request, PricingTier $pricing)
     {
         $request->validate([
             'min_count' => 'required|integer|min:1',
@@ -35,14 +35,14 @@ class PricingTierController extends Controller
             'price_per_message' => 'required|numeric|min:0',
         ]);
 
-        $pricingTier->update($request->all());
+        $pricing->update($request->all());
 
         return redirect()->back()->with('success', 'تم تحديث شريحة التسعير بنجاح');
     }
 
-    public function destroy(PricingTier $pricingTier)
+    public function destroy(PricingTier $pricing)
     {
-        $pricingTier->delete();
+        $pricing->delete();
         return redirect()->back()->with('success', 'تم حذف شريحة التسعير بنجاح');
     }
 }

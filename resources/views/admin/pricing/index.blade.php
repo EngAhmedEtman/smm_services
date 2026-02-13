@@ -73,7 +73,7 @@
                             {{ number_format($tier->price_per_message, 2) }} <span class="text-xs text-gray-500 font-normal">ج.م</span>
                         </td>
                         <td class="px-6 py-4 flex items-center gap-3">
-                            <button onclick="editTier({{ $tier }})" class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all" title="تعديل">
+                            <button onclick='editTier(@json($tier))' class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all" title="تعديل">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
