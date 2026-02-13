@@ -350,63 +350,133 @@
     // Pricing Logic
     document.addEventListener('DOMContentLoaded', function() {
         const groupsSelect = document.querySelector('select[name="whatsapp_contact_id"]');
+
+        // Safely pass data from Blade to JS
         const groupsData = @json($groups);
         const pricingTiers = @json($pricingTiers);
-        const userBalance = {
-            {
-                auth() - > user() - > balance
-            }
-        };
+        const userBalance = parseFloat("{{ number_format(auth()->user()->balance, 2, '.', '') }}"); // Ensure pure number format
+
+        console.log('Groups Data:', groupsData);
+        console.log('Pricing Tiers:', pricingTiers);
+        console.log('User Balance:', userBalance);
 
         const totalContactsEl = document.getElementById('totalContacts');
         const pricePerMessageEl = document.getElementById('pricePerMessage');
         const totalCostEl = document.getElementById('totalCost');
         const submitBtn = document.getElementById('submitBtn');
-        const alertEl = document.getElementById('insufficientBalanceAlert');
+        const alertEl = document.getElementById('insufficientBalanceAlert'); // Assuming this element exists
 
         function calculateCost() {
             const selectedGroupId = groupsSelect.value;
-            if (!selectedGroupId) return;
+            console.log('Selected Group ID:', selectedGroupId);
 
-            const group = groupsData.find(g => g.id == selectedGroupId); // Loose comparison for string/int
-            if (!group) return;
+            // Check if tiers exist
+            if (pricingTiers.length === 0) {
+                console.warn('No pricing tiers configured.');
+                pricePerMessageEl.textContent = 'غير محدد';
+                totalCostEl.textContent = '0.00 ج.م';
+                // Show specific alert for no pricing
+                if (alertEl) {
+                    alertEl.classList.remove('hidden');
+                    alertEl.innerHTML = '<p class="text-red-400 text-xs text-center">عفواً، لم يتم تكوين شرائح الأسعار بعد.<br>يرجى التواصل مع الإدارة.</p>';
+                }
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
 
-            const count = group.numbers_count || 0;
+            // Reset if nothing selected
+            if (!selectedGroupId) {
+                totalContactsEl.textContent = '0';
+                pricePerMessageEl.textContent = '0.00 ج.م';
+                totalCostEl.textContent = '0.00 ج.م';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                // Hide insufficient balance alert (which we might have repurposed)
+                if (alertEl) alertEl.classList.add('hidden');
+                return;
+            }
+
+            // Loose comparison to handle string/int ID mismatch
+            const group = groupsData.find(g => g.id == selectedGroupId);
+            if (!group) {
+                console.warn('Group not found for ID:', selectedGroupId);
+                return;
+            }
+
+            // Ensure count is an integer
+            const count = parseInt(group.numbers_count || 0);
             totalContactsEl.textContent = count;
+            console.log('Contact Count:', count);
 
             // Find Tier
-            // Logic: Min <= Count AND (Max >= Count OR Max is Null)
-            // If multiple match (shouldn't happen with proper tiers), take the one with highest min_count (most specific)
-            let tier = pricingTiers
-                .filter(t => t.min_count <= count && (t.max_count === null || t.max_count >= count))
-                .sort((a, b) => b.min_count - a.min_count)[0];
+            // Map and sort tiers by min_count DESC (Largest to Smallest)
+            const sortedTiers = pricingTiers.map(t => ({
+                ...t,
+                min_count: parseInt(t.min_count),
+                max_count: t.max_count ? parseInt(t.max_count) : null,
+                price_per_message: parseFloat(t.price_per_message)
+            })).sort((a, b) => b.min_count - a.min_count);
 
-            // Fallback price if no tier matches (e.g. count is 0 or less than smallest min)
-            // Assuming 0 cost or a default base price if needed.
-            let price = tier ? parseFloat(tier.price_per_message) : 0;
+            console.log('Sorted Tiers (parsed):', sortedTiers);
 
-            // Validation: if no tier found for > 0 contacts, maybe block? 
-            // For now assume price is 0 if no tier.
+            let matchingTier = sortedTiers.find(t => {
+                const minCondition = t.min_count <= count;
+                const maxCondition = t.max_count === null || t.max_count >= count;
+                return minCondition && maxCondition;
+            });
+
+            console.log('Matching Tier:', matchingTier);
+
+            let price = 0;
+            if (matchingTier) {
+                price = matchingTier.price_per_message;
+            } else if (count > 0 && sortedTiers.length > 0) {
+                // Fallback: If usage is smaller than the smallest tier min_count,
+                // use the smallest tier price (last in desc sort).
+                // e.g. Tiers start from 1000. Count is 8. Use tier 1000 price.
+                const smallestTier = sortedTiers[sortedTiers.length - 1];
+                price = smallestTier.price_per_message;
+                console.log('Using smallest tier fallback price:', price);
+            }
 
             pricePerMessageEl.textContent = price.toFixed(2) + ' ج.م';
+            console.log('Price per message:', price);
 
             const total = count * price;
             totalCostEl.textContent = total.toFixed(2) + ' ج.م';
+            console.log('Total Cost:', total);
+
+            // Balance Check
+            // Reset alert content first just in case
+            if (alertEl) {
+                alertEl.innerHTML = '<p class="text-red-400 text-xs text-center">رصيدك غير كافي لإطلاق هذه الحملة. <br><a href="{{ route("recharge") }}" class="underline font-bold hover:text-red-300">اشحن رصيدك الآن</a></p>';
+            }
 
             if (total > userBalance) {
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                alertEl.classList.remove('hidden');
+                if (alertEl) alertEl.classList.remove('hidden');
+                console.log('Insufficient balance.');
             } else {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                alertEl.classList.add('hidden');
+                if (alertEl) alertEl.classList.add('hidden');
             }
         }
 
         groupsSelect.addEventListener('change', calculateCost);
+
         // Run once on load if something selected
-        if (groupsSelect.value) calculateCost();
+        if (groupsSelect.value) {
+            calculateCost();
+        } else {
+            // Ensure initial state is disabled if no group is selected
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (alertEl) alertEl.classList.add('hidden'); // Hide alert initially
+        }
     });
 </script>
 @endpush
+```
