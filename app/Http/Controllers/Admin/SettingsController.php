@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\Recharge;
 use App\Models\User;
+use App\Models\PricingTier;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -16,7 +17,8 @@ class SettingsController extends Controller
     public function index()
     {
         $settings = Setting::pluck('value', 'key');
-        return view('settings.index', compact('settings'));
+        $tiers = PricingTier::orderBy('min_count')->get();
+        return view('settings.index', compact('settings', 'tiers'));
     }
 
     /**
@@ -61,7 +63,7 @@ class SettingsController extends Controller
         }
 
         $recharge->update(['status' => 'approved']);
-        
+
         // Notify User
         \App\Services\AdminNotificationService::notifyNewRechargeApproved($recharge);
         // Add balance to user
