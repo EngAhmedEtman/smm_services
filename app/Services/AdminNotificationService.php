@@ -136,4 +136,54 @@ class AdminNotificationService
             Log::error("Admin Notification Error: " . $e->getMessage());
         }
     }
+    public static function notifyCreditAdded($user, $amount, $reason)
+    {
+        try {
+            Log::info("AdminNotification: sending credit added notification to User {$user->id}");
+
+            // Fetch credentials from DB
+            $instanceId = Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
+            $accessToken = Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+
+            // If settings are missing, skip notification silently
+            if (!$instanceId || !$accessToken) {
+                Log::warning('AdminNotification: Settings missing.');
+                return;
+            }
+
+            $number = preg_replace('/[^0-9]/', '', $user->phone);
+
+            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            if (strlen($number) === 11 && str_starts_with($number, '01')) {
+                $number = '2' . $number;
+            }
+
+            if (empty($number)) {
+                Log::warning("AdminNotification: User {$user->id} has no valid phone number.");
+                return;
+            }
+
+            // Format text message
+            $message = "🎉 *تم إضافة رصيد لحسابك*\n\n" .
+                "مرحباً {$user->name}،\n" .
+                "تم إضافة مبلغ *{$amount}* جنيه إلى رصيد حسابك.\n\n" .
+                "📝 *السبب:* {$reason}\n" .
+                "💰 *رصيدك الحالي:* {$user->balance} جنيه\n\n" .
+                "شكراً لاستخدامك خدماتنا! 🌹";
+
+            // Send TEXT notification
+            $textPayload = [
+                'number' => $number,
+                'type' => 'text',
+                'message' => $message,
+                'instance_id' => $instanceId,
+                'access_token' => $accessToken
+            ];
+
+            $textResponse = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
+            Log::info('AdminNotification: Text sent [' . $textResponse->status() . ']: ' . $textResponse->body());
+        } catch (\Exception $e) {
+            Log::error("Admin Notification Error: " . $e->getMessage());
+        }
+    }
 }

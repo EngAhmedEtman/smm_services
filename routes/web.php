@@ -84,6 +84,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/recharges/{id}/reject', [\App\Http\Controllers\Admin\SettingsController::class, 'rejectRecharge'])->name('admin.recharges.reject');
 
         Route::get('/admin/users', [\App\Http\Controllers\Admin\SettingsController::class, 'users'])->name('admin.users.index');
+        Route::post('/admin/users/{id}/toggle-status', [\App\Http\Controllers\Admin\SettingsController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
+        Route::post('/admin/users/{id}/add-credit', [\App\Http\Controllers\Admin\SettingsController::class, 'addCredit'])->name('admin.users.add-credit');
+
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
 
         // WhatsApp Assets (Random Text & Welcome Messages) - Moved to Admin

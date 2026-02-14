@@ -92,10 +92,56 @@ class SettingsController extends Controller
     /**
      * Show users management page.
      */
+    /**
+     * Show users management page.
+     */
     public function users()
     {
         $users = User::latest()->get();
         return view('settings.users', compact('users'));
+    }
+
+    /**
+     * Toggle user active status (Ban/Unban).
+     */
+    public function toggleUserStatus($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Prevent banning yourself
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'لا يمكنك حظر نفسك.');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $status = $user->is_active ? 'تفعيل' : 'حظر';
+        return back()->with('success', "تم {$status} العميل {$user->name} بنجاح.");
+    }
+
+    /**
+     * Add credit to user active status.
+     */
+    public function addCredit(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $user->increment('balance', $request->amount);
+
+        // Notify User via WhatsApp
+        try {
+            \App\Services\AdminNotificationService::notifyCreditAdded($user, $request->amount, $request->reason);
+        } catch (\Exception $e) {
+            // Log error but continue
+            \Illuminate\Support\Facades\Log::error("Failed to send WhatsApp notification: " . $e->getMessage());
+        }
+
+        return back()->with('success', "تم إضافة {$request->amount} جنيه لرصيد {$user->name} بنجاح.");
     }
 
     /**
