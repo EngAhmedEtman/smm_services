@@ -49,6 +49,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check if user is banned
+        $user = Auth::user();
+        if ($user->banned) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'هذا الحساب محظور. يرجى التواصل مع الإدارة.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -80,6 +89,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

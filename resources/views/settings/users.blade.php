@@ -80,7 +80,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            @if($user->is_active)
+                            @if(!$user->banned)
                             <span class="bg-green-500/10 text-green-400 border border-green-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
                                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                 نشط
@@ -118,10 +118,10 @@
                                 <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit"
-                                        class="p-2 rounded-lg transition-all border {{ $user->is_active ? 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white border-red-500/20 hover:border-red-500' : 'bg-gray-500/10 text-gray-400 hover:bg-gray-500 hover:text-white border-gray-500/20 hover:border-gray-500' }}"
-                                        title="{{ $user->is_active ? 'حظر المستخدم' : 'تفعيل المستخدم' }}"
-                                        onclick="return confirm('{{ $user->is_active ? 'هل أنت متأكد من حظر هذا المستخدم؟' : 'هل أنت متأكد من تفعيل هذا المستخدم؟' }}')">
-                                        @if($user->is_active)
+                                        class="p-2 rounded-lg transition-all border {{ $user->banned ? 'bg-gray-500/10 text-gray-400 hover:bg-gray-500 hover:text-white border-gray-500/20 hover:border-gray-500' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white border-red-500/20 hover:border-red-500' }}"
+                                        title="{{ $user->banned ? 'تفعيل المستخدم' : 'حظر المستخدم' }}"
+                                        onclick="return confirm('{{ $user->banned ? 'هل أنت متأكد من تفعيل هذا المستخدم؟' : 'هل أنت متأكد من حظر هذا المستخدم؟' }}')">
+                                        @if(!$user->banned)
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
                                         </svg>

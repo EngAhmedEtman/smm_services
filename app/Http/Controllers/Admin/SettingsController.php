@@ -113,10 +113,17 @@ class SettingsController extends Controller
             return back()->with('error', 'لا يمكنك حظر نفسك.');
         }
 
-        $user->update(['is_active' => !$user->is_active]);
+        if ($user->banned) {
+            // Unban: Delete the record
+            $user->banned()->delete();
+            $message = "تم تفعيل العميل {$user->name} بنجاح.";
+        } else {
+            // Ban: Create the record
+            $user->banned()->create(['reason' => 'Admin Action']);
+            $message = "تم حظر العميل {$user->name} بنجاح.";
+        }
 
-        $status = $user->is_active ? 'تفعيل' : 'حظر';
-        return back()->with('success', "تم {$status} العميل {$user->name} بنجاح.");
+        return back()->with('success', $message);
     }
 
     /**

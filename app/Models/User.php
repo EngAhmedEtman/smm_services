@@ -72,4 +72,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(WhatsappCampaign::class);
     }
+
+    public function banned()
+    {
+        return $this->hasOne(BannedUser::class);
+    }
 }

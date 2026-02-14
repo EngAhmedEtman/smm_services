@@ -124,7 +124,7 @@ class ProcessCampaigns extends Command
                 $welcomeText = \App\Models\WhatsappWelcomeText::inRandomOrder()->value('text') ?? '';
                 $text = str_replace('{{welcome}}', $welcomeText, $text);
             }
-            $text = str_replace('{{date}}', now()->toDateString(), $text);
+            $text = str_replace('{{date}}', now()->format('Y-m-d h:i A'), $text);
 
             // Prepare Payload
             $number = preg_replace('/[^0-9]/', '', $log->phone_number);
