@@ -151,30 +151,6 @@ Route::get('/run-campaigns-etman2026', function () {
     return response($output ?: 'Done', 200)->header('Content-Type', 'text/plain');
 });
 
-// Debug Route: Test Admin WhatsApp Connection
-Route::get('/debug/whatsapp-admin', function () {
-    $instanceId = \App\Models\Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
-    $accessToken = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
-    $receiver = \App\Models\Setting::where('key', 'admin_receiver_number')->value('value');
-
-    if (!$instanceId || !$accessToken || !$receiver) {
-        return "❌ Missing Settings:\nInstance: {$instanceId}\nToken: " . ($accessToken ? 'Set' : 'Missing') . "\nReceiver: {$receiver}";
-    }
-
-    $url = "https://wolfixbot.com/api/send";
-    $payload = [
-        'number' => $receiver,
-        'type' => 'text',
-        'message' => "🔔 Test Message from Etman SMM Debugger\nTime: " . now(),
-        'instance_id' => $instanceId,
-        'access_token' => $accessToken
-    ];
-
-    $response = \Illuminate\Support\Facades\Http::post($url, $payload);
-
-    return "Payload:\n" . json_encode($payload, JSON_PRETTY_PRINT) . "\n\nResponse:\n" . $response->body() . "\n\nStatus: " . $response->status();
-});
-
 // File Proxy: Serve storage files without symlink (shared hosting fix)
 Route::get('/file/{path}', function ($path) {
     // Mime types map for images

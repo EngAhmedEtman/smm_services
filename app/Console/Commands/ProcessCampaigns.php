@@ -19,26 +19,14 @@ class ProcessCampaigns extends Command
 
     /**
      * Max seconds this command should run within one cron cycle.
-     * Set to 55 to leave a 5-second safety margin before the next cron tick.
      */
     protected $maxRunTime = 55;
 
     public function handle(): int
     {
-        // We use the hardcoded token because all instances created via the dashboard
-        // are created using this token (see WhatsappController).
-        // Using the Admin Settings token caused a mismatch if the admin used a different account for notifications.
-
-        if (!$this->token) {
-            $this->error('Access Token is missing.');
-            Log::error('ProcessCampaigns: Access Token missing.');
-            return 1;
-        }
-
         $campaigns = WhatsappCampaign::where('status', 'sending')->get();
 
         if ($campaigns->isEmpty()) {
-            $this->info('No active campaigns.');
             return 0;
         }
 
@@ -54,11 +42,9 @@ class ProcessCampaigns extends Command
         $startTime = time();
 
         while (time() - $startTime < $this->maxRunTime) {
-            // Refresh campaign from DB (status may have changed)
             $campaign->refresh();
 
             if ($campaign->status !== 'sending') {
-                $this->info("Campaign #{$campaign->id} is no longer 'sending'. Stopping.");
                 return;
             }
 
@@ -68,8 +54,7 @@ class ProcessCampaigns extends Command
                     'last_sent_at' => now()->addMinutes($campaign->batch_sleep),
                     'batch_sent_count' => 0,
                 ]);
-                $this->info("Campaign #{$campaign->id}: Batch limit reached. Sleeping {$campaign->batch_sleep} min.");
-                return; // Exit — next cron runs will skip until last_sent_at passes
+                return;
             }
 
             // --- Delay Check ---
@@ -77,26 +62,21 @@ class ProcessCampaigns extends Command
                 $waitSeconds = (int) now()->diffInSeconds($campaign->last_sent_at, false);
 
                 if ($waitSeconds <= 0) {
-                    // Time has already passed, proceed
+                    // proceed
                 } elseif (time() - $startTime + $waitSeconds > $this->maxRunTime) {
-                    // Not enough time left in this run, let next cron handle it
-                    $this->info("Campaign #{$campaign->id}: Delay {$waitSeconds}s exceeds remaining time. Deferring.");
                     return;
                 } else {
-                    // We have time — sleep and wait
-                    $this->info("Campaign #{$campaign->id}: Waiting {$waitSeconds}s...");
                     sleep($waitSeconds);
                 }
             }
 
-            // --- Fetch Next Pending Log ---
+            // --- Fetch Next Log ---
             $log = WhatsappCampaignLog::where('whatsapp_campaign_id', $campaign->id)
                 ->where('status', 'pending')
                 ->first();
 
             if (!$log) {
                 $campaign->update(['status' => 'completed']);
-                $this->info("Campaign #{$campaign->id} completed — no more pending messages.");
                 return;
             }
 
@@ -105,30 +85,20 @@ class ProcessCampaigns extends Command
 
             // --- Set Next Delay ---
             $delay = rand($campaign->min_delay, $campaign->max_delay);
-            $updateData = [
-                'last_sent_at' => now()->addSeconds($delay),
-            ];
+            $updateData = ['last_sent_at' => now()->addSeconds($delay)];
 
-            // Increment batch counter if batch feature is enabled
             if ($campaign->batch_size > 0) {
                 $updateData['batch_sent_count'] = $campaign->batch_sent_count + 1;
             }
 
             $campaign->update($updateData);
 
-            // If delay exceeds remaining time, exit and let next cron handle it
-            $elapsed = time() - $startTime;
-            if ($delay > ($this->maxRunTime - $elapsed)) {
-                $this->info("Campaign #{$campaign->id}: Next delay {$delay}s. Deferring to next cron.");
+            if ($delay > ($this->maxRunTime - (time() - $startTime))) {
                 return;
             }
 
-            // Sleep for the delay within this run
-            $this->info("Campaign #{$campaign->id}: Sent to {$log->phone_number}. Sleeping {$delay}s...");
             sleep($delay);
         }
-
-        $this->info("Time limit reached. Exiting.");
     }
 
     protected function sendMessage(WhatsappCampaign $campaign, WhatsappCampaignLog $log): void
@@ -143,42 +113,34 @@ class ProcessCampaigns extends Command
                 }
             }
 
-            // Select random message
             $text = is_array($messages) ? $messages[array_rand($messages)] : $messages;
 
-            // Replace Placeholders
+            // Placeholders
             if (str_contains($text, '{{random}}')) {
                 $randomText = \App\Models\WhatsappRandomText::inRandomOrder()->value('text') ?? '';
                 $text = str_replace('{{random}}', $randomText, $text);
             }
-
             if (str_contains($text, '{{welcome}}')) {
                 $welcomeText = \App\Models\WhatsappWelcomeText::inRandomOrder()->value('text') ?? '';
                 $text = str_replace('{{welcome}}', $welcomeText, $text);
             }
-
             $text = str_replace('{{date}}', now()->toDateString(), $text);
 
             // Prepare Payload
             $number = preg_replace('/[^0-9]/', '', $log->phone_number);
 
-            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            // Safe formatting for Egyptian numbers
             if (strlen($number) === 11 && str_starts_with($number, '01')) {
                 $number = '2' . $number;
-            }
-
-            // Verify number is not empty
-            if (empty($number)) {
-                throw new \Exception("Invalid phone number: {$log->phone_number}");
             }
 
             $payload = [
                 'number' => $number,
                 'instance_id' => $campaign->instance_id,
-                'access_token' => $this->token,
+                'access_token' => $this->token, // Pure Hardcoded Token
             ];
 
-            // Determine Type (Text vs Media)
+            // Determine Type
             if ($campaign->media_path) {
                 $payload['type'] = 'media';
                 $payload['message'] = $text;
@@ -196,11 +158,10 @@ class ProcessCampaigns extends Command
                 $payload['message'] = $text;
             }
 
-            // Send Request
+            // Send
             $response = Http::timeout(60)->post($this->baseUrl . '/send', $payload);
             $resData = $response->json();
 
-            // Handle Response
             if ($response->successful() && ($resData['status'] ?? '') === 'success') {
                 $log->update([
                     'status' => 'sent',
@@ -209,9 +170,10 @@ class ProcessCampaigns extends Command
                 $campaign->increment('sent_count');
                 $this->info("✓ Sent to {$number}");
             } else {
-                $errorMsg = $resData['message'] ?? 'API Error';
-                $debugInfo = json_encode($resData);
-                throw new \Exception("{$errorMsg} | Instance: {$campaign->instance_id} | Response: {$debugInfo}");
+                // Log failure for external debugging
+                $errorDetails = json_encode($resData);
+                Log::error("Campaign Failed | Inst: {$campaign->instance_id} | Token: {$this->token} | Resp: {$errorDetails}");
+                throw new \Exception($resData['message'] ?? 'API Error');
             }
         } catch (\Exception $e) {
             $log->update([
