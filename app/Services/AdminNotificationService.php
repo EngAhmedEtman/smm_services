@@ -163,6 +163,8 @@ class AdminNotificationService
                 return;
             }
 
+            Log::info("AdminNotification: Sending to formatted number: {$number}");
+
             // Format text message
             $message = "🎉 *تم إضافة رصيد لحسابك*\n\n" .
                 "مرحباً {$user->name}،\n" .

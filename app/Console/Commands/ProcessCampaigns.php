@@ -15,7 +15,7 @@ class ProcessCampaigns extends Command
     protected $description = 'Process active WhatsApp campaigns and send pending messages';
 
     protected $baseUrl = 'https://wolfixbot.com/api';
-    protected $token = '6983b5e6a0994';
+    protected $token;
 
     /**
      * Max seconds this command should run within one cron cycle.
@@ -25,6 +25,15 @@ class ProcessCampaigns extends Command
 
     public function handle(): int
     {
+        // Fetch API Token from Settings
+        $this->token = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+
+        if (!$this->token) {
+            $this->error('Admin WhatsApp Access Token is missing in Settings.');
+            Log::error('ProcessCampaigns: Access Token missing.');
+            return 1;
+        }
+
         $campaigns = WhatsappCampaign::where('status', 'sending')->get();
 
         if ($campaigns->isEmpty()) {
@@ -151,6 +160,17 @@ class ProcessCampaigns extends Command
 
             // Prepare Payload
             $number = preg_replace('/[^0-9]/', '', $log->phone_number);
+
+            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            if (strlen($number) === 11 && str_starts_with($number, '01')) {
+                $number = '2' . $number;
+            }
+
+            // Verify number is not empty
+            if (empty($number)) {
+                throw new \Exception("Invalid phone number: {$log->phone_number}");
+            }
+
             $payload = [
                 'number' => $number,
                 'instance_id' => $campaign->instance_id,
