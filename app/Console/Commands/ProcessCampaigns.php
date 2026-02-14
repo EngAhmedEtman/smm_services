@@ -15,10 +15,7 @@ class ProcessCampaigns extends Command
     protected $description = 'Process active WhatsApp campaigns and send pending messages';
 
     protected $baseUrl = 'https://wolfixbot.com/api';
-    protected $token;
-
-    // Hardcoded token from WhatsappController to ensure compatibility with existing instances
-    protected $fallbackToken = '6983b5e6a0994';
+    protected $token = '6983b5e6a0994'; // Primary token for App Instances
 
     /**
      * Max seconds this command should run within one cron cycle.
@@ -28,15 +25,12 @@ class ProcessCampaigns extends Command
 
     public function handle(): int
     {
-        // 1. Try fetching from Admin Settings
-        $settingToken = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
-
-        // 2. Fallback to hardcoded token if setting is empty
-        $this->token = $settingToken ?: $this->fallbackToken;
-
+        // We use the hardcoded token because all instances created via the dashboard
+        // are created using this token (see WhatsappController).
+        // Using the Admin Settings token caused a mismatch if the admin used a different account for notifications.
 
         if (!$this->token) {
-            $this->error('Admin WhatsApp Access Token is missing in Settings and no fallback found.');
+            $this->error('Access Token is missing.');
             Log::error('ProcessCampaigns: Access Token missing.');
             return 1;
         }
