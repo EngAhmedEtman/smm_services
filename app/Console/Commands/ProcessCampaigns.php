@@ -137,11 +137,14 @@ class ProcessCampaigns extends Command
             $payload = [
                 'number' => $number,
                 'instance_id' => $campaign->instance_id,
-                'access_token' => $this->token, // Pure Hardcoded Token
+                'access_token' => $this->token,
             ];
 
             // Determine Type
-            if ($campaign->media_path) {
+            // FIX: Check if file exists to avoid sending broken media links
+            $hasMedia = !empty($campaign->media_path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($campaign->media_path);
+
+            if ($hasMedia) {
                 $payload['type'] = 'media';
                 $payload['message'] = $text;
                 $payload['media_url'] = asset('storage/' . $campaign->media_path);
@@ -157,6 +160,9 @@ class ProcessCampaigns extends Command
                 $payload['type'] = 'text';
                 $payload['message'] = $text;
             }
+
+            // LOG THE PAYLOAD TO SEE WHAT IS WRONG
+            Log::info("Campaign Sending Payload: " . json_encode($payload));
 
             // Send
             $response = Http::timeout(60)->post($this->baseUrl . '/send', $payload);
