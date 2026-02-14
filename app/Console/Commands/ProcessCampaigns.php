@@ -208,7 +208,9 @@ class ProcessCampaigns extends Command
                 $campaign->increment('sent_count');
                 $this->info("✓ Sent to {$number}");
             } else {
-                throw new \Exception($resData['message'] ?? 'API Error');
+                $errorMsg = $resData['message'] ?? 'API Error';
+                $debugInfo = json_encode($resData);
+                throw new \Exception("{$errorMsg} | Instance: {$campaign->instance_id} | Response: {$debugInfo}");
             }
         } catch (\Exception $e) {
             $log->update([
