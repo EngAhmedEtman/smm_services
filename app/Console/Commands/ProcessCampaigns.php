@@ -17,6 +17,9 @@ class ProcessCampaigns extends Command
     protected $baseUrl = 'https://wolfixbot.com/api';
     protected $token;
 
+    // Hardcoded token from WhatsappController to ensure compatibility with existing instances
+    protected $fallbackToken = '6983b5e6a0994';
+
     /**
      * Max seconds this command should run within one cron cycle.
      * Set to 55 to leave a 5-second safety margin before the next cron tick.
@@ -25,11 +28,15 @@ class ProcessCampaigns extends Command
 
     public function handle(): int
     {
-        // Fetch API Token from Settings
-        $this->token = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+        // 1. Try fetching from Admin Settings
+        $settingToken = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+
+        // 2. Fallback to hardcoded token if setting is empty
+        $this->token = $settingToken ?: $this->fallbackToken;
+
 
         if (!$this->token) {
-            $this->error('Admin WhatsApp Access Token is missing in Settings.');
+            $this->error('Admin WhatsApp Access Token is missing in Settings and no fallback found.');
             Log::error('ProcessCampaigns: Access Token missing.');
             return 1;
         }
