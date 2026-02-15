@@ -3,59 +3,41 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class WhatsappService
 {
-    protected $baseUrl;
+    protected $apiUrl;
     protected $token;
 
     public function __construct()
     {
-        $this->baseUrl = config('services.whatsapp.url');
-        $this->token   = config('services.whatsapp.token');
+
+
+        $this->apiUrl = config('services.whatsapp.url');
+        $this->token = config('services.whatsapp.token');
     }
 
-    public function createInstance()
-    {
-        return Http::post($this->baseUrl.'/create_instance', [
-            'access_token' => $this->token
-        ])->json();
-    }
-
-    public function getQrCode($instanceId)
-    {
-        return Http::post($this->baseUrl.'/get_qrcode', [
-            'instance_id'  => $instanceId,
-            'access_token' => $this->token
-        ])->json();
-    }
-
-
-    public function rebootInstance($instanceId)
-    {
-        return Http::post($this->baseUrl.'/reboot', [
-            'instance_id'  => $instanceId,
-            'access_token' => $this->token
-        ])->json();
-    }
-
-    public function resetInstance($instanceId)
-    {
-        return Http::post($this->baseUrl.'/reset_instance', [
-            'instance_id'  => $instanceId,
-            'access_token' => $this->token
-        ])->json();
-    }
-
-
+    /**
+     * إرسال رسالة نصية
+     */
     public function sendText($instanceId, $number, $message)
     {
-        return Http::post($this->baseUrl.'/send', [
-            'number'       => $number,
-            'type'         => 'text',
-            'message'      => $message,
-            'instance_id'  => $instanceId,
-            'access_token' => $this->token
-        ])->json();
+        try {
+            $response = Http::post("{$this->apiUrl}/send", [
+                'instance_id' => $instanceId,
+                'access_token' => $this->token, // التوكن الأصلي بتاعك مخفي هنا!
+                'number' => $number,
+                'message' => $message,
+            ]);
+
+            return $response->json();
+            
+        } catch (\Exception $e) {
+            Log::error('Wolfixbot Send Text Error: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Internal API Error'];
+        }
     }
+
+    // هنضيف هنا باقي الدوال زي sendMedia و createInstance وهكذا...
 }

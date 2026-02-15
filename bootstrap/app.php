@@ -20,6 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'whatsapp/webhook',
         ]);
     })
+
+    ->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'api.key' => \App\Http\Middleware\CheckApiKey::class,
+    ]);
+})
+
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

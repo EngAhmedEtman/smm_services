@@ -27,6 +27,7 @@ class User extends Authenticatable
         'total_spent',
         'total_messages_sent',
         'role',
+        'allow_api_key',
     ];
 
     /**

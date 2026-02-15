@@ -201,6 +201,9 @@
             <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">شحن الرصيد</span>
         </a>
 
+
+
+
         @if(in_array(auth()->user()->role ?? 'user', ['admin', 'super_admin']))
         <!-- Admin Section (Only for Admins) -->
         <div class="px-4 mt-8 mb-2">
@@ -263,7 +266,34 @@
 
 
 
+        @if(auth()->user()->allow_api_key)
+        <a href="{{route('create-token')}}"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
+            {{ request()->routeIs('create-token') ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
 
+            @if(request()->routeIs('create-token'))
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-500 rounded-l-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+            @endif
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('create-token') ? 'text-indigo-400' : 'group-hover:text-indigo-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">واتساب API</span>
+        </a>
+        @else
+        <a href="javascript:void(0)"
+            onclick="showGlobalNotification('غير مسموح لك بدخول هذه الصفحة يرجي التواصل مع الادارة للتفعيل 201558551073+', 'error', 'تنبيه')"
+            class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden text-gray-400 hover:text-white hover:bg-white/5">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 group-hover:scale-110 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <span class="font-medium tracking-wide group-hover:translate-x-[-4px] transition-transform duration-300">واتساب API</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        </a>
+        @endif
 
         <a href="{{ route('call-us') }}"
             class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden

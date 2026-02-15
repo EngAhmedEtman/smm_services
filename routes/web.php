@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\WhatsappContactController;
 use App\Http\Controllers\RechargeController;
 use App\Http\Controllers\WhatsappCampaignController;
 use App\Http\Controllers\WhatsappMessageController;
+use App\Http\Controllers\Api\InstanceController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ApiClientController;
 
 require __DIR__ . '/auth.php';
 
@@ -99,7 +102,13 @@ Route::middleware('auth')->group(function () {
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);
     });
+
+    Route::get('create-token', [ApiClientController::class, 'create'])->name('create-token');
+    Route::post('create-token', [ApiClientController::class, 'createToken'])->name('create-token');
 })->middleware(['auth', 'verified']); // Ensure auth group is closed correctly
+
+
+
 
 
 
