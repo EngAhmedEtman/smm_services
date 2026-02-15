@@ -56,11 +56,8 @@ class ApiClientController extends Controller
             'status' => 1
         ]);
 
-        return response()->json([
-            'success' => true,
-            'api_key' => $client->api_key,
-            'client_id' => $client->id,
-        ]);
+
+        redirect()->route('api.create')->with('success', 'تم انشاء التوكن بنجاح');
     }
 
     private function checkToken()

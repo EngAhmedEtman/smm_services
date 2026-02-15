@@ -101,11 +101,11 @@ Route::middleware('auth')->group(function () {
 
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);
-    });
+    }); // Closing admin group
 
     Route::get('create-token', [ApiClientController::class, 'create'])->name('create-token');
-    Route::post('create-token', [ApiClientController::class, 'createToken'])->name('create-token');
-})->middleware(['auth', 'verified']); // Ensure auth group is closed correctly
+    Route::post('create-token', [ApiClientController::class, 'createToken'])->name('create-token.store');
+}); // Closing main auth group
 
 
 

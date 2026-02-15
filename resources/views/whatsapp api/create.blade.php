@@ -104,7 +104,7 @@
                     <p class="text-gray-400">ابدأ الآن بإنشاء مفتاح خاص بك لتتمكن من الوصول لخدمات الـ API الخاصة بـ EtViral.</p>
                 </div>
 
-                <form action="{{ route('create-token') }}" method="POST" class="w-full max-w-xs">
+                <form action="{{ route('create-token.store') }}" method="POST" class="w-full max-w-xs">
                     @csrf
                     <button type="submit" class="w-full group relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-indigo-600/25 active:scale-95 overflow-hidden">
                         <div class="absolute inset-0 w-1/2 h-full bg-white/10 -skew-x-12 -translate-x-full group-hover:translate-x-[250%] transition-transform duration-1000"></div>
