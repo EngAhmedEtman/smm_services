@@ -36,6 +36,7 @@
                         <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">الحالة</th>
                         <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">الصلاحية</th>
                         <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">تاريخ التسجيل</th>
+                        <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">عدد الرسائل</th>
                         <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">إجراءات</th>
                     </tr>
                 </thead>
@@ -102,6 +103,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-xs text-gray-500 font-mono">{{ $user->created_at->format('Y-m-d') }}</td>
+                        <td class="px-6 py-4 text-xs text-gray-500 font-mono">{{ $user->total_messages_sent }}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 {{-- Add Credit Button --}}
