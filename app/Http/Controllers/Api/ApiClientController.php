@@ -39,11 +39,7 @@ class ApiClientController extends Controller
         $existing = ApiClient::where('user_id', $userId)->first();
 
         if ($existing) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This user already has a token.',
-                'api_key' => $existing->api_key
-            ]);
+            return redirect()->route('create-token')->with('info', 'لديك مفتاح (Token) بالفعل.');
         }
 
         $token = Str::random(40);
@@ -56,8 +52,7 @@ class ApiClientController extends Controller
             'status' => 1
         ]);
 
-
-        redirect()->route('api.create')->with('success', 'تم انشاء التوكن بنجاح');
+        return redirect()->route('create-token')->with('success', 'تم انشاء التوكن بنجاح');
     }
 
     private function checkToken()
