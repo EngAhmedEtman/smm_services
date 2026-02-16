@@ -158,4 +158,19 @@ class SettingsController extends Controller
     {
         return view('settings.tickets');
     }
+    /**
+     * Toggle user API access.
+     */
+    public function toggleAllowApiKey($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Prevent toggling for self if needed, though API access might be fine for admin self
+
+        $user->allow_api_key = !$user->allow_api_key;
+        $user->save();
+
+        $status = $user->allow_api_key ? 'مفعل' : 'معطل';
+        return back()->with('success', "تم تغيير حالة الوصول للـ API للمستخدم {$user->name} إلى {$status}.");
+    }
 }

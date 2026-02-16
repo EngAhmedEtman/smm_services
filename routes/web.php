@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/users', [\App\Http\Controllers\Admin\SettingsController::class, 'users'])->name('admin.users.index');
         Route::post('/admin/users/{id}/toggle-status', [\App\Http\Controllers\Admin\SettingsController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
+        Route::post('/admin/users/{id}/toggle-api', [\App\Http\Controllers\Admin\SettingsController::class, 'toggleAllowApiKey'])->name('admin.users.toggle-api');
         Route::post('/admin/users/{id}/add-credit', [\App\Http\Controllers\Admin\SettingsController::class, 'addCredit'])->name('admin.users.add-credit');
 
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
