@@ -43,6 +43,7 @@ return [
     'whatsapp' => [
     'url'   => env('WHATSAPP_API_URL'),
     'token' => env('WHATSAPP_ACCESS_TOKEN'),
+    'webhook_url' => env('WHATSAPP_WEBHOOK_URL'),
 ],
 
 ];

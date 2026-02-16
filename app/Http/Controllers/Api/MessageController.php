@@ -4,39 +4,130 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\WolfixbotService;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Client\Response;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Exception;
 
 class MessageController extends Controller
 {
-    protected $wolfixbot;
+    private $baseUrl;
+    private $accessToken;
 
-    // بنعمل Inject للـ Service هنا عشان نستخدمها
-    public function __construct(WolfixbotService $wolfixbot)
+    public function __construct()
     {
-        $this->wolfixbot = $wolfixbot;
+        // يُفضل سحب التوكن من config/services.php
+        $this->baseUrl = config('services.whatsapp.url');
+        $this->accessToken = config('services.whatsapp.token');
     }
 
     public function sendText(Request $request)
     {
-        // 1. التحقق من المدخلات اللي جاية من العميل
-        $request->validate([
-            'number' => 'required|string',
-            'message' => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'number' => 'required',
+            'message' => 'required',
+            'instance_id' => 'required',
         ]);
 
-        // 2. نجيب بيانات العميل من الـ Request (اللي الـ Middleware حطها)
-        $client = $request->attributes->get('api_client');
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'errors' => $validator->errors()], 422);
+        }
 
-        // (هنا هنحط كود التحقق من الرصيد وخصمه بعدين - النقطة 7)
+        // Increase timeout to match API
+        set_time_limit(120);
 
-        // 3. نبعت الطلب للـ Service بتاعتنا باستخدام الـ instance_id بتاع العميل ده
-        $result = $this->wolfixbot->sendText(
-            $client->instance_id, 
-            $request->number, 
-            $request->message
-        );
+        try {
+            $cleanNumber = preg_replace('/[^0-9]/', '', $request->number); // Remove + and any non-numeric chars
 
-        // 4. نرجع النتيجة للعميل
-        return response()->json($result);
+            $response = Http::timeout(60)->post($this->baseUrl . '/send', [
+                'number' => $cleanNumber,
+                'type' => 'text',
+                'message' => $request->message,
+                'instance_id' => $request->instance_id,
+                'access_token' => $this->accessToken,
+            ]);
+
+            if ($response instanceof Response) {
+                return response()->json($response->json(), $response->status());
+            }
+
+            // Fallback if response is not standard object
+            return response()->json([
+                'status' => 'error',
+                'message' => 'استجابة غير صالحة من الـ API'
+            ], 500);
+        } catch (RequestException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'فشل الاتصال: ' . $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء الاتصال بالـ API: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function sendMedia(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'number' => 'required',
+            'message' => 'required',
+            'instance_id' => 'required',
+            'media_url' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'errors' => $validator->errors()], 422);
+        }
+
+        // Increase timeout to match API
+        set_time_limit(120);
+
+        if ($request->hasFile('media_url')) {
+            $file = $request->file('media_url');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/whatsapp_media'), $fileName);
+            $mediaUrl = url('uploads/whatsapp_media/' . $fileName);
+        } else {
+            $mediaUrl = $request->media_url;
+        }
+
+        try {
+            $cleanNumber = preg_replace('/[^0-9]/', '', $request->number); // Remove + and any non-numeric chars
+
+            $response = Http::timeout(60)->post($this->baseUrl . '/send', [
+                'number' => $cleanNumber,
+                'type' => 'media',
+                'message' => $request->message,
+                'media_url' => $mediaUrl,
+                'instance_id' => $request->instance_id,
+                'access_token' => $this->accessToken,
+            ]);
+
+            if ($response instanceof Response) {
+                return response()->json($response->json(), $response->status());
+            }
+
+            // Fallback if response is not standard object
+            return response()->json([
+                'status' => 'error',
+                'message' => 'استجابة غير صالحة من الـ API'
+            ], 500);
+        } catch (RequestException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'فشل الاتصال: ' . $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء الاتصال بالـ API: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

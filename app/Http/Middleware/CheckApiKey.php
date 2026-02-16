@@ -17,13 +17,13 @@ class CheckApiKey
     public function handle(Request $request, Closure $next): Response
     {
         // 1. نجيب المفتاح من الـ Header
-        $key = $request->header('ETVIRAL-WHATSAPP-API-KEY');
+        $key = $request->header('key');
 
         // 2. لو مفيش مفتاح أصلاً
         if (!$key) {
             return response()->json([
                 'success' => false,
-                'message' => 'API Key is missing. Please provide ETVIRAL-WHATSAPP-API-KEY in headers.'
+                'message' => 'API Key is missing. Please provide key in headers.'
             ], 401);
         }
 

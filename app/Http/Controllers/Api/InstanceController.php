@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\Http;
 
 class InstanceController extends Controller
 {
-    private $baseUrl = 'https://wolfixbot.com/api';
+    private $baseUrl;
     private $accessToken;
+    private $webhookUrl;
 
     public function __construct()
     {
         // يُفضل سحب التوكن من config/services.php
-        $this->accessToken = config('services.whatsapp.token'); 
+        $this->baseUrl = config('services.whatsapp.url');
+        $this->accessToken = config('services.whatsapp.token');
+        $this->webhookUrl = config('services.whatsapp.webhook_url');
     }
 
 
@@ -25,42 +28,47 @@ class InstanceController extends Controller
             'message' => 'API Key is valid.'
         ]);
     }
-    
+
 
     // 1. إنشاء Instance جديد
-    public function createInstance()
+    public function create_instance()
     {
-        $response = Http::post("{$this->baseUrl}/create_instance", [
-            'access_token' => $this->accessToken,
-        ]);
 
-        return response()->json($response->json());
+        $Response = Http::get(
+            $this->baseUrl . '/create_instance',
+            ['access_token' => $this->accessToken]
+        )->json();
+
+        return response()->json($Response);
     }
 
     // 2. جلب كود الـ QR
     public function getQrCode(Request $request)
     {
-        $request->validate(['instance_id' => 'required|string']);
+        $instanceId = $request->instance_id;
 
-        $response = Http::post("{$this->baseUrl}/get_qrcode", [
-            'instance_id'  => $request->instance_id,
-            'access_token' => $this->accessToken,
-        ]);
-
-        return response()->json($response->json());
+        // 2️⃣ Get QR Code
+        return    $qrResponse = Http::get(
+            $this->baseUrl . '/get_qrcode',
+            [
+                'instance_id' => $instanceId,
+                'access_token' => $this->accessToken
+            ]
+        )->json();
     }
+
+
 
     // 3. إعداد الـ Webhook
     public function setWebhook(Request $request)
     {
         $request->validate([
             'instance_id' => 'required|string',
-            'webhook_url' => 'required|url',
             'enable'      => 'required|boolean'
         ]);
 
-        $response = Http::post("{$this->baseUrl}/set_webhook", [
-            'webhook_url'  => $request->webhook_url,
+        $response = Http::get("{$this->baseUrl}/set_webhook", [
+            'webhook_url'  => $this->webhookUrl,
             'enable'       => $request->enable ? 'true' : 'false',
             'instance_id'  => $request->instance_id,
             'access_token' => $this->accessToken,
@@ -72,39 +80,50 @@ class InstanceController extends Controller
     // 4. عمل Reboot للـ Instance
     public function rebootInstance(Request $request)
     {
-        $request->validate(['instance_id' => 'required|string']);
 
-        $response = Http::post("{$this->baseUrl}/reboot", [
+        $response = Http::get("{$this->baseUrl}/reboot", [
             'instance_id'  => $request->instance_id,
             'access_token' => $this->accessToken,
         ]);
 
         return response()->json($response->json());
     }
+
+
 
     // 5. عمل Reset للـ Instance (مسح الداتا وتغيير الـ ID)
     public function resetInstance(Request $request)
     {
-        $request->validate(['instance_id' => 'required|string']);
 
-        $response = Http::post("{$this->baseUrl}/reset_instance", [
-            'instance_id'  => $request->instance_id,
-            'access_token' => $this->accessToken,
+        $instanceId = trim($request->instance_id);
+
+        $response = Http::get("{$this->baseUrl}/reset_instance", [
+            'instance_id'  => $instanceId,
+            'access_token' => $this->accessToken
         ]);
 
         return response()->json($response->json());
     }
 
+
+
+    
     // 6. إعادة الاتصال (Reconnect)
     public function reconnectInstance(Request $request)
     {
         $request->validate(['instance_id' => 'required|string']);
 
-        $response = Http::post("{$this->baseUrl}/reconnect", [
+        $response = Http::get("{$this->baseUrl}/reconnect", [
             'instance_id'  => $request->instance_id,
             'access_token' => $this->accessToken,
         ]);
 
         return response()->json($response->json());
     }
+
+
+
+
+
+    
 }
