@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/whatsapp/reconnect/{instance_id}', [WhatsappController::class, 'reconnect'])->name('whatsapp.reconnect');
     Route::post('/whatsapp/update-number', [WhatsappController::class, 'updateNumber'])->name('whatsapp.updateNumber');
     Route::get('/whatsapp/debug/{instance_id}', [WhatsappController::class, 'debugStatus'])->name('whatsapp.debug');
+    Route::get('/whatsapp/api-docs', [WhatsappController::class, 'apiDocumentation'])->name('doc.api.inDashboard');
 
     // WhatsApp Contacts
     Route::get('/whatsapp/contacts', [WhatsappContactController::class, 'index'])->name('whatsapp.contacts');

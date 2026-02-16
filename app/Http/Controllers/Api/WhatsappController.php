@@ -295,4 +295,8 @@ class WhatsappController extends Controller
     {
         return view('whatsapp.buttons');
     }
+    public function apiDocumentation()
+    {
+        return view('whatsapp api.doc');
+    }
 }

@@ -12,7 +12,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // مسارات محمية بـ API Key
-Route::middleware(['api.key'])->group(function () {
+Route::prefix('v1')->middleware(['api.key'])->group(function () {
     // مسارات خاصة بحالة العميل والـ Instance
     Route::get('/test', [InstanceController::class, 'test']);
     Route::get('/create_instance', [InstanceController::class, 'create_instance']);
@@ -25,7 +25,6 @@ Route::middleware(['api.key'])->group(function () {
     // مسارات إرسال الرسائل
     Route::post('/send_text', [MessageController::class, 'sendText']);
     Route::post('/send_media', [MessageController::class, 'sendMedia']);
-    Route::post('/send_group', [MessageController::class, 'sendGroup']);
 });
 
 
@@ -44,6 +43,3 @@ Route::middleware(['api.key'])->group(function () {
 //         'json_output' => $response->json(),
 //     ];
 // });
-
-
-
