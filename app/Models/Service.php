@@ -18,6 +18,8 @@ class Service extends Model
         'max',
         'type',
         'provider',
+        'is_active',
+        'custom_category',
     ];
 
     public function users()
@@ -25,5 +27,7 @@ class Service extends Model
         return $this->belongsToMany(User::class, 'service_favorites', 'service_id', 'user_id');
     }
 
-    
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

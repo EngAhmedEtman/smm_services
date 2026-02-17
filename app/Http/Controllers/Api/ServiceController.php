@@ -31,7 +31,7 @@ class ServiceController extends Controller
      */
     public function showForm()
     {
-        $services = $this->smmService->services();
+        $services = $this->smmService->getServicesWithSettings(true);
         return view('services.ServicesPage', compact('services'));
     }
 
@@ -41,7 +41,7 @@ class ServiceController extends Controller
      */
     public function allServices(Request $request)
     {
-        $services = $this->smmService->services();
+        $services = $this->smmService->getServicesWithSettings(true);
 
         // 1. Paginate the services array directly to respect provider order
         $paginatedServices = $this->paginateArray($services, $request, 100);

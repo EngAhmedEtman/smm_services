@@ -101,6 +101,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/assets/welcome', [\App\Http\Controllers\WhatsappAssetsController::class, 'storeWelcome'])->name('admin.assets.storeWelcome');
         Route::delete('/admin/assets/welcome/{id}', [\App\Http\Controllers\WhatsappAssetsController::class, 'destroyWelcome'])->name('admin.assets.destroyWelcome');
 
+        // Control Services
+        Route::get('/admin/control-services', [\App\Http\Controllers\controlSrevices::class, 'index'])->name('admin.controlServices.index');
+        Route::post('/admin/control-services', [\App\Http\Controllers\controlSrevices::class, 'update'])->name('admin.controlServices.update');
+
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);
     }); // Closing admin group
