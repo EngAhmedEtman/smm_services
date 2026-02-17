@@ -178,13 +178,21 @@ class SmmService
         // Category-level settings
         $localCategorySettings = \App\Models\CategorySetting::all()->keyBy('original_category_name');
 
+        // Main Categories (for global sorting)
+        $mainCategories = \App\Models\MainCategory::all()->keyBy('id');
+
         // 3. Merge Data
-        $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings) {
+        $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings, $mainCategories) {
             $serviceId = $service['service'];
             $originalCategoryName = $service['category'];
 
             // A. Apply Category Settings (Main ID & Custom Name & Sort Order)
             $catSetting = $localCategorySettings[$originalCategoryName] ?? null;
+
+            // Default Sort Values
+            $service['main_category_sort'] = 999999;
+            $service['category_sort'] = 999999;
+
             if ($catSetting) {
                 // Attach Main Category ID
                 $service['main_category_id'] = $catSetting->main_category_id;
@@ -195,11 +203,20 @@ class SmmService
                     $service['category'] = $catSetting->custom_name;
                 }
 
-                // Attach Category Sort Order (Default to large number if 0/null to appear last)
-                $service['category_sort'] = ($catSetting->sort_order > 0) ? $catSetting->sort_order : 999999;
+                // Attach Category Sort Order
+                if ($catSetting->sort_order > 0) {
+                    $service['category_sort'] = $catSetting->sort_order;
+                }
+
+                // Attach Main Category Sort Order
+                if ($catSetting->main_category_id && isset($mainCategories[$catSetting->main_category_id])) {
+                    $mainCat = $mainCategories[$catSetting->main_category_id];
+                    if ($mainCat->sort_order > 0) {
+                        $service['main_category_sort'] = $mainCat->sort_order;
+                    }
+                }
             } else {
                 $service['main_category_id'] = null;
-                $service['category_sort'] = 999999;
             }
 
             // B. Apply Service Settings (Override Category & Active Status)
@@ -232,17 +249,17 @@ class SmmService
 
         // 4. Sort Services
         usort($mergedServices, function ($a, $b) {
-            // First by Main Category ID (to group in All view if needed, or consistent order)
-            if ($a['main_category_id'] != $b['main_category_id']) {
-                return $a['main_category_id'] <=> $b['main_category_id']; // Ascending
+            // 1. By Main Category Sort Order (Ascending)
+            if ($a['main_category_sort'] != $b['main_category_sort']) {
+                return $a['main_category_sort'] <=> $b['main_category_sort'];
             }
 
-            // Then by Category Sort Order
+            // 2. By Category Sort Order (Ascending)
             if ($a['category_sort'] != $b['category_sort']) {
-                return $a['category_sort'] <=> $b['category_sort']; // Ascending
+                return $a['category_sort'] <=> $b['category_sort'];
             }
 
-            // Then by Category Name (Alphabetical as tie-breaker)
+            // 3. By Category Name (Alphabetical as tie-breaker)
             return strcmp($a['category'], $b['category']);
         });
 

@@ -109,6 +109,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/control-categories', [\App\Http\Controllers\ControlCategoriesController::class, 'index'])->name('admin.controlCategories.index');
         Route::post('/admin/control-categories', [\App\Http\Controllers\ControlCategoriesController::class, 'update'])->name('control-categories.update');
         Route::post('/admin/control-categories/main', [\App\Http\Controllers\ControlCategoriesController::class, 'storeMainCategory'])->name('control-categories.store-main');
+        Route::post('/admin/control-categories/main-update', [\App\Http\Controllers\ControlCategoriesController::class, 'updateMainCategories'])->name('admin.controlCategories.updateMainList');
+        Route::delete('/admin/control-categories/main/{id}', [\App\Http\Controllers\ControlCategoriesController::class, 'destroyMainCategory'])->name('admin.controlCategories.destroyMain');
 
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);

@@ -25,6 +25,19 @@ class controlSrevices extends Controller
         // false = get all (active and inactive)
         $allServices = $this->smmService->getServicesWithSettings(false);
 
+        // Search Filter
+        if ($request->has('search') && !empty($request->search)) {
+            $search = strtolower($request->search);
+            $allServices = array_filter($allServices, function ($service) use ($search) {
+                return (
+                    strpos((string)$service['service'], $search) !== false ||
+                    strpos(strtolower($service['name']), $search) !== false ||
+                    strpos(strtolower($service['category']), $search) !== false ||
+                    strpos(strtolower($service['original_category'] ?? ''), $search) !== false
+                );
+            });
+        }
+
         // Manual Pagination
         $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
         $perPage = 50;
