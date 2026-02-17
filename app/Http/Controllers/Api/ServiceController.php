@@ -32,7 +32,8 @@ class ServiceController extends Controller
     public function showForm()
     {
         $services = $this->smmService->getServicesWithSettings(true);
-        return view('services.ServicesPage', compact('services'));
+        $mainCategories = \App\Models\MainCategory::where('is_active', true)->orderBy('sort_order')->get();
+        return view('services.ServicesPage', compact('services', 'mainCategories'));
     }
 
     /**

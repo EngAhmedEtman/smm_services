@@ -35,6 +35,28 @@
                 <div id="searchStats" class="text-[10px] text-gray-500 font-mono hidden px-1 mt-1 text-right"></div>
             </div>
 
+            <!-- Main Categories (Tabs) -->
+            <div class="mb-6">
+                <label class="text-xs font-semibold text-gray-400 mr-1 mb-2 block">تصفية حسب المنصة</label>
+                <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar scrollbar-thin scrollbar-thumb-pink-500/20 scrollbar-track-transparent snap-x">
+                    <!-- 'All' Button -->
+                    <button type="button" data-main-id="all" onclick="filterByMainCategory('all', this)"
+                        class="main-cat-btn snap-start whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 border border-pink-500 bg-pink-500 text-white shadow-lg shadow-pink-500/20">
+                        الكل
+                    </button>
+
+                    @foreach($mainCategories as $mainCat)
+                    <button type="button" data-main-id="{{ $mainCat->id }}" onclick="filterByMainCategory('{{ $mainCat->id }}', this)"
+                        class="main-cat-btn snap-start whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border border-gray-700 bg-[#2b2b36]/50 text-gray-400 hover:bg-[#2b2b36] hover:text-white hover:border-gray-500">
+                        @if($mainCat->icon)
+                        <i class="{{ $mainCat->icon }} mr-1"></i>
+                        @endif
+                        {{ $mainCat->name }}
+                    </button>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <!-- Category Select -->
                 <div class="space-y-1.5">
@@ -201,6 +223,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Pass PHP data to JS
         const services = @json($services);
+        // We will default to 'all' or filtering logic will handle it
 
         // Elements
         const searchInput = document.getElementById('serviceSearch');
@@ -214,6 +237,7 @@
         const commentsContainer = document.getElementById('commentsContainer');
         const totalChargeDisplay = document.getElementById('totalCharge');
         const chargeInput = document.getElementById('chargeInput');
+        const mainCatBtns = document.querySelectorAll('.main-cat-btn');
 
         // Info Box Elements
         const serviceInfo = document.getElementById('serviceInfo');
@@ -240,14 +264,54 @@
 
         // --- Logic ---
 
+        // Global function for Main Category Filtering
+        window.filterByMainCategory = function(mainId, btn) {
+            // Update UI
+            mainCatBtns.forEach(b => {
+                b.classList.remove('bg-pink-500', 'text-white', 'border-pink-500', 'shadow-lg', 'shadow-pink-500/20');
+                b.classList.add('bg-[#2b2b36]/50', 'text-gray-400', 'border-gray-700');
+            });
+            btn.classList.remove('bg-[#2b2b36]/50', 'text-gray-400', 'border-gray-700');
+            btn.classList.add('bg-pink-500', 'text-white', 'border-pink-500', 'shadow-lg', 'shadow-pink-500/20');
+
+            // Filter Categories
+            populateCategories(mainId);
+        };
+
         // 1. Populate Categories
-        const categories = [...new Set(services.map(s => s.category))];
-        categories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
-            categorySelect.appendChild(option);
-        });
+        function populateCategories(mainId = 'all') {
+            categorySelect.innerHTML = '<option value="">-- اختر القسم --</option>';
+
+            let filteredCats = [];
+
+            if (mainId === 'all') {
+                filteredCats = [...new Set(services.map(s => s.category))];
+            } else {
+                // Filter services by main_category_id
+                // Note: main_category_id is int, mainId might be string
+                filteredCats = [...new Set(services.filter(s => s.main_category_id == mainId).map(s => s.category))];
+            }
+
+            filteredCats.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+
+            // Trigger reset
+            resetServiceSelection();
+        }
+
+        function resetServiceSelection() {
+            serviceSelect.innerHTML = '<option value="">-- اختر الخدمة --</option>';
+            serviceSelect.disabled = true;
+            serviceInfo.classList.add('hidden');
+            resetCalculation();
+        }
+
+        // Initialize with 'all'
+        populateCategories('all');
 
         // Helper: Populate Services
         function populateServicesOptions(list) {
@@ -340,6 +404,39 @@
         });
 
         function selectServiceFromSearch(srv) {
+            // When searching, we want to set category and service directly.
+            // But we also need to respect Main Category?
+            // Usually search should override filters. 
+            // So we might need to find the main category of the service and switch to it,
+            // or just ignore main category filter when searching.
+
+            // Let's just switch Category Select value, which works regardless of what's in the DOM if we re-populate?
+            // Actually, if the Category option isn't in the Select (because it's filtered out), setting `.value` won't work.
+
+            // So we should:
+            // 1. Find the service's Main Category
+            // 2. Switch the Main Category tab to that (or 'all')
+            // 3. Populate Categories
+            // 4. Select Category & Service
+
+            const mainId = srv.main_category_id || 'all';
+
+            // Find button to click
+            let btnToClick = document.querySelector(`.main-cat-btn[data-main-id="${mainId}"]`);
+            if (!btnToClick) btnToClick = document.querySelector(`.main-cat-btn[data-main-id="all"]`);
+
+            if (btnToClick) {
+                // Determine if we need to call the filter function (check if not already active)
+                // Simply click it to be sure
+                // But wait, triggering click might be async or cause UI flicker.
+                // Let's call the function directly if we can access it, or just click.
+                btnToClick.click();
+            } else {
+                // Fallback to all
+                filterByMainCategory('all', document.querySelector(`.main-cat-btn[data-main-id="all"]`));
+            }
+
+            // Wait for population (synchronous in this code)
             categorySelect.value = srv.category;
             const filteredServices = services.filter(s => s.category === srv.category);
             populateServicesOptions(filteredServices);

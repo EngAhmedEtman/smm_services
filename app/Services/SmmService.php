@@ -172,19 +172,39 @@ class SmmService
         $apiServices = $this->services();
 
         // 2. Fetch Local Settings
-        // We key by service_id for easy lookup
-        $localSettings = \App\Models\Service::all()->keyBy('service_id');
+        // Service-level settings
+        $localServiceSettings = \App\Models\Service::all()->keyBy('service_id');
+
+        // Category-level settings
+        $localCategorySettings = \App\Models\CategorySetting::all()->keyBy('original_category_name');
 
         // 3. Merge Data
-        $mergedServices = array_map(function ($service) use ($localSettings) {
+        $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings) {
             $serviceId = $service['service'];
+            $originalCategoryName = $service['category'];
 
-            if (isset($localSettings[$serviceId])) {
-                $local = $localSettings[$serviceId];
+            // A. Apply Category Settings (Main ID & Custom Name)
+            $catSetting = $localCategorySettings[$originalCategoryName] ?? null;
+            if ($catSetting) {
+                // Attach Main Category ID
+                $service['main_category_id'] = $catSetting->main_category_id;
 
-                // Overlay Custom Category
+                // Overlay Custom Category Name if set
+                if (!empty($catSetting->custom_name)) {
+                    $service['original_category'] = $service['category'];
+                    $service['category'] = $catSetting->custom_name;
+                }
+            } else {
+                $service['main_category_id'] = null;
+            }
+
+            // B. Apply Service Settings (Override Category & Active Status)
+            if (isset($localServiceSettings[$serviceId])) {
+                $local = $localServiceSettings[$serviceId];
+
+                // Overlay Custom Category (Service Level overrides Category Level)
                 if (!empty($local->custom_category)) {
-                    $service['original_category'] = $service['category']; // Save original
+                    $service['original_category'] = $service['category']; // Save previous (could be custom cat name or original)
                     $service['category'] = $local->custom_category;
                 }
 
@@ -194,6 +214,13 @@ class SmmService
                 // Default to active if no local record
                 $service['is_active'] = true;
                 $service['is_active_db'] = false; // Marker that it's not in DB yet
+
+                // If category is inactive via CategorySetting, we might want to hide the service?
+                // For now, let's respect the service level or default true. 
+                // Currently CategorySetting has 'is_active'. Let's use it if Service setting is missing.
+                if ($catSetting && !$catSetting->is_active) {
+                    $service['is_active'] = false;
+                }
             }
 
             return $service;
