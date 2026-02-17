@@ -58,6 +58,17 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Set the phone number attribute (auto-clean).
+     * Removes +, -, spaces, and keeps only digits.
+     */
+    protected function setPhoneAttribute($value)
+    {
+        // Remove everything except numbers
+        $this->attributes['phone'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
+
     public function orders()
     {
         return $this->hasMany(Order::class);

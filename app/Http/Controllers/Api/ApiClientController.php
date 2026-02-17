@@ -14,7 +14,7 @@ class ApiClientController extends Controller
     public function create()
     {
         if (!auth()->user()->allow_api_key) {
-            return redirect()->route('dashboard')->with('error', 'غير مسموح لك بدخول هذه الصفحة يرجي التواصل مع الادارة للتفعيل 01558551073');
+            return redirect()->route('dashboard')->with('error', 'غير مسموح لك بدخول هذه الصفحة. للتفعيل، اضغط على "واتساب API" من القائمة الجانبية للتواصل معنا.');
         }
 
         $token = $this->checkToken();
@@ -29,7 +29,7 @@ class ApiClientController extends Controller
         if (!auth()->user()->allow_api_key) {
             return response()->json([
                 'success' => false,
-                'message' => 'غير مسموح لك بدخول هذه الصفحة يرجي التواصل مع الادارة للتفعيل 01558551073'
+                'message' => 'غير مسموح لك بدخول هذه الصفحة. للتفعيل، اضغط على "واتساب API" من القائمة الجانبية للتواصل معنا.'
             ], 403);
         }
 
