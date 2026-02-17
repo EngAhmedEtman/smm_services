@@ -183,7 +183,7 @@ class SmmService
             $serviceId = $service['service'];
             $originalCategoryName = $service['category'];
 
-            // A. Apply Category Settings (Main ID & Custom Name)
+            // A. Apply Category Settings (Main ID & Custom Name & Sort Order)
             $catSetting = $localCategorySettings[$originalCategoryName] ?? null;
             if ($catSetting) {
                 // Attach Main Category ID
@@ -194,8 +194,12 @@ class SmmService
                     $service['original_category'] = $service['category'];
                     $service['category'] = $catSetting->custom_name;
                 }
+
+                // Attach Category Sort Order (Default to large number if 0/null to appear last)
+                $service['category_sort'] = ($catSetting->sort_order > 0) ? $catSetting->sort_order : 999999;
             } else {
                 $service['main_category_id'] = null;
+                $service['category_sort'] = 999999;
             }
 
             // B. Apply Service Settings (Override Category & Active Status)
@@ -226,7 +230,23 @@ class SmmService
             return $service;
         }, $apiServices);
 
-        // 4. Filter if requested
+        // 4. Sort Services
+        usort($mergedServices, function ($a, $b) {
+            // First by Main Category ID (to group in All view if needed, or consistent order)
+            if ($a['main_category_id'] != $b['main_category_id']) {
+                return $a['main_category_id'] <=> $b['main_category_id']; // Ascending
+            }
+
+            // Then by Category Sort Order
+            if ($a['category_sort'] != $b['category_sort']) {
+                return $a['category_sort'] <=> $b['category_sort']; // Ascending
+            }
+
+            // Then by Category Name (Alphabetical as tie-breaker)
+            return strcmp($a['category'], $b['category']);
+        });
+
+        // 5. Filter if requested
         if ($activeOnly) {
             $mergedServices = array_filter($mergedServices, function ($service) {
                 return (bool) $service['is_active'] === true;
