@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -28,6 +30,8 @@ class User extends Authenticatable
         'total_messages_sent',
         'role',
         'allow_api_key',
+        'code',
+        'expire_at',
     ];
 
     /**
@@ -77,5 +81,24 @@ class User extends Authenticatable
     public function banned()
     {
         return $this->hasOne(BannedUser::class);
+    }
+
+
+    public function generateVerificationCode()
+    {
+        $this->timestamps = false;
+        $this->code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $this->expire_at = now()->addMinutes(10);
+        $this->is_active = false; // Deactivate until verified
+        $this->save();
+    }
+
+    public function clearVerificationCode()
+    {
+        $this->timestamps = false;
+        $this->code = null;
+        $this->expire_at = null;
+        $this->is_active = true; // Activate after verification
+        $this->save();
     }
 }

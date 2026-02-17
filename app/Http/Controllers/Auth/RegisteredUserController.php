@@ -41,12 +41,19 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'is_active' => false, // User must verify email first
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Generate verification code
+        $user->generateVerificationCode();
+
+        // Send verification code via email
+        \Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($user->code));
+
+        return redirect()->route('verify.index');
     }
 }
