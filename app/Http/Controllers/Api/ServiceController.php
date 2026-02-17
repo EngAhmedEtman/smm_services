@@ -11,6 +11,7 @@ use App\Models\Order;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 
 class ServiceController extends Controller
 {
@@ -68,6 +69,14 @@ class ServiceController extends Controller
      */
     public function addOrder(Request $request)
     {
+        // 0. Prevent Double Submission (Idempotency Check)
+        // Lock for 5 seconds based on user ID.
+        // We use 'add' which returns true only if the key didn't exist.
+        $lockKey = 'add_order_lock_' . auth()->id();
+        if (!\Illuminate\Support\Facades\Cache::add($lockKey, true, 5)) {
+            return response()->json(['status' => 'error', 'error' => 'يرجى الانتظار قليلاً قبل إرسال طلب آخر.'], 429);
+        }
+
         // 1. Retrieve Service Information
         $serviceInfo = $this->getServiceInfo((int)$request->service);
         if (!$serviceInfo) {
