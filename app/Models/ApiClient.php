@@ -15,6 +15,15 @@ class ApiClient extends Model
         'instance_id',
         'balance',
         'status',
+        'package_name',
+        'package_status',
+        'expire_at',
+        'last_notification_sent',
+    ];
+
+    protected $casts = [
+        'expire_at' => 'datetime',
+        'last_notification_sent' => 'datetime',
     ];
 
     /**
@@ -33,5 +42,43 @@ class ApiClient extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function usageLogs()
+    {
+        return $this->hasMany(WhatsAppUsageLog::class);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('package_status', 'active')
+            ->where('expire_at', '>', now());
+    }
+
+    public function scopeExpiringSoon($query, $days = 3)
+    {
+        return $query->where('package_status', 'active')
+            ->whereBetween('expire_at', [now(), now()->addDays($days)]);
+    }
+
+    // Helper Methods  
+    public function hasActivePackage()
+    {
+        return $this->package_status === 'active' && $this->expire_at && $this->expire_at > now();
+    }
+
+    public function canSendMessage()
+    {
+        return $this->hasActivePackage() && $this->balance > 0;
+    }
+
+    public function decrementBalance($count = 1)
+    {
+        if ($this->balance >= $count) {
+            $this->decrement('balance', $count);
+            return true;
+        }
+        return false;
     }
 }

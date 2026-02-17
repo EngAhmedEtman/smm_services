@@ -4,6 +4,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Api\ServiceController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FavoriteServiceController;
 use App\Http\Controllers\Api\WhatsappController;
 use App\Http\Controllers\Api\WhatsappContactController;
@@ -15,7 +16,15 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ApiClientController;
 
 
+
 require __DIR__ . '/auth.php';
+
+// Cron Job Route for Subscription Checking
+Route::get('/run-subscription-check-etman2026', function () {
+    Artisan::call('whatsapp:check-subscriptions');
+    return 'Subscription check completed';
+});
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -24,6 +33,11 @@ require __DIR__ . '/auth.php';
 Route::get('/verify', [EmailVerificationController::class, 'index'])->middleware('auth')->name('verify.index');
 Route::post('/verify', [EmailVerificationController::class, 'store'])->middleware('auth')->name('verify.store');
 Route::post('/verify/resend', [EmailVerificationController::class, 'resend'])->middleware('auth')->name('verify.resend');
+
+// Public Packages - Works for both guests and authenticated users
+Route::get('/packages', [\App\Http\Controllers\UserPackageController::class, 'index'])->name('packages.index');
+Route::post('/packages/subscribe', [\App\Http\Controllers\UserPackageController::class, 'subscribe'])->middleware('auth')->name('packages.subscribe');
+
 
 Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'email.verified'])->name('dashboard');
 
@@ -76,6 +90,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 
 
 
+
     // WhatsApp Webhook — must be public (called by Wolfix API externally)
 
 
@@ -98,6 +113,14 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::post('/admin/users/{id}/add-credit', [\App\Http\Controllers\Admin\SettingsController::class, 'addCredit'])->name('admin.users.add-credit');
 
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
+
+        // WhatsApp Packages Management
+        Route::get('/admin/whatsapp-packages', [\App\Http\Controllers\Admin\AdminPackageController::class, 'index'])->name('admin.packages.index');
+        Route::get('/admin/whatsapp-packages/create', [\App\Http\Controllers\Admin\AdminPackageController::class, 'create'])->name('admin.packages.create');
+        Route::post('/admin/whatsapp-packages', [\App\Http\Controllers\Admin\AdminPackageController::class, 'store'])->name('admin.packages.store');
+        Route::get('/admin/whatsapp-packages/{id}/edit', [\App\Http\Controllers\Admin\AdminPackageController::class, 'edit'])->name('admin.packages.edit');
+        Route::put('/admin/whatsapp-packages/{id}', [\App\Http\Controllers\Admin\AdminPackageController::class, 'update'])->name('admin.packages.update');
+        Route::delete('/admin/whatsapp-packages/{id}', [\App\Http\Controllers\Admin\AdminPackageController::class, 'destroy'])->name('admin.packages.destroy');
 
         // WhatsApp Assets (Random Text & Welcome Messages) - Moved to Admin
         Route::get('/admin/assets', [\App\Http\Controllers\WhatsappAssetsController::class, 'index'])->name('admin.assets.index');

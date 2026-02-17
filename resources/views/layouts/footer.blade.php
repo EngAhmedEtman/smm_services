@@ -3,8 +3,8 @@
         <!-- Brand / About -->
         <div class="space-y-2">
             <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/20">E</div>
-                <span class="text-base font-bold text-white tracking-wide">EtViral</span>
+                <img src="{{ asset('images/logo/logo-icon.png') }}" alt="EtViral" class="w-6 h-6 object-contain" style="filter: brightness(0) saturate(100%) invert(50%) sepia(91%) saturate(2090%) hue-rotate(358deg) brightness(97%) contrast(93%);">
+                <span class="text-base font-bold tracking-wide"><span style="color: #7eaeff;">Et</span><span style="color: #F37021;">Viral</span></span>
             </div>
             <p class="text-[13px] text-gray-400 leading-snug">
                 منصتك الأولى لخدمات التسويق الإلكتروني المتكاملة. نقدم حلولاً ذكية لتعزيز تواجدك الرقمي.
@@ -85,7 +85,7 @@
 
     <!-- Bottom Bar -->
     <div class="border-t border-gray-800/50 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-gray-500">
-        <p>&copy; {{ date('Y') }} <span class="text-gray-300 font-bold">EtViral</span>. جميع الحقوق محفوظة.</p>
+        <p>&copy; {{ date('Y') }} <span class="font-bold"><span style="color: #7eaeff;">Et</span><span style="color: #F37021;">Viral</span></span>. جميع الحقوق محفوظة.</p>
         <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>

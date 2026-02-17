@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', config('app.name', 'Etman SMM'))</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/logo-orange.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,7 +116,6 @@
 
         <!-- Page Content -->
         <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-            {{ $slot ?? '' }}
             @yield('content')
         </main>
 
@@ -222,7 +222,7 @@
             showGlobalNotification(@json(session('error')), 'error', 'خطأ');
             @endif
 
-            @if($errors -> any())
+            @if($errors->any())
             showGlobalNotification('يرجى مراجعة البيانات المدخلة', 'error', 'خطأ في البيانات');
             @endif
         });

@@ -102,10 +102,12 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
         </button>
-        <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/20">E</div>
-            <span class="font-bold text-white tracking-wide text-lg">EtmanSMM</span>
-        </div>
+        <a href="/" class="flex items-center gap-2 group">
+            <div class="w-10 h-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+                <img src="{{ asset('images/logo/logo-orange.png') }}" alt="EtViral" class="w-full h-full object-contain">
+            </div>
+            <span class="text-xl font-bold tracking-wide"><span style="color: #7eaeff;">Et</span><span style="color: #F37021;">Viral</span></span>
+        </a>
     </div>
 
     <div class="flex items-center gap-3">

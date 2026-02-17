@@ -82,15 +82,20 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            @if(!$user->banned)
-                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                نشط
-                            </span>
-                            @else
+                            @if($user->banned)
                             <span class="bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
                                 <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                                 محظور
+                            </span>
+                            @elseif(!$user->is_active)
+                            <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
+                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                                غير نشط
+                            </span>
+                            @else
+                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                نشط
                             </span>
                             @endif
                         </td>

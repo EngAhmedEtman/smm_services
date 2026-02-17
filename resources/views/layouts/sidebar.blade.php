@@ -15,21 +15,19 @@
     class="fixed top-0 right-0 bottom-0 w-64 glass border-l border-white/5 flex flex-col z-50 bg-[#16161a]/95 backdrop-blur-2xl transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) transform md:translate-x-0 h-full shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
 
     <!-- Logo Section (Animated) -->
-    <div class="h-24 flex items-center justify-between px-8 relative overflow-hidden group">
+    <div class="h-28 flex items-center justify-between px-6 relative overflow-hidden group">
         <!-- Glow Effect behind Logo -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-indigo-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-orange-500/15 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-        <div class="flex items-center gap-3 relative z-10">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[1px] shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all duration-300 group-hover:rotate-3 group-hover:scale-105">
-                <div class="w-full h-full rounded-[10px] bg-[#16161a] flex items-center justify-center">
-                    <span class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">E</span>
-                </div>
+        <a href="{{ url('/') }}" class="flex items-center gap-3 relative z-10">
+            <div class="w-14 h-14 transition-all duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-[360deg]">
+                <img src="{{ asset('images/logo/logo-orange.png') }}" alt="EtViral" class="w-full h-full object-contain">
             </div>
             <div class="flex flex-col">
-                <span class="text-2xl font-bold text-white tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">EtViral</span>
-                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold ml-0.5">Pro Dashboard</span>
+                <span class="text-2xl font-bold tracking-wide"><span class="text-[#1B2A4A] brightness-200" style="color: #7eaeff;">Et</span><span style="color: #F37021;">Viral</span></span>
+                <!-- <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Viral Growth Starts Here</span> -->
             </div>
-        </div>
+        </a>
 
         <!-- Mobile Close Button -->
         <button @click="mobileSidebarOpen = false" class="md:hidden text-gray-400 hover:text-white transition-colors hover:rotate-90 duration-300">
@@ -256,6 +254,10 @@
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.assets.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         إدارة المتغيرات
                     </a>
+                    <a href="{{ route('admin.packages.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.packages.*') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.packages.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        باقات WhatsApp
+                    </a>
                     <a href="{{ route('admin.controlServices.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.controlServices.*') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.controlServices.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         التحكم في الخدمات
@@ -274,7 +276,7 @@
 
 
 
-        @if(auth()->user()->allow_api_key)
+        @if(auth()->check() && auth()->user()->allow_api_key)
         <a href="{{route('create-token')}}"
             class="group flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden
             {{ request()->routeIs('create-token') ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">

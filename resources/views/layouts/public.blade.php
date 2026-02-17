@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'EtViral')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/logo-orange.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -39,11 +40,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-2">
-                    <a href="/" class="flex items-center gap-2">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
-                            E
+                    <a href="/" class="flex items-center gap-2 group">
+                        <div class="w-12 h-12 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+                            <img src="{{ asset('images/logo/logo-icon.png') }}" alt="EtViral" class="w-full h-full object-contain" style="filter: brightness(0) saturate(100%) invert(50%) sepia(91%) saturate(2090%) hue-rotate(358deg) brightness(97%) contrast(93%);">
                         </div>
-                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">EtViral</span>
+                        <span class="text-2xl font-bold tracking-wide"><span style="color: #7eaeff;">Et</span><span style="color: #F37021;">Viral</span></span>
                     </a>
                 </div>
                 <div class="hidden md:block">
