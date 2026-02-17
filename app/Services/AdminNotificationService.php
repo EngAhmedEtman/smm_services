@@ -43,37 +43,35 @@ class AdminNotificationService
                 "🆔 رقم المعاملة: #{$recharge->id}\n" .
                 "📅 الوقت: " . now()->format('Y-m-d h:i A');
 
-            // Step 1: Send TEXT notification (guaranteed)
-            $textPayload = [
-                'number' => $number,
-                'type' => 'text',
-                'message' => $message,
-                'instance_id' => $instanceId,
-                'access_token' => $accessToken
-            ];
-
-            $textResponse = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
-            Log::info('AdminNotification: Text sent [' . $textResponse->status() . ']: ' . $textResponse->body());
-
-            // Step 2: Send MEDIA (proof image) as a separate message
+            // Send Notification (Media with Caption OR Text only)
             if ($recharge->proof_image) {
                 $imageUrl = url('file/' . $recharge->proof_image);
-
-                Log::info('AdminNotification: Sending media: ' . $imageUrl);
-
+                Log::info('AdminNotification: Sending media with caption: ' . $imageUrl);
 
                 $mediaPayload = [
                     'number' => $number,
                     'type' => 'media',
-                    'message' => "📎 صورة إثبات التحويل - طلب #{$recharge->id}",
+                    'message' => $message, // Full details as caption
                     'media_url' => $imageUrl,
                     'instance_id' => $instanceId,
                     'access_token' => $accessToken
                 ];
 
-                $mediaResponse = Http::timeout(20)->post(self::$baseUrl . '/send', $mediaPayload);
-                Log::info('AdminNotification: Media sent [' . $mediaResponse->status() . ']: ' . $mediaResponse->body());
+                $response = Http::timeout(30)->post(self::$baseUrl . '/send', $mediaPayload);
+            } else {
+                Log::info('AdminNotification: Sending text only');
+                $textPayload = [
+                    'number' => $number,
+                    'type' => 'text',
+                    'message' => $message,
+                    'instance_id' => $instanceId,
+                    'access_token' => $accessToken
+                ];
+
+                $response = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
             }
+
+            Log::info('AdminNotification: Response [' . $response->status() . ']: ' . $response->body());
         } catch (\Exception $e) {
             // Log error but don't break the user flow
             Log::error("Admin Notification Error: " . $e->getMessage());
@@ -113,12 +111,13 @@ class AdminNotificationService
             }
 
             // Format text message
-            $message = "🔔 *تم قبول إيداع جديد* " .
-
-
-                "تم شحن حسابك بمبلغ : {$recharge->amount} جنيه\n" .
+            // Format text message
+            $message = "🔔 *تم قبول إيداع جديد*\n\n" .
+                "مرحباً {$user->name}،\n" .
+                "تم شحن حسابك بمبلغ: *{$recharge->amount}* جنيه\n" .
                 "🆔 رقم المعاملة: #{$recharge->id}\n" .
-                "📅 الوقت: " . now()->format('Y-m-d h:i A');
+                "📅 الوقت: " . now()->format('Y-m-d h:i A') . "\n\n" .
+                "شكراً لثقتك بنا! 🌹";
 
             // Step 1: Send TEXT notification (guaranteed)
             $textPayload = [
