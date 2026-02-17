@@ -62,7 +62,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">البريد الإلكتروني</h3>
                     <p class="text-gray-400 text-sm">راسلنا عبر البريد الإلكتروني</p>
-                    <p class="text-purple-400 font-mono text-sm mt-1">support@EtViral.com</p>
+                    <p class="text-purple-400 font-mono text-sm mt-1">OfficialEtViral@gmail.com</p>
                 </div>
             </div>
         </a>
