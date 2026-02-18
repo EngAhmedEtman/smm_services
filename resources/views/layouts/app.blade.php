@@ -7,6 +7,22 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', config('app.name', 'Etman SMM'))</title>
+    <meta name="description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع منصات التواصل الاجتماعي: فيسبوك، واتساب، انستجرام، تيك توك، يوتيوب، وغيرها. نساعدك في تعزيز ظهورك الرقمي وزيادة مبيعاتك.')">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', config('app.name', 'Etman SMM'))">
+    <meta property="og:description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع منصات التواصل الاجتماعي: فيسبوك، واتساب، انستجرام، تيك توك، يوتيوب، وغيرها. نساعدك في تعزيز ظهورك الرقمي وزيادة مبيعاتك.')">
+    <meta property="og:image" content="{{ asset('images/logo/logo-orange.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="@yield('title', config('app.name', 'Etman SMM'))">
+    <meta property="twitter:description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع منصات التواصل الاجتماعي: فيسبوك، واتساب، انستجرام، تيك توك، يوتيوب، وغيرها. نساعدك في تعزيز ظهورك الرقمي وزيادة مبيعاتك.')">
+    <meta property="twitter:image" content="{{ asset('images/logo/logo-orange.png') }}">
+
     <link rel="icon" type="image/png" href="{{ asset('images/logo/logo-orange.png') }}">
 
     <!-- Fonts -->
@@ -222,7 +238,7 @@
             showGlobalNotification(@json(session('error')), 'error', 'خطأ');
             @endif
 
-            @if($errors->any())
+            @if($errors - > any())
             showGlobalNotification('يرجى مراجعة البيانات المدخلة', 'error', 'خطأ في البيانات');
             @endif
         });

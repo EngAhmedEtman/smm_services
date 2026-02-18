@@ -115,17 +115,11 @@
                 <div class="flex items-center justify-between bg-gray-800 p-3 rounded-lg border border-gray-700">
                     <span class="text-gray-400 text-sm">محفظة 1</span>
                     <div class="flex items-center gap-3">
-                        <span class="font-mono text-xl text-white font-bold tracking-widest">0123456789</span>
+                        <span class="font-mono text-xl text-white font-bold tracking-widest">01070191977</span>
                         <button onclick="navigator.clipboard.writeText('0123456789')" class="text-indigo-400 hover:text-white text-sm">نسخ</button>
                     </div>
                 </div>
-                <div class="flex items-center justify-between bg-gray-800 p-3 rounded-lg border border-gray-700">
-                    <span class="text-gray-400 text-sm">محفظة 2</span>
-                    <div class="flex items-center gap-3">
-                        <span class="font-mono text-xl text-white font-bold tracking-widest">0123456789</span>
-                        <button onclick="navigator.clipboard.writeText('0123456789')" class="text-indigo-400 hover:text-white text-sm">نسخ</button>
-                    </div>
-                </div>
+
             </div>
         </div>
 

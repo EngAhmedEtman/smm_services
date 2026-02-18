@@ -6,6 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EtViral | @yield('title')</title>
+    <meta name="description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع المنصات: فيسبوك، انستجرام، تويتر، سناب شات، تيك توك، يوتيوب، واتساب، تليجرام، لينكد إن. نساعدك في تعزيز ظهورك الرقمي وزيادة المبيعات.')">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="EtViral | @yield('title')">
+    <meta property="og:description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع المنصات: فيسبوك، انستجرام، تويتر، سناب شات، تيك توك، يوتيوب، واتساب، تليجرام، لينكد إن. نساعدك في تعزيز ظهورك الرقمي وزيادة المبيعات.')">
+    <meta property="og:image" content="{{ asset('images/logo/logo-orange.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="EtViral | @yield('title')">
+    <meta property="twitter:description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع المنصات: فيسبوك، انستجرام، تويتر، سناب شات، تيك توك، يوتيوب، واتساب، تليجرام، لينكد إن. نساعدك في تعزيز ظهورك الرقمي وزيادة المبيعات.')">
+    <meta property="twitter:image" content="{{ asset('images/logo/logo-orange.png') }}">
+
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content="EtViral | @yield('title')">
+    <meta itemprop="description" content="@yield('description', 'خدمات تسويق إلكتروني متكاملة لجميع المنصات: فيسبوك، انستجرام، تويتر، سناب شات، تيك توك، يوتيوب، واتساب، تليجرام، لينكد إن. نساعدك في تعزيز ظهورك الرقمي وزيادة المبيعات.')">
+    <meta itemprop="image" content="{{ asset('images/logo/logo-orange.png') }}">
+
     <link rel="icon" type="image/png" href="{{ asset('images/logo/logo-orange.png') }}">
 
     <!-- Fonts -->
