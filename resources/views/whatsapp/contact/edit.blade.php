@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <form action="{{ route('whatsapp.contact.update', $contact->id) }}" method="POST" class="space-y-8 relative z-10">
+        <form action="{{ route('whatsapp.contacts.update', $contact->id) }}" method="POST" class="space-y-8 relative z-10">
             @csrf
             @method('PUT')
 

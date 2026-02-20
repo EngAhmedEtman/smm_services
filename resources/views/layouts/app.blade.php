@@ -238,7 +238,7 @@
             showGlobalNotification(@json(session('error')), 'error', 'خطأ');
             @endif
 
-            @if($errors - > any())
+            @if($errors -> any())
             showGlobalNotification('يرجى مراجعة البيانات المدخلة', 'error', 'خطأ في البيانات');
             @endif
         });
