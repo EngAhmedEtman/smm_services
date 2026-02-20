@@ -141,8 +141,6 @@
 
     @stack('scripts')
 
-    @stack('scripts')
-
     <!-- Global Notifications (Vanilla JS Fallback) -->
     <div id="global-notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 
@@ -238,7 +236,7 @@
             showGlobalNotification(@json(session('error')), 'error', 'خطأ');
             @endif
 
-            @if($errors -> any())
+            @if($errors - > any())
             showGlobalNotification('يرجى مراجعة البيانات المدخلة', 'error', 'خطأ في البيانات');
             @endif
         });
