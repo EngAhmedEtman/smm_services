@@ -16,7 +16,7 @@
 
     <div class="bg-[#1e1e24]/80 backdrop-blur-md border border-gray-800/60 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group hover:border-pink-500/20 transition-all duration-500">
 
-        <form action="{{ route('addOrder') }}" method="POST" id="orderForm" class="space-y-6 relative z-10">
+        <form id="orderForm" class="space-y-6 relative z-10">
             @csrf
 
             <!-- Quick Search -->
@@ -187,7 +187,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-pink-900/30 transform transition-all hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-4 focus:ring-pink-500/20 disabled:opacity-70 disabled:cursor-not-allowed border border-white/10">
+            <button type="button" id="orderSubmitBtn" class="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-pink-900/30 transform transition-all hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-4 focus:ring-pink-500/20 disabled:opacity-70 disabled:cursor-not-allowed border border-white/10">
                 تأكيد وإرسال الطلب
             </button>
 
@@ -519,15 +519,16 @@
 
         // 6. Form Submission
         let isSubmitting = false;
-        document.getElementById('orderForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
+        document.getElementById('orderSubmitBtn').addEventListener('click', function() {
             // Prevent double submission
             if (isSubmitting) return;
             isSubmitting = true;
 
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
+            const form = document.getElementById('orderForm');
+            const formData = new FormData(form);
+            // Manually add CSRF token since form has no action
+            const csrfToken = document.querySelector('input[name="_token"]').value;
+            const submitBtn = this;
             const originalBtnContent = submitBtn.innerHTML;
 
             submitBtn.disabled = true;

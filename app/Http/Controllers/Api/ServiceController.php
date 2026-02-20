@@ -70,10 +70,11 @@ class ServiceController extends Controller
     public function addOrder(Request $request)
     {
         // 0. Prevent Double Submission (Idempotency Check)
-        // Lock for 5 seconds based on user ID.
-        // We use 'add' which returns true only if the key didn't exist.
-        $lockKey = 'add_order_lock_' . auth()->id();
-        if (!\Illuminate\Support\Facades\Cache::add($lockKey, true, 5)) {
+        // Lock based on user ID + order content hash (service + link + quantity)
+        // This prevents the same exact order from being submitted twice even in race conditions.
+        $orderHash = md5($request->service . '|' . $request->link . '|' . $request->quantity . '|' . $request->comments);
+        $lockKey = 'add_order_lock_' . auth()->id() . '_' . $orderHash;
+        if (!\Illuminate\Support\Facades\Cache::add($lockKey, true, 10)) {
             return response()->json(['status' => 'error', 'error' => 'يرجى الانتظار قليلاً قبل إرسال طلب آخر.'], 429);
         }
 
