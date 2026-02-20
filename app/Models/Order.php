@@ -23,6 +23,7 @@ class Order extends Model
         'cancel_available',
         'last_refill_id',
         'last_refill_status',
+        'refunded_at',
     ];
 
     public function user()

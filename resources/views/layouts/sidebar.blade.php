@@ -246,6 +246,10 @@
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.orders.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         كل الطلبات
                     </a>
+                    <a href="{{ route('admin.online-users.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.online-users.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.online-users.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-green-500 animate-pulse' }} transition-all"></span>
+                        متصلون الآن
+                    </a>
                     <a href="{{ route('admin.users.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.users.index') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.users.index') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         المستخدمين

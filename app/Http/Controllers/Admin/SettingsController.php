@@ -193,6 +193,28 @@ class SettingsController extends Controller
     {
         return view('settings.tickets');
     }
+
+    /**
+     * Show users currently online (active within last 5 minutes).
+     */
+    public function onlineUsers()
+    {
+        // Online = last seen within 5 minutes
+        $onlineUsers = User::whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subMinutes(5))
+            ->orderByDesc('last_seen_at')
+            ->get();
+
+        // Recent activity: active in last hour
+        $recentUsers = User::whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subHour())
+            ->where('last_seen_at', '<', now()->subMinutes(5))
+            ->orderByDesc('last_seen_at')
+            ->get();
+
+        return view('settings.online-users', compact('onlineUsers', 'recentUsers'));
+    }
+
     /**
      * Toggle user API access.
      */

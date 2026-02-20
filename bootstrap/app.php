@@ -15,8 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'super_admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
-            'api.key' => \App\Http\Middleware\CheckApiKey::class,
+            'api.key'     => \App\Http\Middleware\CheckApiKey::class,
             'email.verified' => \App\Http\Middleware\EnsureEmailVerified::class,
+        ]);
+
+        // Track last seen for all authenticated web requests
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackLastSeen::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

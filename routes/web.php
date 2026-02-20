@@ -114,6 +114,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
         Route::get('/admin/orders', [\App\Http\Controllers\Admin\SettingsController::class, 'orders'])->name('admin.orders.index');
+        Route::get('/admin/online-users', [\App\Http\Controllers\Admin\SettingsController::class, 'onlineUsers'])->name('admin.online-users.index');
 
         // WhatsApp Packages Management
         Route::get('/admin/whatsapp-packages', [\App\Http\Controllers\Admin\AdminPackageController::class, 'index'])->name('admin.packages.index');

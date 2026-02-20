@@ -22,8 +22,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'phone', // Added phone number
-        'is_active', // Added is_active status
+        'phone',
+        'is_active',
         'password',
         'balance',
         'total_spent',
@@ -32,6 +32,7 @@ class User extends Authenticatable
         'allow_api_key',
         'code',
         'expire_at',
+        'last_seen_at',
     ];
 
     /**
@@ -53,9 +54,18 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
+            'last_seen_at'      => 'datetime',
         ];
+    }
+
+    /**
+     * Returns true if the user was active within the last 5 minutes.
+     */
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at && $this->last_seen_at->diffInMinutes(now()) < 5;
     }
 
     /**
