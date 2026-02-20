@@ -252,8 +252,12 @@
         }
     }
 
+    let isSubmitting = false;
+
     function submitQuickOrder(e) {
         e.preventDefault();
+        if (isSubmitting) return;
+        isSubmitting = true;
         const formData = new FormData(e.target);
         btnSubmit.disabled = true;
         document.getElementById('loadingSpinner').classList.remove('hidden');
@@ -277,6 +281,7 @@
             })
             .catch(err => showToast('خطأ غير متوقع', 'error'))
             .finally(() => {
+                isSubmitting = false;
                 btnSubmit.disabled = false;
                 document.getElementById('loadingSpinner').classList.add('hidden');
             });

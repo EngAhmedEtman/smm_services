@@ -518,8 +518,13 @@
         }
 
         // 6. Form Submission
+        let isSubmitting = false;
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // Prevent double submission
+            if (isSubmitting) return;
+            isSubmitting = true;
 
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');
@@ -569,6 +574,7 @@
                 })
                 .finally(() => {
                     if (!successModal.classList.contains('hidden')) return;
+                    isSubmitting = false;
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnContent;
                 });
