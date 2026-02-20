@@ -113,6 +113,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::post('/admin/users/{id}/add-credit', [\App\Http\Controllers\Admin\SettingsController::class, 'addCredit'])->name('admin.users.add-credit');
 
         Route::get('/admin/tickets', [\App\Http\Controllers\Admin\SettingsController::class, 'tickets'])->name('admin.tickets.index');
+        Route::get('/admin/orders', [\App\Http\Controllers\Admin\SettingsController::class, 'orders'])->name('admin.orders.index');
 
         // WhatsApp Packages Management
         Route::get('/admin/whatsapp-packages', [\App\Http\Controllers\Admin\AdminPackageController::class, 'index'])->name('admin.packages.index');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\Recharge;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\PricingTier;
 use Illuminate\Http\Request;
 
@@ -149,6 +150,40 @@ class SettingsController extends Controller
         }
 
         return back()->with('success', "تم إضافة {$request->amount} جنيه لرصيد {$user->name} بنجاح.");
+    }
+
+    /**
+     * Show all orders from all users (Admin).
+     */
+    public function orders(Request $request)
+    {
+        $query = Order::with('user')->latest();
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by user search
+        if ($request->filled('search')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            })->orWhere('link', 'like', '%' . $request->search . '%')
+                ->orWhere('smm_order_id', 'like', '%' . $request->search . '%');
+        }
+
+        $orders  = $query->paginate(50)->withQueryString();
+        $stats   = [
+            'total'      => Order::count(),
+            'pending'    => Order::where('status', 'pending')->count(),
+            'processing' => Order::whereIn('status', ['processing', 'inprogress', 'in progress'])->count(),
+            'completed'  => Order::where('status', 'completed')->count(),
+            'partial'    => Order::where('status', 'partial')->count(),
+            'failed'     => Order::whereIn('status', ['failed', 'canceled', 'cancelled'])->count(),
+        ];
+
+        return view('settings.orders', compact('orders', 'stats'));
     }
 
     /**
