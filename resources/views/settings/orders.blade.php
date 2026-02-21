@@ -135,8 +135,8 @@
                         {{-- Quantity --}}
                         <td class="px-4 py-3 text-xs text-gray-300 whitespace-nowrap">
                             {{ number_format($order->quantity) }}
-                            @if($order->remains !== null && $order->remains > 0)
-                            <span class="text-gray-600">(متبقي: {{ number_format($order->remains) }})</span>
+                            @if(($order->api_remains ?? $order->remains) > 0)
+                            <span class="text-gray-600">(متبقي: {{ number_format($order->api_remains ?? $order->remains) }})</span>
                             @endif
                         </td>
 
@@ -150,26 +150,30 @@
                             {{ $order->smm_order_id ?? '—' }}
                         </td>
 
-                        {{-- Status --}}
+                        {{-- Status (من API) --}}
                         <td class="px-4 py-3">
                             @php
-                            $status = strtolower($order->status ?? 'pending');
+                            $status = strtolower($order->api_status ?? $order->status ?? 'pending');
                             $statusMap = [
                             'pending' => ['label' => 'معلق', 'cls' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', 'dot' => 'bg-yellow-400 animate-pulse'],
-                            'processing' => ['label' => 'جارٍ التنفيذ', 'cls' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'dot' => 'bg-blue-400 animate-pulse'],
+                            'processing' => ['label' => 'جارٍ التنفيذ','cls' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'dot' => 'bg-blue-400 animate-pulse'],
                             'inprogress' => ['label' => 'قيد التنفيذ', 'cls' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'dot' => 'bg-blue-400 animate-pulse'],
-                            'in progress'=> ['label' => 'قيد التنفيذ', 'cls' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'dot' => 'bg-blue-400 animate-pulse'],
+                            'in progress' => ['label' => 'قيد التنفيذ', 'cls' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'dot' => 'bg-blue-400 animate-pulse'],
                             'completed' => ['label' => 'مكتمل', 'cls' => 'bg-green-500/10 text-green-400 border-green-500/20', 'dot' => 'bg-green-400'],
-                            'partial' => ['label' => 'جزئي', 'cls' => 'bg-orange-500/10 text-orange-400 border-orange-500/20', 'dot' => 'bg-orange-400'],
+                            'partial' => ['label' => 'جزئي', 'cls' => 'bg-orange-500/10 text-orange-400 border-orange-500/20','dot' => 'bg-orange-400'],
                             'failed' => ['label' => 'فشل', 'cls' => 'bg-red-500/10 text-red-400 border-red-500/20', 'dot' => 'bg-red-400'],
                             'canceled' => ['label' => 'ملغي', 'cls' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'dot' => 'bg-gray-400'],
                             'cancelled' => ['label' => 'ملغي', 'cls' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'dot' => 'bg-gray-400'],
                             ];
-                            $s = $statusMap[$status] ?? ['label' => $order->status, 'cls' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'dot' => 'bg-gray-400'];
+                            $s = $statusMap[$status] ?? ['label' => ($order->api_status ?? $order->status), 'cls' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'dot' => 'bg-gray-400'];
+                            $fromApi = isset($order->smm_order_id) && !empty($order->smm_order_id);
                             @endphp
-                            <span class="inline-flex items-center gap-1 text-xs font-medium border px-2 py-0.5 rounded-full {{ $s['cls'] }}">
+                            <span class="inline-flex items-center gap-1 text-xs font-medium border px-2 py-0.5 rounded-full {{ $s['cls'] }}" title="{{ $fromApi ? 'الحالة من API' : 'الحالة من قاعدة البيانات' }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $s['dot'] }}"></span>
                                 {{ $s['label'] }}
+                                @if($fromApi)
+                                <span class="opacity-50 text-[9px]">⚡</span>
+                                @endif
                             </span>
                         </td>
 

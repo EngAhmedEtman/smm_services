@@ -154,6 +154,7 @@ class SettingsController extends Controller
 
     /**
      * Show all orders from all users (Admin).
+     * Statuses are fetched live from the SMM API for the current page.
      */
     public function orders(Request $request)
     {
@@ -173,8 +174,40 @@ class SettingsController extends Controller
                 ->orWhere('smm_order_id', 'like', '%' . $request->search . '%');
         }
 
-        $orders  = $query->paginate(50)->withQueryString();
-        $stats   = [
+        // Paginate 20 per page
+        $orders = $query->paginate(20)->withQueryString();
+
+        // Fetch live statuses from SMM API for orders that have a smm_order_id
+        $smmIds = $orders->filter(fn($o) => !empty($o->smm_order_id))
+            ->pluck('smm_order_id')
+            ->toArray();
+
+        $apiStatuses = [];
+        if (!empty($smmIds)) {
+            try {
+                $smmService  = new \App\Services\SmmService();
+                $apiStatuses = $smmService->getMultipleOrdersStatus($smmIds);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Admin orders: SMM API status fetch failed — ' . $e->getMessage());
+            }
+        }
+
+        // Merge API status into each order item
+        foreach ($orders as $order) {
+            $apiData = $apiStatuses[$order->smm_order_id] ?? null;
+            if ($apiData && isset($apiData['status'])) {
+                $order->api_status  = strtolower($apiData['status']);
+                $order->api_remains = $apiData['remains'] ?? $order->remains;
+                $order->api_start   = $apiData['start_count'] ?? $order->start_count;
+            } else {
+                // Fallback to DB value
+                $order->api_status  = $order->status;
+                $order->api_remains = $order->remains;
+                $order->api_start   = $order->start_count;
+            }
+        }
+
+        $stats = [
             'total'      => Order::count(),
             'pending'    => Order::where('status', 'pending')->count(),
             'processing' => Order::whereIn('status', ['processing', 'inprogress', 'in progress'])->count(),
