@@ -146,6 +146,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         // Custom Services Management
         Route::get('/admin/custom-services', [\App\Http\Controllers\Admin\CustomServiceController::class, 'index'])->name('admin.customServices.index');
         Route::post('/admin/custom-services', [\App\Http\Controllers\Admin\CustomServiceController::class, 'store'])->name('admin.customServices.store');
+        Route::put('/admin/custom-services/{id}', [\App\Http\Controllers\Admin\CustomServiceController::class, 'update'])->name('admin.customServices.update');
         Route::delete('/admin/custom-services/{id}', [\App\Http\Controllers\Admin\CustomServiceController::class, 'destroy'])->name('admin.customServices.destroy');
 
         // WhatsApp Pricing Tiers

@@ -84,6 +84,19 @@
                                 {{ number_format($service->min) }} - {{ number_format($service->max) }}
                             </td>
                             <td class="px-6 py-4 flex items-center gap-3">
+                                <button onclick='openEditModal({!! json_encode([
+                                    "id" => $service->id,
+                                    "name" => $service->name,
+                                    "category" => $service->category,
+                                    "description" => $service->description,
+                                    "rate" => $service->rate,
+                                    "min" => $service->min,
+                                    "max" => $service->max
+                                ]) !!})' class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all" title="تعديل">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </button>
                                 <form action="{{ route('admin.customServices.destroy', $service->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذه الخدمة؟');">
                                     @csrf
                                     @method('DELETE')
@@ -126,7 +139,12 @@
             @csrf
             <div>
                 <label class="block text-gray-400 text-sm font-bold mb-2">اسم القسم</label>
-                <input type="text" name="category" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required placeholder="مثال: خدمات متنوعة">
+                <select name="category" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+                    <option value="" disabled selected>-- اختر القسم --</option>
+                    @foreach($mainCategories ?? [] as $cat)
+                    <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div>
                 <label class="block text-gray-400 text-sm font-bold mb-2">اسم الخدمة</label>
@@ -158,4 +176,69 @@
         </form>
     </div>
 </div>
+
+<!-- Edit Custom Service Modal -->
+<div id="editCustomServiceModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-50 flex items-center justify-center">
+    <div class="relative mx-auto p-6 border border-gray-700 w-full max-w-md shadow-2xl rounded-2xl bg-[#1e1e24]">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-white">تعديل الخدمة المخصصة</h3>
+            <p class="text-gray-400 text-sm mt-1">تحديث بيانات الخدمة الحالية.</p>
+        </div>
+
+        <form id="editCustomServiceForm" method="POST" class="space-y-4 text-right">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="block text-gray-400 text-sm font-bold mb-2">اسم القسم</label>
+                <select name="category" id="edit_category" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+                    <option value="" disabled>-- اختر القسم --</option>
+                    @foreach($mainCategories ?? [] as $cat)
+                    <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 text-sm font-bold mb-2">اسم الخدمة</label>
+                <input type="text" name="name" id="edit_name" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+            </div>
+            <div>
+                <label class="block text-gray-400 text-sm font-bold mb-2">الوصف</label>
+                <textarea name="description" id="edit_description" rows="3" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all placeholder-gray-500" required></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-400 text-sm font-bold mb-2">السعر للألف ($)</label>
+                <input type="number" step="0.0001" name="rate" id="edit_rate" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-400 text-sm font-bold mb-2">الحد الأدنى</label>
+                    <input type="number" name="min" id="edit_min" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm font-bold mb-2">الحد الأقصى</label>
+                    <input type="number" name="max" id="edit_max" class="w-full bg-[#16161a] border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all" required>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" onclick="document.getElementById('editCustomServiceModal').classList.add('hidden')" class="px-6 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">إلغاء</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-600/20">حفظ التحديث</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditModal(service) {
+        document.getElementById('edit_name').value = service.name;
+        document.getElementById('edit_category').value = service.category;
+        document.getElementById('edit_description').value = service.description;
+        document.getElementById('edit_rate').value = service.rate;
+        document.getElementById('edit_min').value = service.min;
+        document.getElementById('edit_max').value = service.max;
+
+        document.getElementById('editCustomServiceForm').action = '/admin/custom-services/' + service.id;
+        document.getElementById('editCustomServiceModal').classList.remove('hidden');
+    }
+</script>
 @endsection

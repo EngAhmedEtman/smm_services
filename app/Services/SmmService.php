@@ -199,9 +199,10 @@ class SmmService
 
         // Main Categories (for global sorting)
         $mainCategories = \App\Models\MainCategory::all()->keyBy('id');
+        $mainCategoriesByName = \App\Models\MainCategory::all()->keyBy('name');
 
         // 3. Merge Data
-        $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings, $mainCategories) {
+        $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings, $mainCategories, $mainCategoriesByName) {
             $serviceId = $service['service'];
             $originalCategoryName = $service['category'];
 
@@ -241,6 +242,14 @@ class SmmService
                 }
             } else {
                 $service['main_category_id'] = null;
+                // If this is a custom service, its category might exactly match a MainCategory name
+                if ($service['is_custom'] && isset($mainCategoriesByName[$originalCategoryName])) {
+                    $mainCat = $mainCategoriesByName[$originalCategoryName];
+                    $service['main_category_id'] = $mainCat->id;
+                    if ($mainCat->sort_order > 0) {
+                        $service['main_category_sort'] = $mainCat->sort_order;
+                    }
+                }
             }
 
             // B. Apply Service Settings (Override Category & Active Status)
