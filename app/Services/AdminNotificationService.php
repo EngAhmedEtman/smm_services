@@ -205,15 +205,20 @@ class AdminNotificationService
             $user = $order->user;
             $number = preg_replace('/[^0-9]/', '', $adminPhone);
 
+            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            if (strlen($number) === 11 && str_starts_with($number, '01')) {
+                $number = '2' . $number;
+            }
+
             // Format text message
             $message = "🔔 *طلب خدمة مخصصة جديد*\n\n" .
                 "👤 العميل: {$user->name}\n" .
                 "📧 البريد: {$user->email}\n" .
-                "رقم الهاتف: {$user->phone}\n\n" .
+                "📞 رقم الهاتف: {$user->phone}\n\n" .
                 "🛒 الخدمة: {$order->service_name}\n" .
                 "🔗 الرابط: {$order->link}\n" .
                 "📦 الكمية: {$order->quantity}\n" .
-                "💰 التكلفة: {$order->price} $\n\n" .
+                "💰 التكلفة: {$order->price} ج.م\n\n" .
                 "🆔 رقم الطلب الداخلي: #{$order->id}\n" .
                 "📅 الوقت: " . now()->format('Y-m-d h:i A');
 
@@ -228,6 +233,58 @@ class AdminNotificationService
 
             $response = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
             Log::info('AdminNotification: Text sent [' . $response->status() . ']: ' . $response->body());
+        } catch (\Exception $e) {
+            Log::error("Admin Notification Error: " . $e->getMessage());
+        }
+    }
+
+    public static function notifyOrderRefunded($user, $order)
+    {
+        try {
+            Log::info("AdminNotification: sending order refund notification to User {$user->id} for order #{$order->id}");
+
+            // Fetch credentials from DB
+            $instanceId = Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
+            $accessToken = Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+
+            // If settings are missing, skip notification silently
+            if (!$instanceId || !$accessToken) {
+                Log::warning('AdminNotification: Settings missing.');
+                return;
+            }
+
+            $number = preg_replace('/[^0-9]/', '', $user->phone);
+
+            // Auto-format Egyptian numbers (01xxxxxxxxx -> 201xxxxxxxxx)
+            if (strlen($number) === 11 && str_starts_with($number, '01')) {
+                $number = '2' . $number;
+            }
+
+            if (empty($number)) {
+                Log::warning("AdminNotification: User {$user->id} has no valid phone number.");
+                return;
+            }
+
+            // Format text message
+            $message = "🔄 *تم إلغاء طلب ورد المبلغ*\n\n" .
+                "مرحباً {$user->name}،\n" .
+                "نأسف لإبلاغك بأنه تم إلغاء طلبك رقم #{$order->id}.\n" .
+                "الخدمة: {$order->service_name}\n\n" .
+                "تمت إعادة تكلفة الطلب (*{$order->price}* جنيه) إلى رصيدك.\n" .
+                "💰 *رصيدك الحالي:* {$user->balance} جنيه\n\n" .
+                "شكراً لاستخدامك خدماتنا!";
+
+            // Send TEXT notification
+            $textPayload = [
+                'number' => $number,
+                'type' => 'text',
+                'message' => $message,
+                'instance_id' => $instanceId,
+                'access_token' => $accessToken
+            ];
+
+            $textResponse = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
+            Log::info('AdminNotification: Text sent [' . $textResponse->status() . ']: ' . $textResponse->body());
         } catch (\Exception $e) {
             Log::error("Admin Notification Error: " . $e->getMessage());
         }
