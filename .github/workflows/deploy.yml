@@ -23,7 +23,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd domains/s111s.com/sana
+          cd domains/etviral.com/etmanss
 
             git pull origin main
 
