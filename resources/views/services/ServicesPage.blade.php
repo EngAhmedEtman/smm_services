@@ -124,7 +124,7 @@
 
             <!-- Link Input -->
             <div class="space-y-1.5">
-                <label for="link" class="text-xs font-semibold text-gray-400 mr-1">رابط الحساب / المنشور</label>
+                <label id="linkLabel" for="link" class="text-xs font-semibold text-gray-400 mr-1">رابط الحساب / المنشور</label>
                 <div class="relative group">
                     <input type="url" id="link" name="link"
                         class="block w-full rounded-xl bg-[#0f0f13]/80 border border-gray-700/50 text-white px-5 py-3.5 pl-12 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all placeholder-gray-600 shadow-sm"
@@ -462,11 +462,22 @@
                 serviceMaxEl.textContent = selectedOption.dataset.max;
 
                 const descContainer = document.getElementById('serviceDescContainer');
+                const linkInput = document.getElementById('link');
+                const linkLabel = document.getElementById('linkLabel');
+
                 if (selectedOption.dataset.is_custom === 'true') {
                     descContainer.classList.remove('hidden');
                     serviceDescEl.textContent = selectedOption.dataset.desc;
+                    // Custom Service Link UI modifications
+                    linkInput.type = 'text';
+                    linkInput.placeholder = 'رابط / نص / رقم هاتف / بريد';
+                    if (linkLabel) linkLabel.textContent = 'البيانات المطلوبة (رابط / نص / رقم)';
                 } else {
                     descContainer.classList.add('hidden');
+                    // Revert to normal URL UI
+                    linkInput.type = 'url';
+                    linkInput.placeholder = 'https://instagram.com/...';
+                    if (linkLabel) linkLabel.textContent = 'رابط الحساب / المنشور';
                 }
 
                 const type = selectedOption.dataset.type || 'Default';

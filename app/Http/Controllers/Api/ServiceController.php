@@ -80,7 +80,8 @@ class ServiceController extends Controller
         }
 
         // 1. Retrieve Service Information
-        $serviceInfo = $this->getServiceInfo((int)$request->service);
+        $serviceId = $request->service;
+        $serviceInfo = $this->getServiceInfo($serviceId);
         if (!$serviceInfo) {
             return response()->json(['status' => 'error', 'error' => 'Service not found'], 404);
         }
@@ -225,9 +226,9 @@ class ServiceController extends Controller
     /**
      * Find service details by ID from the fetched services list.
      */
-    private function getServiceInfo(int $serviceId)
+    private function getServiceInfo($serviceId)
     {
-        $allServices = $this->smmService->services();
+        $allServices = $this->smmService->getServicesWithSettings(true);
         return collect($allServices)->firstWhere('service', $serviceId);
     }
 
@@ -238,9 +239,14 @@ class ServiceController extends Controller
     {
         $type = $serviceInfo['type'] ?? 'Default';
         $rules = [
-            'service' => 'required|integer',
+            'service' => 'required',
             'link' => 'required|url',
         ];
+
+        // Allow any string (like email/phone) if the service is a custom local service
+        if (isset($serviceInfo['is_custom']) && $serviceInfo['is_custom']) {
+            $rules['link'] = 'required|string|max:1000';
+        }
 
         if ($this->isCustomComments($type)) {
             $rules['comments'] = 'required|string';
