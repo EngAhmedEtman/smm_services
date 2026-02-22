@@ -185,4 +185,51 @@ class AdminNotificationService
             Log::error("Admin Notification Error: " . $e->getMessage());
         }
     }
+
+    public static function notifyNewCustomOrder($order)
+    {
+        try {
+            Log::info('AdminNotification: Starting for Custom Order #' . $order->id);
+
+            // Fetch credentials from DB
+            $instanceId = Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
+            $accessToken = Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+            $adminPhone = Setting::where('key', 'admin_receiver_number')->value('value');
+
+            // If settings are missing, skip notification silently
+            if (!$instanceId || !$accessToken || !$adminPhone) {
+                Log::warning('AdminNotification: Settings missing.');
+                return;
+            }
+
+            $user = $order->user;
+            $number = preg_replace('/[^0-9]/', '', $adminPhone);
+
+            // Format text message
+            $message = "🔔 *طلب خدمة مخصصة جديد*\n\n" .
+                "👤 العميل: {$user->name}\n" .
+                "📧 البريد: {$user->email}\n" .
+                "رقم الهاتف: {$user->phone}\n\n" .
+                "🛒 الخدمة: {$order->service_name}\n" .
+                "🔗 الرابط: {$order->link}\n" .
+                "📦 الكمية: {$order->quantity}\n" .
+                "💰 التكلفة: {$order->price} $\n\n" .
+                "🆔 رقم الطلب الداخلي: #{$order->id}\n" .
+                "📅 الوقت: " . now()->format('Y-m-d h:i A');
+
+            // Send TEXT notification
+            $textPayload = [
+                'number' => $number,
+                'type' => 'text',
+                'message' => $message,
+                'instance_id' => $instanceId,
+                'access_token' => $accessToken
+            ];
+
+            $response = Http::timeout(15)->post(self::$baseUrl . '/send', $textPayload);
+            Log::info('AdminNotification: Text sent [' . $response->status() . ']: ' . $response->body());
+        } catch (\Exception $e) {
+            Log::error("Admin Notification Error: " . $e->getMessage());
+        }
+    }
 }

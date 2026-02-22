@@ -171,6 +171,25 @@ class SmmService
         // 1. Fetch API Services
         $apiServices = $this->services();
 
+        // 1.5. Fetch Custom Local Services and format them like API services
+        $customLocalServicesRaw = \App\Models\Service::where('is_custom', true)->get();
+        $customApiServices = [];
+        foreach ($customLocalServicesRaw as $cService) {
+            $customApiServices[] = [
+                'service'  => $cService->service_id,
+                'name'     => $cService->name,
+                'type'     => $cService->type,
+                'category' => $cService->category,
+                'rate'     => $cService->rate,
+                'min'      => $cService->min,
+                'max'      => $cService->max,
+                'is_custom' => true,
+            ];
+        }
+
+        // Merge API Services and Custom Services
+        $allServices = array_merge($apiServices, $customApiServices);
+
         // 2. Fetch Local Settings
         // Service-level settings
         $localServiceSettings = \App\Models\Service::all()->keyBy('service_id');
@@ -185,6 +204,11 @@ class SmmService
         $mergedServices = array_map(function ($service) use ($localServiceSettings, $localCategorySettings, $mainCategories) {
             $serviceId = $service['service'];
             $originalCategoryName = $service['category'];
+
+            // Retain custom flag
+            if (!isset($service['is_custom'])) {
+                $service['is_custom'] = false;
+            }
 
             // A. Apply Category Settings (Main ID & Custom Name & Sort Order)
             $catSetting = $localCategorySettings[$originalCategoryName] ?? null;
@@ -245,7 +269,7 @@ class SmmService
             }
 
             return $service;
-        }, $apiServices);
+        }, $allServices);
 
         // 4. Sort Services
         usort($mergedServices, function ($a, $b) {

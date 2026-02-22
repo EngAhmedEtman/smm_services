@@ -142,6 +142,10 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::post('/admin/control-categories/main-update', [\App\Http\Controllers\ControlCategoriesController::class, 'updateMainCategories'])->name('admin.controlCategories.updateMainList');
         Route::delete('/admin/control-categories/main/{id}', [\App\Http\Controllers\ControlCategoriesController::class, 'destroyMainCategory'])->name('admin.controlCategories.destroyMain');
 
+        // Custom Services Management
+        Route::post('/admin/custom-services', [\App\Http\Controllers\Admin\SettingsController::class, 'storeCustomService'])->name('admin.customServices.store');
+        Route::delete('/admin/custom-services/{id}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroyCustomService'])->name('admin.customServices.destroy');
+
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);
     }); // Closing admin group

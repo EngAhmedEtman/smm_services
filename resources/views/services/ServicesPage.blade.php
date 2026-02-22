@@ -109,7 +109,7 @@
                     </div>
                 </div>
 
-                <div class="pt-1">
+                <div class="pt-1 hidden" id="serviceDescContainer">
                     <div class="flex items-center gap-2 mb-2 text-gray-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -326,6 +326,8 @@
                     option.dataset.max = srv.max;
                     option.dataset.name = srv.name;
                     option.dataset.type = srv.type;
+                    option.dataset.is_custom = srv.is_custom ? 'true' : 'false';
+                    option.dataset.desc = srv.description || srv.desc || srv.name;
                     serviceSelect.appendChild(option);
                 });
                 serviceSelect.disabled = false;
@@ -458,7 +460,14 @@
                 serviceRateEl.textContent = Number(selectedOption.dataset.rate).toFixed(4) + ' ج.م';
                 serviceMinEl.textContent = selectedOption.dataset.min;
                 serviceMaxEl.textContent = selectedOption.dataset.max;
-                serviceDescEl.textContent = selectedOption.dataset.name;
+
+                const descContainer = document.getElementById('serviceDescContainer');
+                if (selectedOption.dataset.is_custom === 'true') {
+                    descContainer.classList.remove('hidden');
+                    serviceDescEl.textContent = selectedOption.dataset.desc;
+                } else {
+                    descContainer.classList.add('hidden');
+                }
 
                 const type = selectedOption.dataset.type || 'Default';
                 handleServiceType(type);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 use App\Services\SmmService;
+use App\Services\AdminNotificationService;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Auth\AuthManager;
@@ -107,7 +108,26 @@ class ServiceController extends Controller
         // 5. Create Local Order
         $order = $this->createLocalOrder($request, $processedData, $serviceInfo);
 
-        // 6. Submit to SMM Provider
+        // 6. Check if Custom Service
+        if (isset($serviceInfo['is_custom']) && $serviceInfo['is_custom']) {
+            // Deduct balance manually (since we bypass API submission)
+            $this->deductUserBalance($processedData['charge']);
+
+            // Notify Admin via WhatsApp
+            try {
+                AdminNotificationService::notifyNewCustomOrder($order);
+            } catch (\Exception $e) {
+                Log::error("Failed to notify admin about custom order: " . $e->getMessage());
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم استلام طلبك المخصص بنجاح وجاري تنفيذه.',
+                'local_order_id' => $order->id
+            ]);
+        }
+
+        // 7. Submit to SMM Provider (for non-custom services)
         return $this->submitOrderToProvider($order, $request->all(), $processedData['charge']);
     }
 

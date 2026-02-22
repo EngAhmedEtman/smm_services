@@ -25,10 +25,10 @@ class ControlCategoriesController extends Controller
         $apiCategories = collect($apiServices)->pluck('category')->unique()->values();
 
         // 3. Fetch Local Settings
-        $categorySettings = \App\Models\CategorySetting::all()->keyBy('original_category_name');
+        $categorySettings = CategorySetting::all()->keyBy('original_category_name');
 
         // 4. Fetch Main Categories (Sorted by sort_order)
-        $mainCategories = \App\Models\MainCategory::orderBy('sort_order', 'asc')->get();
+        $mainCategories = MainCategory::orderBy('sort_order', 'asc')->get();
 
         // 5. Merge Data
         $categories = $apiCategories->map(function ($catName) use ($categorySettings) {
