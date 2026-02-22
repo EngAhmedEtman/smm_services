@@ -144,8 +144,9 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::delete('/admin/control-categories/main/{id}', [\App\Http\Controllers\ControlCategoriesController::class, 'destroyMainCategory'])->name('admin.controlCategories.destroyMain');
 
         // Custom Services Management
-        Route::post('/admin/custom-services', [\App\Http\Controllers\Admin\SettingsController::class, 'storeCustomService'])->name('admin.customServices.store');
-        Route::delete('/admin/custom-services/{id}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroyCustomService'])->name('admin.customServices.destroy');
+        Route::get('/admin/custom-services', [\App\Http\Controllers\Admin\CustomServiceController::class, 'index'])->name('admin.customServices.index');
+        Route::post('/admin/custom-services', [\App\Http\Controllers\Admin\CustomServiceController::class, 'store'])->name('admin.customServices.store');
+        Route::delete('/admin/custom-services/{id}', [\App\Http\Controllers\Admin\CustomServiceController::class, 'destroy'])->name('admin.customServices.destroy');
 
         // WhatsApp Pricing Tiers
         Route::resource('/admin/pricing', \App\Http\Controllers\Admin\PricingTierController::class, ['names' => 'admin.pricing'])->except(['create', 'edit', 'show']);

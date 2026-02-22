@@ -270,6 +270,10 @@
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.controlServices.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         التحكم في الخدمات
                     </a>
+                    <a href="{{ route('admin.customServices.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.customServices.*') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.customServices.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
+                        الخدمات المخصصة
+                    </a>
                     <a href="{{ route('admin.controlCategories.index') }}" class="group/sub flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-colors {{ request()->routeIs('admin.controlCategories.*') ? 'bg-red-500/10 text-white' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5' }}">
                         <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.controlCategories.*') ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-gray-700 group-hover/sub:bg-gray-500' }} transition-all"></span>
                         التحكم في الأقسام

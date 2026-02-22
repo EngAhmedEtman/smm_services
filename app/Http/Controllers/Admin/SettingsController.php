@@ -20,8 +20,7 @@ class SettingsController extends Controller
     {
         $settings = Setting::pluck('value', 'key');
         $tiers = PricingTier::orderBy('min_count')->get();
-        $customServices = Service::where('is_custom', true)->latest()->get();
-        return view('settings.index', compact('settings', 'tiers', 'customServices'));
+        return view('settings.index', compact('settings', 'tiers'));
     }
 
     /**
@@ -45,57 +44,7 @@ class SettingsController extends Controller
         return back()->with('success', 'تم تحديث إعدادات الإشعارات بنجاح.');
     }
 
-    /**
-     * Store a new custom service.
-     */
-    public function storeCustomService(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
-            'min' => 'required|integer|min:1',
-            'max' => 'required|integer|min:1',
-        ]);
 
-        // Generate a random ID for custom service to simulate SMM ID format
-        $serviceId = 'c_' . mt_rand(10000, 99999);
-
-        Service::create([
-            'service_id' => $serviceId,
-            'name' => $request->name,
-            'description' => $request->description,
-            'category' => $request->category,
-            'rate' => $request->rate,
-            'min' => $request->min,
-            'max' => $request->max,
-            'type' => 'Default',
-            'provider' => 'Local', // Mark provider as Local
-            'is_custom' => true,
-            'is_active' => true,
-        ]);
-
-        // Clear cache to reflect new service
-        \Illuminate\Support\Facades\Cache::forget('smm_services');
-
-        return back()->with('success', 'تم إضافة الخدمة المخصصة بنجاح.');
-    }
-
-    /**
-     * Delete a custom service.
-     */
-    public function destroyCustomService($id)
-    {
-        $service = Service::where('id', $id)->where('is_custom', true)->firstOrFail();
-
-        $service->delete();
-
-        // Clear cache
-        \Illuminate\Support\Facades\Cache::forget('smm_services');
-
-        return back()->with('success', 'تم حذف الخدمة المخصصة.');
-    }
 
     /**
      * Show all recharge requests.
@@ -302,6 +251,7 @@ class SettingsController extends Controller
                 $user->increment('balance', $order->price);
                 // Optionally log refund or notify
                 \Illuminate\Support\Facades\Log::info("Refunded {$order->price} to Custom Order #{$order->id} for User {$user->id} due to status change to {$newStatus}");
+
 
                 try {
                     \App\Services\AdminNotificationService::notifyCreditAdded($user, $order->price, "استرداد رصيد للطلب الملغي رقم #{$order->id}");
