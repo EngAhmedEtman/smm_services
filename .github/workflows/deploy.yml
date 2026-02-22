@@ -38,3 +38,4 @@ jobs:
 
             php artisan optimize
           EOF
+          
