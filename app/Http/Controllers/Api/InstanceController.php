@@ -42,6 +42,8 @@ class InstanceController extends Controller
         return response()->json($Response);
     }
 
+
+    
     // 2. جلب كود الـ QR
     public function getQrCode(Request $request)
     {
