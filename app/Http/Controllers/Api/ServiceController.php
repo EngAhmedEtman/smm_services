@@ -305,9 +305,17 @@ class ServiceController extends Controller
      */
     private function createLocalOrder(Request $request, array $processedData, array $serviceInfo)
     {
+        $serviceId = $request->service;
+        // If the service is a custom service (e.g. "c_123"), extract only the numeric part for the database.
+        if (isset($serviceInfo['is_custom']) && $serviceInfo['is_custom']) {
+            $serviceId = (int) preg_replace('/[^0-9]/', '', $serviceId);
+        } else {
+            $serviceId = (int) $serviceId;
+        }
+
         return Order::create([
             'user_id' => auth()->id(),
-            'service_id' => $request->service,
+            'service_id' => $serviceId,
             'service_name' => $serviceInfo['name'] ?? 'Unknown Service',
             'link' => $request->link,
             'quantity' => $processedData['quantity'],
