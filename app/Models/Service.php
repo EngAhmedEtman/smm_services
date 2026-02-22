@@ -21,6 +21,7 @@ class Service extends Model
         'provider',
         'is_active',
         'custom_category',
+        'is_custom',
     ];
 
     public function users()
