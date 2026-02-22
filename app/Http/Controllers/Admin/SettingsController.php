@@ -274,6 +274,50 @@ class SettingsController extends Controller
     }
 
     /**
+     * Update order status manually for local/custom orders.
+     */
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:pending,processing,inprogress,completed,partial,canceled,failed',
+        ]);
+
+        $order = Order::findOrFail($id);
+
+        if (!empty($order->smm_order_id)) {
+            return back()->with('error', 'لا يمكن تعديل حالة الطلبات الخارجية يدوياً.');
+        }
+
+        $oldStatus = strtolower($order->status);
+        $newStatus = strtolower($request->status);
+
+        if ($oldStatus === $newStatus) {
+            return back()->with('info', 'لم يتم تغيير حالة.');
+        }
+
+        // Refund logic if canceled/failed
+        if (in_array($newStatus, ['canceled', 'cancelled', 'failed']) && !in_array($oldStatus, ['canceled', 'cancelled', 'failed'])) {
+            $user = $order->user;
+            if ($user) {
+                $user->increment('balance', $order->price);
+                // Optionally log refund or notify
+                \Illuminate\Support\Facades\Log::info("Refunded {$order->price} to Custom Order #{$order->id} for User {$user->id} due to status change to {$newStatus}");
+
+                try {
+                    \App\Services\AdminNotificationService::notifyCreditAdded($user, $order->price, "استرداد رصيد للطلب الملغي رقم #{$order->id}");
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to notify user about refund: " . $e->getMessage());
+                }
+            }
+        }
+
+        $order->status = $newStatus;
+        $order->save();
+
+        return back()->with('success', 'تم تحديث حالة الطلب بنجاح.');
+    }
+
+    /**
      * Show tickets page (placeholder).
      */
     public function tickets()

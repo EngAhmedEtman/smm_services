@@ -168,13 +168,27 @@
                             $s = $statusMap[$status] ?? ['label' => ($order->api_status ?? $order->status), 'cls' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'dot' => 'bg-gray-400'];
                             $fromApi = isset($order->smm_order_id) && !empty($order->smm_order_id);
                             @endphp
-                            <span class="inline-flex items-center gap-1 text-xs font-medium border px-2 py-0.5 rounded-full {{ $s['cls'] }}" title="{{ $fromApi ? 'الحالة من API' : 'الحالة من قاعدة البيانات' }}">
+
+                            @if($fromApi)
+                            <span class="inline-flex items-center gap-1 text-xs font-medium border px-2 py-0.5 rounded-full {{ $s['cls'] }}" title="الحالة من API">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $s['dot'] }}"></span>
                                 {{ $s['label'] }}
-                                @if($fromApi)
                                 <span class="opacity-50 text-[9px]">⚡</span>
-                                @endif
                             </span>
+                            @else
+                            <form action="{{ route('admin.orders.status.update', $order->id) }}" method="POST" class="flex items-center gap-1" onsubmit="return confirm('تأكيد تغيير حالة الطلب؟ (سيتم استرداد الرصيد للعميل إذا كانت الحالة ملغي/فشل)')">
+                                @csrf
+                                <select name="status" onchange="this.form.submit()" class="text-xs font-medium border px-2 py-1 rounded-lg bg-gray-800 text-gray-300 {{ $s['cls'] }} appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500">
+                                    <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>معلق</option>
+                                    <option value="processing" {{ $status === 'processing' ? 'selected' : '' }}>جارٍ التنفيذ</option>
+                                    <option value="inprogress" {{ $status === 'inprogress' ? 'selected' : '' }}>قيد التنفيذ</option>
+                                    <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>مكتمل</option>
+                                    <option value="partial" {{ $status === 'partial' ? 'selected' : '' }}>جزئي</option>
+                                    <option value="failed" {{ $status === 'failed' ? 'selected' : '' }}>فشل</option>
+                                    <option value="canceled" {{ in_array($status, ['canceled', 'cancelled']) ? 'selected' : '' }}>ملغي (استرداد)</option>
+                                </select>
+                            </form>
+                            @endif
                         </td>
 
                         {{-- Date --}}
