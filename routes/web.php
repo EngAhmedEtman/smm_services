@@ -10,7 +10,6 @@ Route::any('{any}', function () {
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Api\ServiceController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FavoriteServiceController;
 use App\Http\Controllers\Api\WhatsappController;
