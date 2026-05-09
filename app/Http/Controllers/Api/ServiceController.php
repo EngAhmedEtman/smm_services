@@ -123,7 +123,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'تم استلام طلبك المخصص بنجاح وجاري تنفيذه.',
+                'message' => 'تم استلام طلبك بنجاح وجاري تنفيذه.',
                 'local_order_id' => $order->id
             ]);
         }

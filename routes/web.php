@@ -1,4 +1,11 @@
 <?php
+use Illuminate\Support\Facades\Route;
+
+// Maintenance mode: redirect all requests to maintenance page
+Route::any('{any}', function () {
+    return view('maintenance');
+})->where('any', '.*');
+
 
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\ProfileController;
@@ -165,6 +172,36 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 
 // WhatsApp Webhook — must be public (called by Wolfix API externally)
 Route::post('/whatsapp/webhook', [WhatsappController::class, 'webhook'])->name('whatsapp.webhook');
+
+// Temporary WhatsApp connection test route
+Route::get('/test-wa', function () {
+    $instanceId = \App\Models\Setting::where('key', 'admin_whatsapp_instance_id')->value('value');
+    $accessToken = \App\Models\Setting::where('key', 'admin_whatsapp_access_token')->value('value');
+    $adminPhone = \App\Models\Setting::where('key', 'admin_receiver_number')->value('value');
+
+    $number = preg_replace('/[^0-9]/', '', $adminPhone);
+
+    // Auto-format Egyptian numbers
+    if (strlen($number) === 11 && str_starts_with($number, '01')) {
+        $number = '2' . $number;
+    }
+
+    $payload = [
+        'number' => $number,
+        'type' => 'text',
+        'message' => "🔧 *رسالة تجريبية*\nهذه الرسالة لاختبار اتصال الـ API الخاص بـ WolfixBot.",
+        'instance_id' => $instanceId,
+        'access_token' => $accessToken
+    ];
+
+    $response = \Illuminate\Support\Facades\Http::timeout(15)->post('https://wolfixbot.com/api/send', $payload);
+
+    return [
+        'request_payload' => $payload,
+        'response_status' => $response->status(),
+        'response_body' => $response->json() ?? $response->body()
+    ];
+});
 
 // Public Pages (no auth required)
 Route::get('/call-us', function () {
